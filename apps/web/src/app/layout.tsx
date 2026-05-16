@@ -28,6 +28,19 @@ export const metadata: Metadata = {
   description: 'Plataforma LegalTech premium para despachos de abogados. Análisis de contratos, generación de escritos y gestión de expedientes con IA. Por Cliender.',
   keywords: 'software abogados, IA legal, legaltech españa, gestión expedientes, generación contratos, análisis jurídico IA',
   authors: [{ name: 'Cliender', url: 'https://cliender.com' }],
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'IURALEX',
+  },
+  formatDetection: { telephone: false },
+  themeColor: '#FAFAF9',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+  },
   openGraph: {
     title: 'IURALEX — La IA que entiende el derecho español',
     description: 'Plataforma LegalTech premium para despachos de abogados españoles. Por Cliender.',

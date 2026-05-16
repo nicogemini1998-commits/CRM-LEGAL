@@ -23,7 +23,7 @@ const NAV_ITEMS: NavItem[] = [
 ]
 
 const BOTTOM_ITEMS: NavItem[] = [
-  { href: '/admin',    label: 'Administración', icon: 'settings' },
+  { href: '/admin/equipo', label: 'Equipo',         icon: 'settings' },
   { href: '/settings', label: 'Configuración',  icon: 'compass' },
 ]
 
