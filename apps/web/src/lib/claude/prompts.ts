@@ -785,5 +785,85 @@ Incluye: capital prestado, tipo de interés (Art. 1755 CC: debe pactarse expresa
 Si el préstamo es hipotecario y el prestatario es persona física: aplicar LCCI Ley 5/2019 — FEIN obligatoria (Art. 10), acto notarial previo (Art. 14), tope intereses de demora = interés remuneratorio + 3 pp (Art. 25).`,
 
   SERVICIOS: `Genera un Contrato de Prestación de Servicios conforme al Art. 1544 CC y, si aplica para autónomos, la LETA Ley 20/2007.
-Incluye: descripción detallada del servicio, honorarios y periodicidad de pago, plazos de ejecución, propiedad intelectual de los entregables, confidencialidad y remisión a la LSE si aplica, limitación de responsabilidad, resolución unilateral — preaviso mínimo 3 meses si el receptor es el cliente y el prestador es TRADE (Arts. 14-16 LETA), facturación y retención IRPF si aplica.`,
+Incluye: descripción detallada del servicio, honorarios y periodicidad de pago, plazos de ejecución, propiedad intelectual de los entregables (LPI RDL 1/1996: cesión expresa de derechos de explotación), confidencialidad y remisión a la LSE si aplica, limitación de responsabilidad (máx. honorarios cobrados u otro límite pactado), prohibición de cesión sin consentimiento, resolución unilateral — preaviso mínimo 3 meses si el receptor es el cliente y el prestador es TRADE (Arts. 14-16 LETA), retención IRPF si aplica (15% general autónomos; 7% primer año de actividad), facturación mensual/hitos.`,
+
+  ARRENDAMIENTO_VIVIENDA: `Genera un Contrato de Arrendamiento de Vivienda conforme a la LAU 29/1994 (mod. Ley 12/2023).
+OBLIGATORIO incluir: duración mínima 5 años (propietario persona física) o 7 años (persona jurídica) — Art. 9 LAU; prórroga tácita anual hasta 3 años adicionales — Art. 10 LAU; desistimiento posible tras 6 meses con 30 días de preaviso — Art. 11 LAU; fianza = 1 mes de renta — Art. 36 LAU (indicar CCAA para el depósito); actualización de renta por Índice de Referencia del INE desde 2025 — Art. 18 LAU; relación de gastos repercutibles pactados — Art. 20 LAU; causas de resolución — Art. 27 LAU; inventario de bienes si aplica.
+Advertir sobre zonas tensionadas si el inmueble pudiera estar en una (Art. 18 Ley 12/2023).`,
+
+  ARRENDAMIENTO_LOCAL: `Genera un Contrato de Arrendamiento de Local Comercial conforme a la LAU 29/1994 Art. 4.3 (uso distinto de vivienda — libertad de pacto).
+Incluye: duración pactada libremente (sin mínimo legal); fianza = 2 meses de renta — Art. 36 LAU; actividad concreta para la que se destina el local; cláusula de traspaso (Arts. 31-33 LAU); obras de adaptación (consentimiento del arrendador + reversión/no reversión al finalizar); resolución anticipada pactada; actualización de renta según IPC o índice pactado; distribución de cargas (comunidad, IBI, seguros); subrogación en caso de venta del inmueble — Art. 29 LAU.`,
+
+  CONTRATO_INDEFINIDO: `Genera un Contrato de Trabajo Indefinido conforme al ET (RDL 2/2015) y el RDL 32/2021.
+Incluye: identificación empresa y trabajador (DNI, domicilio, categoría profesional, convenio colectivo aplicable), fecha de inicio, jornada completa o parcial (Art. 12 ET), horario de trabajo y distribución semanal, período de prueba (máx. 6 meses titulados / 2 meses resto — Art. 14 ET), salario bruto anual y distribución en pagas, centro de trabajo, funciones detalladas, cláusula de registro de jornada (Art. 34.9 ET), confidencialidad, pacto de no competencia postcontractual si aplica (Art. 21.2 ET: plazo máx. 2 años técnicos / 6 meses resto + compensación económica adecuada), referencia a la normativa de prevención de riesgos (LPRL 31/1995).`,
+
+  CARTA_DESPIDO_DISCIPLINARIO: `Genera una Carta de Despido Disciplinario conforme al Art. 55 ET.
+REQUISITOS FORMALES OBLIGATORIOS (so pena de improcedencia):
+- Forma escrita (Art. 55.1 ET)
+- Hechos que lo motivan: descripción CONCRETA y DETALLADA de los hechos (fecha, hora, lugar, conducta específica)
+- Causa legal del Art. 54 ET a la que se subsume (indicar expresamente)
+- Fecha de efectos del despido (el día de la entrega de la carta o el indicado en ella)
+- Firma del representante legal de la empresa con poderes suficientes
+IMPORTANTE: NO incluir condicionantes ("si no acredita X"); NO usar expresiones vagas; el convenio colectivo puede exigir expediente disciplinario previo (verificar); si el trabajador es representante sindical o delegado de personal: expediente contradictorio obligatorio (Art. 55.1 ET).
+Plazo para que el trabajador impugne: 20 días hábiles desde la entrega (Art. 59.3 ET, caducidad). Conciliación SMAC previa obligatoria.`,
+
+  CARTA_DESPIDO_OBJETIVO: `Genera una Carta de Despido Objetivo conforme al Art. 52 ET.
+REQUISITOS FORMALES OBLIGATORIOS:
+- Forma escrita (Art. 53.1.a ET)
+- Causa legal concreta del Art. 52 ET (causas ETOP: económicas, técnicas, organizativas o de producción; o ineptitud sobrevenida, falta de adaptación, absentismo)
+- Descripción detallada y acreditada de la causa (documentos acreditativos: balances, informes, etc.)
+- Preaviso de 15 días (Art. 53.1.c ET; puede sustituirse por abono de salarios del período)
+- Puesta a disposición simultánea de la indemnización: 20 días/año (máx. 12 mensualidades) — Art. 53.1.b ET; si no hay liquidez: dejar constancia escrita del motivo (salvo error excusable)
+- Si el trabajador no está de acuerdo: puede impugnar en 20 días hábiles desde la fecha de efectos.`,
+
+  FINIQUITO: `Genera un documento de Finiquito conforme a los Arts. 26, 38 y 49 ET.
+INCLUIR OBLIGATORIAMENTE:
+- Identificación de empresa y trabajador
+- Fecha de inicio y fin de la relación laboral + causa de extinción
+- Liquidación detallada: (1) Salario del mes en curso prorrateado por días trabajados; (2) Vacaciones anuales devengadas y no disfrutadas (Art. 38 ET: 30 días naturales/año o los del convenio); (3) Parte proporcional de pagas extraordinarias desde el último devengo; (4) Otros conceptos pactados en convenio o contrato
+- Indemnización si procede: indicar cuantía y base de cálculo (días/año × salario diario × años de servicio)
+- Total bruto, retenciones IRPF y total neto
+- Declaración de que con el pago queda saldada la relación laboral
+ADVERTENCIA LEGAL: la firma del finiquito no impide al trabajador impugnar el despido si lo hace dentro del plazo de caducidad de 20 días hábiles; es recomendable añadir "no conforme con la causa de extinción" si hay discrepancia.`,
+
+  ESTATUTOS_SL: `Genera Estatutos Sociales de Sociedad de Responsabilidad Limitada conforme a la LSC (RDL 1/2010).
+CONTENIDO MÍNIMO LEGAL (Art. 23 LSC): denominación social (con "Sociedad de Responsabilidad Limitada" o "S.L."), objeto social (amplio pero preciso, indicar CNAE), domicilio social en territorio español, capital social (mínimo 3.000 € — o SL de Formación Sucesiva con restricciones Art. 4 bis LSC), participaciones (número, valor nominal, numeración correlativa), régimen de administración (administrador único, solidario, mancomunado, o consejo de administración — con duración del cargo).
+INCLUIR ADEMÁS: régimen de transmisión de participaciones (derecho de adquisición preferente — Art. 107 LSC), convocatoria y celebración de junta general (Arts. 166-180 LSC), quórum y mayorías (Arts. 198-200 LSC), causas de separación (Art. 348 LSC), pactos de no competencia de administradores (Art. 230 LSC), ejercicio social (cierre 31 de diciembre), reparto de dividendos (Art. 326 LSC).`,
+
+  PACTO_SOCIOS: `Genera un Pacto de Socios conforme a la LSC y la doctrina sobre pactos parasociales (STS).
+ESTRUCTURA: partes + recitals (contexto societario) + objeto.
+CLÁUSULAS CLAVE A INCLUIR: (1) Gobierno corporativo: composición del órgano de administración, derechos de designación proporcionales a participación, veto para decisiones estratégicas (reserved matters); (2) Transmisión de participaciones: lock-up, tag-along (derecho de acompañamiento), drag-along (derecho de arrastre), right of first offer/refusal; (3) Financiación: obligaciones de los socios ante necesidades de capital, dilución; (4) Salida: IPO, venta estratégica, liquidación preferente; (5) No competencia y dedicación exclusiva; (6) Resolución de conflictos: mediación → arbitraje institucional (CIMA o CCI); (7) Duración y causas de terminación.
+ADVERTIR: el pacto es vinculante entre firmantes pero inoponible frente a la sociedad y terceros (doctrina STS); para que afecte a la sociedad, los pactos deben incorporarse a los estatutos.`,
+
+  DEMANDA_DIVORCIO: `Genera un modelo de Demanda de Divorcio Contencioso conforme a los Arts. 86, 90 y 92 CC y la LEC.
+ESTRUCTURA PROCESAL: encabezamiento (Juzgado de Primera Instancia o de Familia competente: domicilio habitual del matrimonio o del demandado — Art. 769 LEC), comparecencia de las partes (procurador + abogado obligatorios), hechos numerados (matrimonio, hijos si los hay, situación de convivencia), fundamentos de derecho (Arts. 86 CC, 769 LEC, jurisprudencia sobre custodia), petición concreta al juzgado (divorcio + régimen de custodia + pensión de alimentos + uso del domicilio + pensión compensatoria si procede + liquidación del régimen económico si se solicita).
+MEDIDAS PROVISIONALES a solicitar si hay urgencia (Art. 773 LEC): custodia provisional, alimentos provisionales, uso de la vivienda, prohibición de disposición de bienes comunes.
+DOCUMENTOS A APORTAR: certificado de matrimonio, libro de familia, DNI, documentación económica (nóminas, IRPF, etc.).`,
+
+  CONVENIO_REGULADOR: `Genera un Convenio Regulador de Divorcio/Separación conforme a los Arts. 90 y 97 CC.
+CONTENIDO MÍNIMO LEGAL (Art. 90 CC): (1) Cuidado de los hijos (custodia individual o compartida — Art. 92 CC), régimen de visitas del no custodio; (2) Atribución del uso del domicilio familiar; (3) Pensión de alimentos para los hijos (Art. 142 CC: cuantía, periodicidad, actualización por IPC, gastos extraordinarios); (4) Pensión compensatoria si procede (Art. 97 CC: criterios, duración, causas de extinción — Art. 101 CC); (5) Liquidación del régimen económico matrimonial (inventario + adjudicación); (6) Cargas familiares.
+PLAN DE PARENTALIDAD (si hay hijos menores): calendario de convivencia ordinario y extraordinario (festivos, vacaciones escolares, Navidad, Semana Santa, verano), comunicaciones y resolución de discrepancias.`,
+
+  RECURSO_ALZADA: `Genera un modelo de Recurso de Alzada conforme al Art. 114 de la Ley 39/2015 (LPACAP).
+PLAZO: 1 mes desde la notificación del acto (si el acto es expreso — Art. 122.1 LPACAP) o en cualquier momento si el acto es presunto (silencio administrativo negativo).
+ESTRUCTURA: (1) Encabezamiento: autoridad u órgano ante quien se dirige (el jerárquico superior del que dictó el acto); (2) Identificación del recurrente y representante si aplica; (3) Acto que se recurre (número, fecha, contenido); (4) Hechos: relato objetivo y completo; (5) Fundamentos de derecho: artículos infringidos, doctrina aplicable, jurisprudencia; (6) Petición concreta (anulación/modificación); (7) Lugar, fecha y firma.
+EFECTOS: suspende el acto recurrido si así se solicita y se justifica (Art. 117 LPACAP); la Administración tiene 3 meses para resolver; silencio = desestimación (Art. 122.2 LPACAP).`,
+
+  RECURSO_CONTENCIOSO: `Genera un modelo de Recurso Contencioso-Administrativo conforme a la LJCA (Ley 29/1998).
+PLAZO: 2 meses desde notificación del acto o resolución del recurso administrativo previo (Art. 46.1 LJCA); 6 meses para actos presuntos.
+ESTRUCTURA DEL ESCRITO DE INTERPOSICIÓN (Arts. 45-46 LJCA): (1) Juzgado o Sala competente (TSJ para actos de CCAA; AN para actos de AGE de especial relevancia; TS para actos del Consejo de Ministros); (2) Identificación del recurrente y su representación (procurador + abogado obligatorio); (3) Acto o disposición impugnada; (4) Petición de que se admita el recurso; (5) Anuncio de que se ampliará en la demanda.
+DEMANDA posterior (Art. 56 LJCA): 20 días desde emplazamiento; hechos + fundamentos de derecho + súplica; documentos + proposición de prueba.
+MEDIDA CAUTELAR: solicitar suspensión del acto si procede (Art. 130 LJCA: fumus boni iuris + periculum in mora + ponderación de intereses).`,
+
+  ARRAS_PENITENCIALES: `Genera un Contrato de Arras Penitenciales conforme al Art. 1454 CC.
+ELEMENTOS ESENCIALES: identificación de las partes (comprador y vendedor), descripción completa del inmueble (dirección, referencia catastral, superficie, cargas registrales según nota simple adjunta), precio total de compraventa acordado, importe de las arras (normalmente 10% del precio), fecha límite para otorgar la escritura pública de compraventa.
+CONSECUENCIAS DEL INCUMPLIMIENTO (Art. 1454 CC): si incumple quien entregó las arras (comprador): las pierde íntegramente; si incumple quien las recibió (vendedor): debe devolver el doble del importe recibido.
+INCLUIR: condiciones suspensivas si aplica (obtención de financiación hipotecaria — indicar plazo y entidad), estado de cargas del inmueble y obligación del vendedor de entregarla libre de cargas, distribución de gastos de compraventa (ITP/AJD, notaría, registro), consecuencias si el comprador no obtiene hipoteca.
+ADVERTIR: las arras penitenciales implican la renuncia al cumplimiento forzoso (STS 13/01/2015); si se quiere mantener la acción resolutoria del Art. 1124 CC, pactar expresamente.`,
+
+  DESAHUCIO_IMPAGO: `Genera un modelo de Demanda de Desahucio por Impago de Renta conforme a los Arts. 27 LAU y 437-441 LEC (reforma RDL 6/2023).
+REQUISITO PREVIO OBLIGATORIO (desde junio 2024): acreditar intento de MASC (mediación, conciliación o negociación) antes de presentar la demanda (Art. 437.1 LEC reformado); aportar certificado de mediación frustrada o de no comparecencia del arrendatario.
+ESTRUCTURA DE LA DEMANDA: (1) Juzgado de Primera Instancia del lugar del inmueble (Art. 52.1.7 LEC); (2) Identificación del arrendador (demandante) y arrendatario (demandado); (3) Hechos: contrato de arrendamiento (adjuntar), rentas impagadas (relación de mensualidades y cuantía total), requerimiento previo de pago si se realizó; (4) Fundamentos de derecho: Art. 27 LAU (causa resolución), Art. 437 LEC (juicio verbal de desahucio); (5) Petición: resolución del contrato + lanzamiento + condena al pago de rentas impagadas + costas.
+NOVEDAD RDL 6/2023: en la resolución de admisión se fija ya la fecha de lanzamiento; si el demandado no se opone ni paga en 10 días hábiles, se procede directamente al lanzamiento sin más trámites.
+Si el arrendatario es gran tenedor (>10 inmuebles): acreditar comunicación a servicios sociales y situación de vulnerabilidad.`,
 }
