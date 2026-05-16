@@ -1,0 +1,3 @@
+[submodule "packages/claude-for-legal"]
+	path = packages/claude-for-legal
+	url = https://github.com/anthropics/claude-for-legal
