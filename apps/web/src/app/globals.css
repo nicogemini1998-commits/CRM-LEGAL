@@ -1,0 +1,288 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────────────────
+   IURALEX — Design System v4.0 "Obsidian & Citrus"
+   Editorial Tech · Quiet Power · Linear-meets-Vercel-meets-Arc
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── Surfaces ─────────────────────────────────────────────────────── */
+  --bg: #FAFAF9;              /* warm white, no slate frío */
+  --surface: #FFFFFF;
+  --surface-elevated: #F5F5F4;
+  --surface-sunken: #F0EFEC;
+
+  /* ── Ink ──────────────────────────────────────────────────────────── */
+  --ink-primary: #0A0A0A;     /* casi negro puro */
+  --ink-secondary: #525252;
+  --ink-tertiary: #A3A3A3;
+  --ink-quaternary: #D6D3D1;
+  --ink-inverse: #FAFAF9;
+
+  /* ── Hairlines ────────────────────────────────────────────────────── */
+  --hairline: #E7E5E4;
+  --hairline-strong: #D6D3D1;
+  --hairline-faint: #F0EFEC;
+
+  /* ── Signature: Cliender Purple + Obsidian ───────────────────────── */
+  --lime: #7C3AED;              /* Cliender purple primary */
+  --lime-hover: #6D28D9;        /* darker hover */
+  --lime-pressed: #5B21B6;
+  --lime-glow: rgba(124, 58, 237, 0.32);
+  --lime-bg-soft: #F5F3FF;      /* violet-50 — for soft backgrounds */
+  --lime-text-on: #FFFFFF;      /* white text on purple solid */
+  --lime-text-soft: #5B21B6;    /* dark purple text on bg-soft */
+
+  --obsidian: #18181B;
+  --obsidian-hover: #27272A;
+  --obsidian-pressed: #09090B;
+  --obsidian-soft: #3F3F46;
+
+  /* ── Semantic ─────────────────────────────────────────────────────── */
+  --success: #16A34A;
+  --success-bg: #DCFCE7;
+  --warning: #F59E0B;
+  --warning-bg: #FEF3C7;
+  --danger: #DC2626;
+  --danger-bg: #FEE2E2;
+  --info: #2563EB;
+  --info-bg: #DBEAFE;
+
+  /* ── Acentos editoriales ──────────────────────────────────────────── */
+  --plum: #831843;
+  --plum-bg: #FCE7F3;
+  --sand: #FEF3C7;
+  --mist: #DBEAFE;
+
+  /* ── Tipografía ───────────────────────────────────────────────────── */
+  --font-display: var(--font-instrument), "Instrument Serif", Georgia, serif;
+  --font-sans: var(--font-geist-sans), "Geist", -apple-system, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  /* ── Radii ───────────────────────────────────────────────────────── */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-2xl: 20px;
+  --r-3xl: 28px;
+  --r-full: 9999px;
+
+  /* ── Shadows: layered, no flat box-shadow ───────────────────────── */
+  --shadow-hairline: 0 0 0 1px var(--hairline);
+  --shadow-xs: 0 1px 0 0 rgba(10, 10, 10, 0.04);
+  --shadow-sm: 0 1px 2px 0 rgba(10, 10, 10, 0.04), 0 1px 1px 0 rgba(10, 10, 10, 0.02);
+  --shadow-md: 0 4px 12px -2px rgba(10, 10, 10, 0.05), 0 2px 4px -2px rgba(10, 10, 10, 0.04);
+  --shadow-lg: 0 12px 32px -8px rgba(10, 10, 10, 0.08), 0 4px 8px -4px rgba(10, 10, 10, 0.05);
+  --shadow-xl: 0 24px 48px -12px rgba(10, 10, 10, 0.14);
+  --shadow-inner: inset 0 1px 0 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 0 rgba(10, 10, 10, 0.02);
+  --shadow-lime-glow: 0 0 0 4px var(--lime-glow);
+
+  /* ── Easing (Linear's signature) ─────────────────────────────────── */
+  --ease-out-quart: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+
+  /* ── Durations ───────────────────────────────────────────────────── */
+  --d-micro: 120ms;
+  --d-fast: 180ms;
+  --d-normal: 240ms;
+  --d-slow: 320ms;
+  --d-slower: 480ms;
+}
+
+/* ─── Reset & Base ──────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+
+*::selection {
+  background: var(--lime);
+  color: var(--lime-text-on);
+  text-shadow: none;
+}
+
+html {
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "ss02", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  min-height: 100vh;
+}
+
+/* ─── Editorial Typography ──────────────────────────────────────────── */
+.font-display { font-family: var(--font-display); }
+.font-mono { font-family: var(--font-mono); }
+
+.display-hero {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(48px, 7vw, 88px);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+}
+
+.display-1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 64px;
+  line-height: 0.98;
+  letter-spacing: -0.032em;
+}
+
+.display-2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 1.0;
+  letter-spacing: -0.028em;
+}
+
+.display-3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 36px;
+  line-height: 1.05;
+  letter-spacing: -0.024em;
+}
+
+.label-micro {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.label-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink-tertiary);
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* ─── Scrollbars (minimal) ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--ink-quaternary);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--ink-tertiary); background-clip: padding-box; border: 3px solid transparent; }
+
+/* ─── Focus ─────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+button:focus-visible, a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--lime-glow), 0 0 0 1px var(--lime);
+}
+
+/* ─── Mesh Gradient base (used by <MeshGradient />) ─────────────────── */
+.mesh-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(at 92% 8%, rgba(124, 58, 237, 0.20) 0px, transparent 50%),
+    radial-gradient(at 8% 92%, rgba(124, 58, 237, 0.08) 0px, transparent 45%),
+    radial-gradient(at 50% 50%, rgba(24, 24, 27, 0.02) 0px, transparent 60%);
+  filter: blur(40px);
+  z-index: 0;
+}
+
+/* ─── Shimmer Skeleton ──────────────────────────────────────────────── */
+@keyframes shimmer-wave {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-elevated);
+  border-radius: var(--r-md);
+}
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.6) 50%, transparent 100%);
+  animation: shimmer-wave 1.6s var(--ease-out-quart) infinite;
+}
+
+/* ─── Typing dots (LEXIA thinking) ──────────────────────────────────── */
+@keyframes typing-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+.typing-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lime);
+  margin: 0 2px;
+  animation: typing-bounce 1.2s var(--ease-out-quart) infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* ─── Streaming cursor ──────────────────────────────────────────────── */
+@keyframes cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.2; }
+}
+.stream-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: var(--lime);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: cursor-blink 0.9s var(--ease-out-quart) infinite;
+}
+
+/* ─── Mesh slow drift (chat background) ─────────────────────────────── */
+@keyframes mesh-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-1%, 1%) scale(1.02); }
+  66% { transform: translate(1%, -1%) scale(0.98); }
+}
+.mesh-drift {
+  animation: mesh-drift 24s ease-in-out infinite;
+}
+
+/* ─── Hairline divider ──────────────────────────────────────────────── */
+.hairline { border-color: var(--hairline) !important; }
+.hairline-b { border-bottom: 1px solid var(--hairline); }
+.hairline-t { border-top: 1px solid var(--hairline); }
+.hairline-r { border-right: 1px solid var(--hairline); }
+.hairline-l { border-left: 1px solid var(--hairline); }
+
+/* ─── Reduced motion ────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
