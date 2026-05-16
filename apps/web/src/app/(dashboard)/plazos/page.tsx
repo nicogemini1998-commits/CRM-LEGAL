@@ -310,12 +310,12 @@ const CATEGORIES = [
 
 type CategoryKey = typeof CATEGORIES[number]['key']
 
-const CATEGORY_COLORS: Record<Category, { bg: string; text: string; border: string }> = {
-  civil: { bg: 'bg-blue-500/15', text: 'text-blue-400', border: 'border-blue-500/30' },
-  penal: { bg: 'bg-red-500/15', text: 'text-red-400', border: 'border-red-500/30' },
-  laboral: { bg: 'bg-orange-500/15', text: 'text-orange-400', border: 'border-orange-500/30' },
-  administrativo: { bg: 'bg-cyan-500/15', text: 'text-cyan-400', border: 'border-cyan-500/30' },
-  mercantil: { bg: 'bg-violet-500/15', text: 'text-violet-400', border: 'border-violet-500/30' },
+const CATEGORY_COLORS: Record<Category, { color: string; bg: string }> = {
+  civil:          { color: '#1D4ED8', bg: 'rgba(29,78,216,0.1)'   },
+  penal:          { color: '#DC2626', bg: 'rgba(220,38,38,0.1)'   },
+  laboral:        { color: '#C2410C', bg: 'rgba(194,65,12,0.1)'   },
+  administrativo: { color: '#0369A1', bg: 'rgba(3,105,161,0.1)'   },
+  mercantil:      { color: '#6D28D9', bg: 'rgba(109,40,217,0.1)'  },
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -385,64 +385,53 @@ function formatDays(rule: DeadlineRule): string {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
+const CAT_LABELS: Record<Category, string> = {
+  civil: 'Civil', penal: 'Penal', laboral: 'Laboral',
+  administrativo: 'Administrativo', mercantil: 'Mercantil',
+}
+
 function CategoryBadge({ category }: { category: Category }) {
-  const colors = CATEGORY_COLORS[category]
-  const labels: Record<Category, string> = {
-    civil: 'Civil',
-    penal: 'Penal',
-    laboral: 'Laboral',
-    administrativo: 'Administrativo',
-    mercantil: 'Mercantil',
-  }
+  const c = CATEGORY_COLORS[category]
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide border ${colors.bg} ${colors.text} ${colors.border}`}>
-      {labels[category]}
+    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', background: c.bg, color: c.color }}>
+      {CAT_LABELS[category]}
     </span>
   )
 }
 
 function LawBadge({ law }: { law: string }) {
   return (
-    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-[#7C3AED]/10 text-purple-400 border border-purple-500/20">
+    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 6, fontSize: 10, fontFamily: 'monospace', fontWeight: 600, background: 'rgba(124,58,237,0.08)', color: '#7C3AED', border: '1px solid rgba(124,58,237,0.2)' }}>
       {law}
     </span>
   )
 }
 
-function RuleCard({
-  rule,
-  selected,
-  onClick,
-}: {
-  rule: DeadlineRule
-  selected: boolean
-  onClick: () => void
-}) {
+function RuleCard({ rule, selected, onClick }: { rule: DeadlineRule; selected: boolean; onClick: () => void }) {
+  const c = CATEGORY_COLORS[rule.category]
   return (
     <motion.button
-      layout
-      onClick={onClick}
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -4 }}
-      whileHover={{ scale: 1.01 }}
+      layout onClick={onClick}
+      initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
       whileTap={{ scale: 0.99 }}
-      className={`w-full text-left p-3 rounded-xl border transition-all duration-200 ${
-        selected
-          ? 'bg-[#7C3AED]/10 border-purple-500/50 shadow-[0_0_0_1px_rgba(124,58,237,0.3)]'
-          : 'bg-[#141418] border-white/8 hover:border-white/16 hover:bg-[#18181c]'
-      }`}
+      style={{
+        width: '100%', textAlign: 'left', padding: '12px', borderRadius: 10, cursor: 'pointer',
+        transition: 'all 0.15s',
+        background: selected ? 'rgba(124,58,237,0.06)' : 'var(--surface)',
+        border: selected ? '1px solid rgba(124,58,237,0.35)' : '1px solid var(--hairline)',
+        boxShadow: selected ? '0 0 0 1px rgba(124,58,237,0.15)' : '0 1px 2px rgba(0,0,0,0.04)',
+      }}
+      onMouseEnter={e => { if (!selected) { e.currentTarget.style.borderColor = c.color + '40'; e.currentTarget.style.background = c.bg } }}
+      onMouseLeave={e => { if (!selected) { e.currentTarget.style.borderColor = 'var(--hairline)'; e.currentTarget.style.background = 'var(--surface)' } }}
     >
-      <div className="flex flex-col gap-1.5">
-        <p className={`text-sm font-medium leading-snug ${selected ? 'text-white' : 'text-white/90'}`}>
-          {rule.label}
-        </p>
-        <div className="flex flex-wrap gap-1.5 items-center">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink-primary)', lineHeight: 1.3 }}>{rule.label}</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
           <LawBadge law={rule.law} />
           <CategoryBadge category={rule.category} />
         </div>
-        <p className="text-xs text-white/40 mt-0.5">
-          {formatDays(rule)} · {rule.type === 'business' ? 'hábiles' : 'naturales'}
+        <p style={{ fontSize: 11, color: 'var(--ink-tertiary)', marginTop: 2 }}>
+          {formatDays(rule)} · {rule.type === 'business' ? 'días hábiles' : 'días naturales'}
         </p>
       </div>
     </motion.button>
@@ -451,15 +440,13 @@ function RuleCard({
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-4 py-20">
-      <div className="w-16 h-16 rounded-2xl bg-[#7C3AED]/10 border border-purple-500/20 flex items-center justify-center">
-        <svg className="w-8 h-8 text-purple-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 24px', gap: 16 }}>
+      <div style={{ width: 64, height: 64, borderRadius: 16, background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>
+        📅
       </div>
-      <div className="text-center">
-        <p className="text-white/50 text-sm font-medium">Selecciona un plazo</p>
-        <p className="text-white/25 text-xs mt-1">Elige una norma del panel izquierdo para calcular la fecha límite</p>
+      <div style={{ textAlign: 'center' }}>
+        <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink-secondary)' }}>Selecciona un plazo</p>
+        <p style={{ fontSize: 12, color: 'var(--ink-tertiary)', marginTop: 4 }}>Elige una norma de la lista para calcular la fecha límite</p>
       </div>
     </div>
   )
@@ -467,11 +454,9 @@ function EmptyState() {
 
 function NoResults() {
   return (
-    <div className="flex flex-col items-center justify-center py-12 gap-3">
-      <svg className="w-10 h-10 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-      <p className="text-white/40 text-sm">No se encontraron plazos</p>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px 0', gap: 8 }}>
+      <p style={{ fontSize: 24 }}>🔍</p>
+      <p style={{ fontSize: 13, color: 'var(--ink-tertiary)' }}>No se encontraron plazos</p>
     </div>
   )
 }
@@ -514,260 +499,157 @@ export default function PlazosPage() {
   const isToday = daysLeft === 0
 
   return (
-    <div className="min-h-screen bg-[#0D0D0F] text-white">
+    <div style={{ maxWidth: 1100, margin: '0 auto', paddingBottom: 80 }}>
+
       {/* Header */}
-      <div className="px-6 pt-8 pb-6 border-b border-white/8">
-        <h1 className="text-2xl font-semibold tracking-tight">Calculadora de Plazos</h1>
-        <p className="text-sm text-white/40 mt-1">
-          Calcula plazos procesales según la normativa española vigente
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
+        style={{ paddingBottom: 32, borderBottom: '1px solid var(--hairline)', marginBottom: 32 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 999, marginBottom: 16, background: 'rgba(3,105,161,0.08)', border: '1px solid rgba(3,105,161,0.2)', fontSize: 11, fontWeight: 600, color: '#0369A1', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+          ⏱ Plazos Procesales · Normativa Española
+        </div>
+        <h1 style={{ fontSize: 32, fontWeight: 700, color: 'var(--ink-primary)', marginBottom: 8, lineHeight: 1.2 }}>
+          Calculadora de{' '}
+          <span style={{ background: 'linear-gradient(135deg, #0369A1, #7C3AED)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            plazos procesales
+          </span>
+        </h1>
+        <p style={{ fontSize: 14, color: 'var(--ink-secondary)', lineHeight: 1.6, maxWidth: 560 }}>
+          Calcula fechas límite según LEC, LECrim, LRJS, LPAC y LSC. Distingue entre días hábiles y naturales, excluye festivos nacionales automáticamente.
         </p>
+      </motion.div>
+
+      {/* Search + Filters */}
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ position: 'relative', marginBottom: 12 }}>
+          <svg style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--ink-tertiary)' }}
+            width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" strokeWidth="2" /><path d="m21 21-4.35-4.35" strokeWidth="2" />
+          </svg>
+          <input type="text" placeholder="Buscar plazo por nombre o artículo…" value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ width: '100%', paddingLeft: 36, paddingRight: 16, paddingTop: 10, paddingBottom: 10, borderRadius: 10, fontSize: 13, color: 'var(--ink-primary)', background: 'var(--surface)', border: '1px solid var(--hairline)', outline: 'none', boxSizing: 'border-box' }}
+          />
+        </div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {CATEGORIES.map(cat => (
+            <button key={cat.key} onClick={() => setActiveCategory(cat.key)}
+              style={{ padding: '6px 14px', borderRadius: 999, fontSize: 12, fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s',
+                background: activeCategory === cat.key ? 'var(--obsidian)' : 'var(--surface)',
+                color: activeCategory === cat.key ? 'var(--lime)' : 'var(--ink-secondary)',
+                border: activeCategory === cat.key ? '1px solid var(--obsidian)' : '1px solid var(--hairline)',
+              }}>{cat.label}</button>
+          ))}
+        </div>
       </div>
 
-      <div className="px-6 py-6 flex flex-col gap-4">
-        {/* Search + Category Filter */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          {/* Search */}
-          <div className="relative flex-1">
-            <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Buscar por nombre o artículo..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#141418] border border-white/8 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all"
-            />
-          </div>
-          {/* Category pills */}
-          <div className="flex flex-wrap gap-1.5">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.key}
-                onClick={() => setActiveCategory(cat.key)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
-                  activeCategory === cat.key
-                    ? 'bg-[#7C3AED] text-white shadow-[0_0_12px_rgba(124,58,237,0.4)]'
-                    : 'bg-[#141418] border border-white/8 text-white/50 hover:text-white/80 hover:border-white/16'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+      {/* Main 2-col layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 20, alignItems: 'start' }}>
+
+        {/* LEFT: rule list */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-tertiary)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
+            {filtered.length} plazos disponibles
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 'calc(100vh - 320px)', overflowY: 'auto', paddingRight: 4 }}>
+            <AnimatePresence mode="popLayout">
+              {filtered.length === 0 ? <NoResults /> : filtered.map(rule => (
+                <RuleCard key={rule.id} rule={rule} selected={selectedRule?.id === rule.id} onClick={() => handleSelectRule(rule)} />
+              ))}
+            </AnimatePresence>
           </div>
         </div>
 
-        {/* Main layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Left panel — rule list */}
-          <div className="lg:col-span-1 flex flex-col gap-2">
-            <p className="text-xs text-white/30 font-medium uppercase tracking-wider px-0.5">
-              {filtered.length} plazos
-            </p>
-            <div className="flex flex-col gap-2 max-h-[calc(100vh-280px)] overflow-y-auto pr-1 custom-scrollbar">
-              <AnimatePresence mode="popLayout">
-                {filtered.length === 0 ? (
-                  <NoResults />
-                ) : (
-                  filtered.map((rule) => (
-                    <RuleCard
-                      key={rule.id}
-                      rule={rule}
-                      selected={selectedRule?.id === rule.id}
-                      onClick={() => handleSelectRule(rule)}
-                    />
-                  ))
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
+        {/* RIGHT: calculator */}
+        <div style={{ borderRadius: 16, background: 'var(--surface)', border: '1px solid var(--hairline)', minHeight: 480, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+          <AnimatePresence mode="wait">
+            {!selectedRule ? (
+              <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 480 }}>
+                <EmptyState />
+              </motion.div>
+            ) : (
+              <motion.div key={selectedRule.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}
+                style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: 28 }}>
 
-          {/* Right panel — calculator */}
-          <div className="lg:col-span-2">
-            <div className="rounded-2xl bg-[#141418] border border-white/8 min-h-[480px] flex flex-col">
-              <AnimatePresence mode="wait">
-                {!selectedRule ? (
-                  <motion.div
-                    key="empty"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex-1 flex items-center justify-center"
-                  >
-                    <EmptyState />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key={selectedRule.id}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.2 }}
-                    className="flex flex-col gap-5 p-6"
-                  >
-                    {/* Rule title */}
-                    <div className="flex flex-col gap-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <LawBadge law={selectedRule.law} />
-                        <CategoryBadge category={selectedRule.category} />
-                      </div>
-                      <h2 className="text-lg font-semibold text-white">{selectedRule.label}</h2>
-                      <p className="text-sm text-white/50">{selectedRule.description}</p>
-                    </div>
+                {/* Rule info */}
+                <div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
+                    <LawBadge law={selectedRule.law} />
+                    <CategoryBadge category={selectedRule.category} />
+                  </div>
+                  <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--ink-primary)', marginBottom: 6 }}>{selectedRule.label}</h2>
+                  <p style={{ fontSize: 13, color: 'var(--ink-secondary)', lineHeight: 1.6 }}>{selectedRule.description}</p>
+                </div>
 
-                    {/* Start from info box */}
-                    <div className="flex gap-3 items-start bg-[#2D6BE4]/10 border border-blue-500/20 rounded-xl p-4">
-                      <svg className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <div>
-                        <p className="text-xs font-semibold text-blue-400 uppercase tracking-wide mb-0.5">El plazo comienza desde</p>
-                        <p className="text-sm text-white/70">{selectedRule.startFrom}</p>
-                      </div>
-                    </div>
+                {/* Start from */}
+                <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '12px 16px', borderRadius: 10, background: 'rgba(29,78,216,0.06)', border: '1px solid rgba(29,78,216,0.15)' }}>
+                  <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>ℹ️</span>
+                  <div>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: '#1D4ED8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>El plazo empieza desde</p>
+                    <p style={{ fontSize: 13, color: 'var(--ink-secondary)', lineHeight: 1.5 }}>{selectedRule.startFrom}</p>
+                  </div>
+                </div>
 
-                    {/* Date input */}
-                    <div className="flex flex-col gap-2">
-                      <label className="text-sm font-medium text-white/70">
-                        Fecha de inicio
-                      </label>
-                      <input
-                        type="date"
-                        value={startDate}
-                        onChange={(e) => { setStartDate(e.target.value); setResult(null) }}
-                        className="w-full sm:w-64 px-4 py-2.5 rounded-xl bg-[#0D0D0F] border border-white/10 text-sm text-white focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all [color-scheme:dark]"
-                      />
-                      <p className="text-xs text-white/30">
-                        Tipo de cómputo: <span className="text-white/50 font-medium">{selectedRule.type === 'business' ? 'Días hábiles' : 'Días naturales'}</span>
-                        {' · '}{formatDays(selectedRule)}
-                      </p>
-                    </div>
+                {/* Date input */}
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ink-primary)', marginBottom: 8 }}>Fecha de inicio del plazo</label>
+                  <input type="date" value={startDate} onChange={e => { setStartDate(e.target.value); setResult(null) }}
+                    style={{ padding: '9px 14px', borderRadius: 10, fontSize: 13, color: 'var(--ink-primary)', background: 'var(--surface-elevated)', border: '1px solid var(--hairline)', outline: 'none' }}
+                  />
+                  <p style={{ fontSize: 11, color: 'var(--ink-tertiary)', marginTop: 6 }}>
+                    Cómputo: <strong style={{ color: 'var(--ink-secondary)' }}>{selectedRule.type === 'business' ? 'Días hábiles' : 'Días naturales'}</strong>
+                    {' · '}{formatDays(selectedRule)}
+                  </p>
+                </div>
 
-                    {/* Calculate button */}
-                    <button
-                      onClick={handleCalculate}
-                      disabled={!startDate}
-                      className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#7C3AED] hover:bg-[#6d31d4] disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold text-white transition-all duration-150 shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:shadow-[0_0_28px_rgba(124,58,237,0.5)] active:scale-[0.98]"
-                    >
-                      Calcular plazo
-                    </button>
+                {/* Button */}
+                <button onClick={handleCalculate} disabled={!startDate}
+                  style={{ alignSelf: 'flex-start', padding: '10px 24px', borderRadius: 10, border: 'none', cursor: startDate ? 'pointer' : 'not-allowed', opacity: startDate ? 1 : 0.4, fontSize: 13, fontWeight: 700, color: '#fff', background: 'linear-gradient(135deg, #7C3AED, #6366F1)', boxShadow: startDate ? '0 4px 16px rgba(124,58,237,0.3)' : 'none', transition: 'all 0.15s' }}>
+                  Calcular fecha límite
+                </button>
 
-                    {/* Result */}
-                    <AnimatePresence>
-                      {result && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                          transition={{ duration: 0.25 }}
-                          className="flex flex-col gap-3"
-                        >
-                          {/* Result card */}
-                          <div className={`rounded-xl border p-5 flex flex-col gap-4 ${
-                            isExpired
-                              ? 'bg-red-500/8 border-red-500/25'
-                              : 'bg-[#7C3AED]/8 border-purple-500/25'
-                          }`}>
-                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                              <div>
-                                <p className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-1">Fecha límite</p>
-                                <p className="text-xl font-semibold text-white capitalize">
-                                  {formatDate(result)}
-                                </p>
-                              </div>
-                              {/* Days badge */}
-                              <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold self-start ${
-                                isExpired
-                                  ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                                  : isToday
-                                  ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                                  : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                              }`}>
-                                {isExpired ? (
-                                  <>
-                                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                                    </svg>
-                                    VENCIDO hace {Math.abs(daysLeft!)} días
-                                  </>
-                                ) : isToday ? (
-                                  'Vence HOY'
-                                ) : (
-                                  `${daysLeft} días restantes`
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Business day note */}
-                            {selectedRule.type === 'business' && (
-                              <p className="text-xs text-white/35 flex items-center gap-1.5">
-                                <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                Se excluyen sábados, domingos y festivos nacionales
-                              </p>
-                            )}
-
-                            {/* Add to calendar (disabled) */}
-                            <button
-                              disabled
-                              className="inline-flex items-center gap-2 self-start px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-white/30 cursor-not-allowed"
-                            >
-                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                              </svg>
-                              Añadir al calendario
-                              <span className="text-[10px] bg-white/8 px-1.5 py-0.5 rounded font-medium">Próximamente</span>
-                            </button>
+                {/* Result */}
+                <AnimatePresence>
+                  {result && (
+                    <motion.div initial={{ opacity: 0, y: 10, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}
+                      style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      <div style={{ borderRadius: 12, padding: '20px 24px', border: `1px solid ${isExpired ? 'rgba(220,38,38,0.2)' : 'rgba(124,58,237,0.2)'}`, background: isExpired ? 'rgba(220,38,38,0.05)' : 'rgba(124,58,237,0.05)' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+                          <div>
+                            <p style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--ink-tertiary)', marginBottom: 6 }}>Fecha límite</p>
+                            <p style={{ fontSize: 22, fontWeight: 700, color: 'var(--ink-primary)', textTransform: 'capitalize' }}>{formatDate(result)}</p>
                           </div>
-
-                          {/* Warning */}
-                          {selectedRule.warning && (
-                            <motion.div
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: 'auto' }}
-                              className="flex gap-3 items-start bg-amber-500/8 border border-amber-500/20 rounded-xl p-4"
-                            >
-                              <svg className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                              </svg>
-                              <div>
-                                <p className="text-xs font-semibold text-amber-400 uppercase tracking-wide mb-0.5">Advertencia</p>
-                                <p className="text-sm text-white/60">{selectedRule.warning}</p>
-                              </div>
-                            </motion.div>
-                          )}
+                          <div style={{ padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 700, background: isExpired ? 'rgba(220,38,38,0.1)' : isToday ? 'rgba(217,119,6,0.1)' : 'rgba(22,163,74,0.1)', color: isExpired ? '#DC2626' : isToday ? '#D97706' : '#16A34A', border: `1px solid ${isExpired ? 'rgba(220,38,38,0.2)' : isToday ? 'rgba(217,119,6,0.2)' : 'rgba(22,163,74,0.2)'}` }}>
+                            {isExpired ? `⚠️ VENCIDO hace ${Math.abs(daysLeft!)} días` : isToday ? '🔴 Vence HOY' : `✅ ${daysLeft} días restantes`}
+                          </div>
+                        </div>
+                        {selectedRule.type === 'business' && (
+                          <p style={{ fontSize: 11, color: 'var(--ink-tertiary)', marginTop: 14, display: 'flex', alignItems: 'center', gap: 5 }}>
+                            📅 Se excluyen sábados, domingos y festivos nacionales españoles
+                          </p>
+                        )}
+                        <button disabled style={{ marginTop: 14, padding: '7px 14px', borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--surface-elevated)', fontSize: 11, color: 'var(--ink-tertiary)', cursor: 'not-allowed', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                          📆 Añadir al calendario <span style={{ fontSize: 10, background: 'var(--surface-sunken)', padding: '1px 6px', borderRadius: 4, fontWeight: 600 }}>Próximamente</span>
+                        </button>
+                      </div>
+                      {selectedRule.warning && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+                          style={{ display: 'flex', gap: 12, padding: '12px 16px', borderRadius: 10, background: 'rgba(217,119,6,0.06)', border: '1px solid rgba(217,119,6,0.2)' }}>
+                          <span style={{ fontSize: 16, flexShrink: 0 }}>⚠️</span>
+                          <div>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: '#D97706', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>Advertencia</p>
+                            <p style={{ fontSize: 12, color: 'var(--ink-secondary)', lineHeight: 1.6 }}>{selectedRule.warning}</p>
+                          </div>
                         </motion.div>
                       )}
-                    </AnimatePresence>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
-
-      <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255,255,255,0.08);
-          border-radius: 2px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255,255,255,0.15);
-        }
-      `}</style>
     </div>
   )
 }

@@ -501,80 +501,167 @@ export default function PlantillasPage() {
         )}
       </AnimatePresence>
 
-      {/* ── Panel lateral ─────────────────────────────────────────────────── */}
+      {/* ── Modal centrado ────────────────────────────────────────────────── */}
       <AnimatePresence>
         {selected && selectedCat && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelected(null)}
-              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(3px)', zIndex: 40 }}
-            />
+            {/* Overlay */}
             <motion.div
-              initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-              transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelected(null)}
               style={{
-                position: 'fixed', right: 0, top: 0, height: '100%', width: 440,
-                background: 'var(--surface)', borderLeft: '1px solid var(--hairline)',
-                boxShadow: '-8px 0 32px rgba(0,0,0,0.08)', zIndex: 50,
-                display: 'flex', flexDirection: 'column', overflow: 'hidden',
+                position: 'fixed', inset: 0,
+                background: 'rgba(0,0,0,0.5)',
+                zIndex: 50,
+              }}
+            />
+
+            {/* Centered modal card */}
+            <div
+              style={{
+                position: 'fixed', inset: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                zIndex: 51,
+                padding: '16px',
+                pointerEvents: 'none',
               }}
             >
-              {/* Color stripe */}
-              <div style={{ height: 4, background: selectedCat.color, flexShrink: 0 }} />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 400 }}
+                style={{
+                  pointerEvents: 'auto',
+                  width: '90%', maxWidth: 640,
+                  maxHeight: '85vh',
+                  overflowY: 'auto',
+                  borderRadius: 16,
+                  background: 'var(--surface)',
+                  boxShadow: '0 24px 64px rgba(0,0,0,0.18)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                {/* Top color stripe */}
+                <div style={{ height: 4, background: selectedCat.color, borderRadius: '16px 16px 0 0', flexShrink: 0 }} />
 
-              {/* Header */}
-              <div style={{ padding: '20px 24px 18px', borderBottom: '1px solid var(--hairline)', flexShrink: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-                  <div>
-                    <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
-                      <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 600, background: selectedCat.bg, color: selectedCat.color }}>{selectedCat.emoji} {selected.category}</span>
-                      {selected.law && <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 500, background: 'var(--surface-elevated)', color: 'var(--ink-tertiary)', border: '1px solid var(--hairline)' }}>{selected.law}</span>}
+                {/* Header */}
+                <div style={{ padding: '24px 32px 20px', borderBottom: '1px solid var(--hairline)', flexShrink: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
+                        <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 600, background: selectedCat.bg, color: selectedCat.color }}>
+                          {selectedCat.emoji} {selected.category}
+                        </span>
+                        {selected.law && (
+                          <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 500, background: 'var(--surface-elevated)', color: 'var(--ink-tertiary)', border: '1px solid var(--hairline)' }}>
+                            {selected.law}
+                          </span>
+                        )}
+                      </div>
+                      <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink-primary)', lineHeight: 1.3, marginBottom: 6 }}>
+                        {selected.title}
+                      </p>
+                      <p style={{ fontSize: 13, color: 'var(--ink-secondary)', lineHeight: 1.55 }}>
+                        {selected.description}
+                      </p>
                     </div>
-                    <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink-primary)', lineHeight: 1.3 }}>{selected.title}</p>
-                    <p style={{ fontSize: 12, color: 'var(--ink-secondary)', marginTop: 4, lineHeight: 1.5 }}>{selected.description}</p>
+                    <button
+                      onClick={() => setSelected(null)}
+                      style={{
+                        width: 32, height: 32, borderRadius: 8,
+                        border: '1px solid var(--hairline)',
+                        background: 'var(--surface-elevated)',
+                        cursor: 'pointer', fontSize: 20,
+                        color: 'var(--ink-secondary)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        flexShrink: 0, lineHeight: 1,
+                      }}
+                    >
+                      ×
+                    </button>
                   </div>
-                  <button onClick={() => setSelected(null)} style={{ width: 28, height: 28, borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--surface-elevated)', cursor: 'pointer', fontSize: 18, color: 'var(--ink-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>×</button>
                 </div>
-              </div>
 
-              {/* Form */}
-              <div style={{ flex: 1, padding: '20px 24px', overflowY: 'auto' }}>
-                <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-tertiary)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>Datos para rellenar</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  {selected.fields.map(field => (
-                    <div key={field.id}>
-                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ink-primary)', marginBottom: 6 }}>
-                        {field.label}{field.required && <span style={{ color: '#DC2626', marginLeft: 2 }}>*</span>}
-                      </label>
-                      {field.type === 'textarea' ? (
-                        <textarea value={formValues[field.id] ?? ''} onChange={e => setFormValues(p => ({ ...p, [field.id]: e.target.value }))} placeholder={field.placeholder} rows={3}
-                          style={{ width: '100%', padding: '8px 12px', borderRadius: 8, fontSize: 13, color: 'var(--ink-primary)', background: 'var(--surface-elevated)', border: '1px solid var(--hairline)', outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
-                        />
-                      ) : field.type === 'select' ? (
-                        <select value={formValues[field.id] ?? ''} onChange={e => setFormValues(p => ({ ...p, [field.id]: e.target.value }))}
-                          style={{ width: '100%', padding: '8px 12px', borderRadius: 8, fontSize: 13, color: 'var(--ink-primary)', background: 'var(--surface-elevated)', border: '1px solid var(--hairline)', outline: 'none', boxSizing: 'border-box' }}>
-                          <option value=''>Seleccionar…</option>
-                          {field.options?.map(o => <option key={o} value={o}>{o}</option>)}
-                        </select>
-                      ) : (
-                        <input type={field.type} value={formValues[field.id] ?? ''} onChange={e => setFormValues(p => ({ ...p, [field.id]: e.target.value }))} placeholder={field.placeholder}
-                          style={{ width: '100%', padding: '8px 12px', borderRadius: 8, fontSize: 13, color: 'var(--ink-primary)', background: 'var(--surface-elevated)', border: '1px solid var(--hairline)', outline: 'none', boxSizing: 'border-box' }}
-                        />
-                      )}
-                    </div>
-                  ))}
+                {/* Form */}
+                <div style={{ padding: '24px 32px', flex: 1 }}>
+                  <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-tertiary)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 18 }}>
+                    Datos para rellenar
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    {selected.fields.map(field => (
+                      <div key={field.id}>
+                        <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ink-primary)', marginBottom: 6 }}>
+                          {field.label}
+                          {field.required && <span style={{ color: '#DC2626', marginLeft: 2 }}>*</span>}
+                        </label>
+                        {field.type === 'textarea' ? (
+                          <textarea
+                            value={formValues[field.id] ?? ''}
+                            onChange={e => setFormValues(p => ({ ...p, [field.id]: e.target.value }))}
+                            placeholder={field.placeholder}
+                            rows={3}
+                            style={{
+                              width: '100%', padding: '9px 12px', borderRadius: 8, fontSize: 13,
+                              color: 'var(--ink-primary)', background: 'var(--surface-elevated)',
+                              border: '1px solid var(--hairline)', outline: 'none',
+                              resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
+                            }}
+                          />
+                        ) : field.type === 'select' ? (
+                          <select
+                            value={formValues[field.id] ?? ''}
+                            onChange={e => setFormValues(p => ({ ...p, [field.id]: e.target.value }))}
+                            style={{
+                              width: '100%', padding: '9px 12px', borderRadius: 8, fontSize: 13,
+                              color: 'var(--ink-primary)', background: 'var(--surface-elevated)',
+                              border: '1px solid var(--hairline)', outline: 'none', boxSizing: 'border-box',
+                            }}
+                          >
+                            <option value=''>Seleccionar…</option>
+                            {field.options?.map(o => <option key={o} value={o}>{o}</option>)}
+                          </select>
+                        ) : (
+                          <input
+                            type={field.type}
+                            value={formValues[field.id] ?? ''}
+                            onChange={e => setFormValues(p => ({ ...p, [field.id]: e.target.value }))}
+                            placeholder={field.placeholder}
+                            style={{
+                              width: '100%', padding: '9px 12px', borderRadius: 8, fontSize: 13,
+                              color: 'var(--ink-primary)', background: 'var(--surface-elevated)',
+                              border: '1px solid var(--hairline)', outline: 'none', boxSizing: 'border-box',
+                            }}
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* CTA */}
-              <div style={{ padding: '16px 24px', borderTop: '1px solid var(--hairline)', flexShrink: 0 }}>
-                <button onClick={handleGenerate} style={{ width: '100%', padding: '13px', borderRadius: 10, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#fff', background: 'linear-gradient(135deg, #7C3AED, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                  <span>✨</span> Generar con LEXIA
-                </button>
-                <p style={{ textAlign: 'center', fontSize: 10, color: 'var(--ink-tertiary)', marginTop: 8 }}>
-                  LEXIA generará el documento completo adaptado a tu caso
-                </p>
-              </div>
-            </motion.div>
+                {/* CTA footer */}
+                <div style={{ padding: '20px 32px 28px', borderTop: '1px solid var(--hairline)', flexShrink: 0 }}>
+                  <button
+                    onClick={handleGenerate}
+                    style={{
+                      width: '100%', padding: '14px', borderRadius: 10,
+                      border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 700,
+                      color: '#fff', background: 'linear-gradient(135deg, #7C3AED, #6366F1)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                      boxShadow: '0 4px 14px rgba(124,58,237,0.35)',
+                    }}
+                  >
+                    <span>✨</span> Generar con LEXIA
+                  </button>
+                  <p style={{ textAlign: 'center', fontSize: 11, color: 'var(--ink-tertiary)', marginTop: 10 }}>
+                    LEXIA generará el documento completo adaptado a tu caso
+                  </p>
+                </div>
+              </motion.div>
+            </div>
           </>
         )}
       </AnimatePresence>
