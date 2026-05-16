@@ -30,75 +30,61 @@ interface Template {
 
 // ─── Category config ──────────────────────────────────────────────────────────
 
-const CAT_CONFIG: Record<string, { color: string; light: string; emoji: string; desc: string }> = {
-  Contratos:      { color: '#6366F1', light: 'rgba(99,102,241,0.12)',   emoji: '📄', desc: 'Compraventas, arrendamientos y servicios' },
-  Laboral:        { color: '#F97316', light: 'rgba(249,115,22,0.12)',   emoji: '💼', desc: 'Contratos, cartas y finiquitos' },
-  Mercantil:      { color: '#8B5CF6', light: 'rgba(139,92,246,0.12)',   emoji: '🏢', desc: 'Sociedades, pactos y poderes' },
-  Civil:          { color: '#3B82F6', light: 'rgba(59,130,246,0.12)',   emoji: '⚖️', desc: 'Reclamaciones y documentos civiles' },
-  Penal:          { color: '#EF4444', light: 'rgba(239,68,68,0.12)',    emoji: '🔒', desc: 'Denuncias, querellas y defensas' },
-  Administrativo: { color: '#06B6D4', light: 'rgba(6,182,212,0.12)',    emoji: '🏛️', desc: 'Recursos y expedientes' },
-  Inmobiliario:   { color: '#F59E0B', light: 'rgba(245,158,11,0.12)',   emoji: '🏠', desc: 'Arrendamientos, arras y desahucios' },
+const CAT: Record<string, { color: string; bg: string; emoji: string; desc: string }> = {
+  Contratos:      { color: '#4338CA', bg: 'rgba(67,56,202,0.08)',   emoji: '📄', desc: 'Compraventas, arrendamientos y servicios' },
+  Laboral:        { color: '#C2410C', bg: 'rgba(194,65,12,0.08)',   emoji: '💼', desc: 'Contratos, cartas y liquidaciones' },
+  Mercantil:      { color: '#6D28D9', bg: 'rgba(109,40,217,0.08)', emoji: '🏢', desc: 'Sociedades, pactos y poderes' },
+  Civil:          { color: '#1D4ED8', bg: 'rgba(29,78,216,0.08)',   emoji: '⚖️', desc: 'Reclamaciones y documentos civiles' },
+  Penal:          { color: '#DC2626', bg: 'rgba(220,38,38,0.08)',   emoji: '🔒', desc: 'Denuncias, querellas y defensas' },
+  Administrativo: { color: '#0369A1', bg: 'rgba(3,105,161,0.08)',   emoji: '🏛️', desc: 'Recursos y expedientes' },
+  Inmobiliario:   { color: '#B45309', bg: 'rgba(180,83,9,0.08)',    emoji: '🏠', desc: 'Arrendamientos, arras y desahucios' },
 }
 
 const COMPLEXITY_COLOR: Record<string, string> = {
-  Básico:     '#22C55E',
-  Intermedio: '#F59E0B',
-  Avanzado:   '#EF4444',
+  Básico: '#16A34A', Intermedio: '#D97706', Avanzado: '#DC2626',
 }
 
-// ─── Templates (20) ───────────────────────────────────────────────────────────
+// ─── Templates ────────────────────────────────────────────────────────────────
 
 const TEMPLATES: Template[] = [
   // CONTRATOS
-  {
-    id: 'nda',
-    title: 'Acuerdo de confidencialidad (NDA)',
-    category: 'Contratos', pages: 3, complexity: 'Básico', popular: true, law: 'CC art. 1255',
-    description: 'NDA bilateral o unilateral con objeto, duración, obligaciones y penalizaciones.',
+  { id: 'nda', title: 'Acuerdo de confidencialidad (NDA)', category: 'Contratos', pages: 3, complexity: 'Básico', popular: true, law: 'CC art. 1255',
+    description: 'NDA bilateral o unilateral con objeto, duración, obligaciones y penalizaciones por incumplimiento.',
     fields: [
       { id: 'parte_divulgante', label: 'Parte divulgante', type: 'text', placeholder: 'Empresa SA', required: true },
       { id: 'parte_receptora', label: 'Parte receptora', type: 'text', placeholder: 'Colaborador SL', required: true },
-      { id: 'objeto', label: 'Información confidencial', type: 'textarea', placeholder: 'Tecnología, datos de clientes, procesos…', required: true },
+      { id: 'objeto', label: 'Información confidencial', type: 'textarea', placeholder: 'Tecnología, datos de clientes, procesos internos…', required: true },
       { id: 'duracion', label: 'Duración (años)', type: 'number', placeholder: '3', required: true },
       { id: 'jurisdiccion', label: 'Jurisdicción', type: 'select', options: ['Madrid', 'Barcelona', 'Valencia', 'Sevilla', 'Bilbao'], required: true },
     ],
   },
-  {
-    id: 'prestacion-servicios',
-    title: 'Contrato de prestación de servicios',
-    category: 'Contratos', pages: 5, complexity: 'Básico', popular: true,
-    description: 'Contrato mercantil de servicios con precio, plazos, propiedad intelectual y penalizaciones.',
+  { id: 'prestacion-servicios', title: 'Contrato de prestación de servicios', category: 'Contratos', pages: 5, complexity: 'Básico', popular: true,
+    description: 'Contrato mercantil de servicios con precio, plazos, propiedad intelectual y cláusulas de penalización.',
     fields: [
       { id: 'proveedor', label: 'Proveedor del servicio', type: 'text', placeholder: 'Proveedor SL', required: true },
       { id: 'cliente', label: 'Cliente', type: 'text', placeholder: 'Cliente SA', required: true },
-      { id: 'descripcion_servicio', label: 'Descripción del servicio', type: 'textarea', placeholder: 'Desarrollo de software, consultoría…', required: true },
+      { id: 'descripcion_servicio', label: 'Descripción del servicio', type: 'textarea', placeholder: 'Desarrollo de software, consultoría técnica…', required: true },
       { id: 'precio', label: 'Precio total (€)', type: 'number', placeholder: '5000', required: true },
       { id: 'fecha_inicio', label: 'Fecha de inicio', type: 'date', required: true },
       { id: 'duracion_meses', label: 'Duración (meses)', type: 'number', placeholder: '6', required: true },
     ],
   },
-  {
-    id: 'compraventa-inmueble',
-    title: 'Contrato de compraventa de inmueble',
-    category: 'Contratos', pages: 8, complexity: 'Intermedio', popular: true, law: 'CC art. 1445',
-    description: 'Compraventa de bien inmueble con precio, forma de pago y obligaciones de ambas partes.',
+  { id: 'compraventa-inmueble', title: 'Contrato de compraventa de inmueble', category: 'Contratos', pages: 8, complexity: 'Intermedio', popular: true, law: 'CC art. 1445',
+    description: 'Compraventa de bien inmueble con precio, forma de pago, cargas y obligaciones de ambas partes.',
     fields: [
-      { id: 'vendedor', label: 'Vendedor (nombre y NIF)', type: 'text', placeholder: 'Juan García López - 12345678A', required: true },
-      { id: 'comprador', label: 'Comprador (nombre y NIF)', type: 'text', placeholder: 'María Pérez Ruiz - 87654321B', required: true },
+      { id: 'vendedor', label: 'Vendedor (nombre y NIF)', type: 'text', placeholder: 'Juan García López · 12345678A', required: true },
+      { id: 'comprador', label: 'Comprador (nombre y NIF)', type: 'text', placeholder: 'María Pérez Ruiz · 87654321B', required: true },
       { id: 'descripcion_inmueble', label: 'Descripción del inmueble', type: 'textarea', placeholder: 'Piso 3º B, c/ Gran Vía 45, Madrid, ref. catastral…', required: true },
       { id: 'precio', label: 'Precio (€)', type: 'number', placeholder: '250000', required: true },
       { id: 'forma_pago', label: 'Forma de pago', type: 'select', options: ['Al contado', 'Con financiación hipotecaria', 'Pago aplazado'], required: true },
       { id: 'fecha_escritura', label: 'Fecha prevista escritura', type: 'date', required: true },
     ],
   },
-  {
-    id: 'arrendamiento-vivienda',
-    title: 'Contrato de arrendamiento de vivienda',
-    category: 'Contratos', pages: 6, complexity: 'Básico', popular: true, law: 'LAU art. 1',
+  { id: 'arrendamiento-vivienda', title: 'Contrato de arrendamiento de vivienda', category: 'Contratos', pages: 6, complexity: 'Básico', popular: true, law: 'LAU art. 1',
     description: 'Contrato de alquiler residencial conforme a la LAU con fianza, inventario y cláusulas estándar.',
     fields: [
-      { id: 'arrendador', label: 'Arrendador', type: 'text', placeholder: 'Propietario SA', required: true },
-      { id: 'arrendatario', label: 'Arrendatario', type: 'text', placeholder: 'Inquilino Nombre', required: true },
+      { id: 'arrendador', label: 'Arrendador', type: 'text', placeholder: 'Nombre del propietario', required: true },
+      { id: 'arrendatario', label: 'Arrendatario', type: 'text', placeholder: 'Nombre del inquilino', required: true },
       { id: 'direccion', label: 'Dirección del inmueble', type: 'text', placeholder: 'C/ Mayor 10, 2º A, Madrid', required: true },
       { id: 'renta', label: 'Renta mensual (€)', type: 'number', placeholder: '900', required: true },
       { id: 'duracion', label: 'Duración (meses)', type: 'number', placeholder: '12', required: true },
@@ -106,40 +92,30 @@ const TEMPLATES: Template[] = [
       { id: 'fecha_inicio', label: 'Fecha de inicio', type: 'date', required: true },
     ],
   },
-
   // LABORAL
-  {
-    id: 'carta-despido-disciplinario',
-    title: 'Carta de despido disciplinario',
-    category: 'Laboral', pages: 2, complexity: 'Básico', popular: true, law: 'ET art. 54',
-    description: 'Carta de despido por causas disciplinarias con descripción de hechos y efectos.',
+  { id: 'carta-despido-disciplinario', title: 'Carta de despido disciplinario', category: 'Laboral', pages: 2, complexity: 'Básico', popular: true, law: 'ET art. 54',
+    description: 'Carta de despido por causas disciplinarias con descripción detallada de hechos y fecha de efectos.',
     fields: [
       { id: 'empresa', label: 'Empresa', type: 'text', placeholder: 'Empresa SA', required: true },
-      { id: 'trabajador', label: 'Trabajador (nombre y NIF)', type: 'text', placeholder: 'Ana López - 12345678A', required: true },
+      { id: 'trabajador', label: 'Trabajador (nombre y NIF)', type: 'text', placeholder: 'Ana López · 12345678A', required: true },
       { id: 'categoria', label: 'Categoría profesional', type: 'text', placeholder: 'Técnico de ventas', required: true },
       { id: 'motivos', label: 'Hechos y motivos del despido', type: 'textarea', placeholder: 'Describa los incumplimientos contractuales…', required: true },
       { id: 'fecha_efectos', label: 'Fecha de efectos', type: 'date', required: true },
     ],
   },
-  {
-    id: 'contrato-indefinido',
-    title: 'Contrato de trabajo indefinido',
-    category: 'Laboral', pages: 4, complexity: 'Básico', popular: true, law: 'ET art. 15',
-    description: 'Contrato indefinido ordinario con jornada, salario, categoría y cláusulas adicionales.',
+  { id: 'contrato-indefinido', title: 'Contrato de trabajo indefinido', category: 'Laboral', pages: 4, complexity: 'Básico', popular: true, law: 'ET art. 15',
+    description: 'Contrato indefinido ordinario con jornada, salario, categoría y cláusulas adicionales de confidencialidad.',
     fields: [
       { id: 'empresa', label: 'Empresa empleadora', type: 'text', required: true },
       { id: 'trabajador', label: 'Trabajador', type: 'text', required: true },
       { id: 'puesto', label: 'Puesto de trabajo', type: 'text', placeholder: 'Desarrollador Senior', required: true },
       { id: 'salario_anual', label: 'Salario bruto anual (€)', type: 'number', placeholder: '40000', required: true },
-      { id: 'jornada', label: 'Jornada', type: 'select', options: ['Completa (40h)', 'Parcial 20h', 'Parcial 30h'], required: true },
+      { id: 'jornada', label: 'Jornada', type: 'select', options: ['Completa (40h/semana)', 'Parcial 20h', 'Parcial 30h'], required: true },
       { id: 'fecha_inicio', label: 'Fecha de inicio', type: 'date', required: true },
     ],
   },
-  {
-    id: 'finiquito',
-    title: 'Finiquito / liquidación',
-    category: 'Laboral', pages: 2, complexity: 'Básico', law: 'ET art. 49',
-    description: 'Documento de liquidación de haberes pendientes, vacaciones y partes proporcionales.',
+  { id: 'finiquito', title: 'Finiquito y liquidación de haberes', category: 'Laboral', pages: 2, complexity: 'Básico', law: 'ET art. 49',
+    description: 'Documento de liquidación de haberes pendientes, vacaciones no disfrutadas y partes proporcionales.',
     fields: [
       { id: 'empresa', label: 'Empresa', type: 'text', required: true },
       { id: 'trabajador', label: 'Trabajador', type: 'text', required: true },
@@ -148,13 +124,9 @@ const TEMPLATES: Template[] = [
       { id: 'total_importe', label: 'Importe total bruto (€)', type: 'number', placeholder: '2500', required: true },
     ],
   },
-
   // MERCANTIL
-  {
-    id: 'estatutos-sl',
-    title: 'Estatutos de sociedad limitada',
-    category: 'Mercantil', pages: 12, complexity: 'Avanzado', law: 'LSC',
-    description: 'Estatutos completos para constitución de SL con órganos, capital, transmisiones y disolución.',
+  { id: 'estatutos-sl', title: 'Estatutos de sociedad limitada', category: 'Mercantil', pages: 12, complexity: 'Avanzado', law: 'LSC',
+    description: 'Estatutos completos para constitución de SL con órganos, capital, transmisión de participaciones y disolución.',
     fields: [
       { id: 'denominacion', label: 'Denominación social', type: 'text', placeholder: 'Mi Empresa SL', required: true },
       { id: 'objeto_social', label: 'Objeto social', type: 'textarea', placeholder: 'Desarrollo de software, consultoría tecnológica…', required: true },
@@ -162,76 +134,53 @@ const TEMPLATES: Template[] = [
       { id: 'domicilio', label: 'Domicilio social', type: 'text', placeholder: 'C/ Velázquez 10, Madrid', required: true },
     ],
   },
-  {
-    id: 'pacto-socios',
-    title: 'Pacto de socios',
-    category: 'Mercantil', pages: 10, complexity: 'Avanzado', popular: true,
-    description: 'Pacto parasocial con lock-up, drag-along, tag-along, dividendos y salida de socios.',
+  { id: 'pacto-socios', title: 'Pacto de socios', category: 'Mercantil', pages: 10, complexity: 'Avanzado', popular: true,
+    description: 'Pacto parasocial con lock-up, drag-along, tag-along, derechos de información y régimen de salida.',
     fields: [
       { id: 'empresa', label: 'Nombre de la sociedad', type: 'text', required: true },
-      { id: 'socios', label: 'Nombres de los socios', type: 'textarea', placeholder: 'Socio A (40%), Socio B (60%)', required: true },
+      { id: 'socios', label: 'Socios y participaciones', type: 'textarea', placeholder: 'Socio A (40%), Socio B (60%)', required: true },
       { id: 'lock_up_meses', label: 'Período lock-up (meses)', type: 'number', placeholder: '24', required: false },
-      { id: 'dividendo_minimo', label: 'Dividendo mínimo (%)', type: 'number', placeholder: '20', required: false },
     ],
   },
-  {
-    id: 'poder-pleitos',
-    title: 'Poder para pleitos',
-    category: 'Mercantil', pages: 2, complexity: 'Básico',
-    description: 'Poder notarial para representación procesal ante juzgados y tribunales españoles.',
+  { id: 'poder-pleitos', title: 'Poder para pleitos', category: 'Mercantil', pages: 2, complexity: 'Básico',
+    description: 'Poder notarial de representación procesal ante juzgados, tribunales y organismos públicos españoles.',
     fields: [
       { id: 'poderdante', label: 'Poderdante (nombre y NIF)', type: 'text', required: true },
       { id: 'apoderado', label: 'Abogado/Procurador apoderado', type: 'text', required: true },
       { id: 'objeto', label: 'Objeto del poder', type: 'textarea', placeholder: 'Representación en procedimiento sobre…', required: true },
-      { id: 'juzgado', label: 'Juzgado o Tribunal', type: 'text', placeholder: 'Juzgado de lo Mercantil nº 1 de Madrid', required: false },
     ],
   },
-
   // CIVIL
-  {
-    id: 'demanda-cantidad',
-    title: 'Demanda de reclamación de cantidad',
-    category: 'Civil', pages: 5, complexity: 'Intermedio', law: 'LEC art. 248',
-    description: 'Demanda ordinaria o verbal para reclamar deuda dineraria con fundamentos jurídicos.',
+  { id: 'demanda-cantidad', title: 'Demanda de reclamación de cantidad', category: 'Civil', pages: 5, complexity: 'Intermedio', law: 'LEC art. 248',
+    description: 'Demanda ordinaria o verbal para reclamar deuda dineraria con fundamentos jurídicos y petición de intereses.',
     fields: [
       { id: 'demandante', label: 'Demandante', type: 'text', required: true },
       { id: 'demandado', label: 'Demandado', type: 'text', required: true },
       { id: 'importe', label: 'Importe reclamado (€)', type: 'number', required: true },
       { id: 'origen_deuda', label: 'Origen de la deuda', type: 'textarea', placeholder: 'Facturas impagadas, préstamo, daños…', required: true },
-      { id: 'juzgado', label: 'Juzgado', type: 'text', placeholder: 'Juzgado de Primera Instancia nº 5 de Madrid', required: true },
     ],
   },
-  {
-    id: 'reconocimiento-deuda',
-    title: 'Reconocimiento de deuda',
-    category: 'Civil', pages: 2, complexity: 'Básico', law: 'CC art. 1217',
-    description: 'Documento de reconocimiento de deuda con plan de pago y garantías.',
+  { id: 'reconocimiento-deuda', title: 'Reconocimiento de deuda', category: 'Civil', pages: 2, complexity: 'Básico', law: 'CC art. 1217',
+    description: 'Documento privado de reconocimiento de deuda con plan de pago, intereses y garantías.',
     fields: [
       { id: 'deudor', label: 'Deudor (nombre y NIF)', type: 'text', required: true },
       { id: 'acreedor', label: 'Acreedor (nombre y NIF)', type: 'text', required: true },
       { id: 'importe', label: 'Importe de la deuda (€)', type: 'number', required: true },
-      { id: 'plan_pago', label: 'Plan de pago', type: 'textarea', placeholder: '500€/mes durante 12 meses…', required: true },
+      { id: 'plan_pago', label: 'Plan de pago acordado', type: 'textarea', placeholder: '500 €/mes durante 12 meses a partir del…', required: true },
     ],
   },
-
   // PENAL
-  {
-    id: 'denuncia-penal',
-    title: 'Denuncia penal',
-    category: 'Penal', pages: 3, complexity: 'Básico', law: 'LECrim art. 265',
-    description: 'Denuncia ante Juzgado o Fiscalía con narración de hechos y diligencias solicitadas.',
+  { id: 'denuncia-penal', title: 'Denuncia penal', category: 'Penal', pages: 3, complexity: 'Básico', law: 'LECrim art. 265',
+    description: 'Denuncia ante Juzgado o Fiscalía con narración de hechos, calificación y diligencias solicitadas.',
     fields: [
       { id: 'denunciante', label: 'Denunciante (nombre y NIF)', type: 'text', required: true },
-      { id: 'denunciado', label: 'Denunciado (si se conoce)', type: 'text', placeholder: 'Desconocido o nombre', required: false },
+      { id: 'denunciado', label: 'Denunciado (si se conoce)', type: 'text', placeholder: 'Desconocido / nombre', required: false },
       { id: 'hechos', label: 'Narración de los hechos', type: 'textarea', required: true },
       { id: 'delito', label: 'Tipo de delito', type: 'select', options: ['Estafa', 'Robo', 'Lesiones', 'Amenazas', 'Violencia de género', 'Otro'], required: true },
     ],
   },
-  {
-    id: 'querella',
-    title: 'Querella por estafa',
-    category: 'Penal', pages: 6, complexity: 'Avanzado', law: 'CP art. 248', popular: true,
-    description: 'Querella con calificación jurídica, pruebas documentales y medidas cautelares.',
+  { id: 'querella', title: 'Querella por estafa', category: 'Penal', pages: 6, complexity: 'Avanzado', popular: true, law: 'CP art. 248',
+    description: 'Querella con calificación jurídica completa, pruebas documentales y solicitud de medidas cautelares.',
     fields: [
       { id: 'querellante', label: 'Querellante', type: 'text', required: true },
       { id: 'querellado', label: 'Querellado', type: 'text', required: true },
@@ -239,13 +188,9 @@ const TEMPLATES: Template[] = [
       { id: 'importe_defraudado', label: 'Importe defraudado (€)', type: 'number', required: true },
     ],
   },
-
   // ADMINISTRATIVO
-  {
-    id: 'recurso-alzada',
-    title: 'Recurso de alzada',
-    category: 'Administrativo', pages: 4, complexity: 'Intermedio', law: 'LPAC art. 121', popular: true,
-    description: 'Recurso administrativo ante órgano superior con motivos jurídicos y petición de nulidad.',
+  { id: 'recurso-alzada', title: 'Recurso de alzada', category: 'Administrativo', pages: 4, complexity: 'Intermedio', popular: true, law: 'LPAC art. 121',
+    description: 'Recurso administrativo ante el órgano superior con motivos jurídicos y petición de nulidad o revocación.',
     fields: [
       { id: 'recurrente', label: 'Recurrente (nombre y NIF)', type: 'text', required: true },
       { id: 'organo', label: 'Órgano al que se dirige', type: 'text', placeholder: 'Dirección General de…', required: true },
@@ -254,11 +199,8 @@ const TEMPLATES: Template[] = [
       { id: 'motivos', label: 'Motivos de impugnación', type: 'textarea', required: true },
     ],
   },
-  {
-    id: 'alegaciones-sancionador',
-    title: 'Alegaciones a expediente sancionador',
-    category: 'Administrativo', pages: 4, complexity: 'Intermedio', law: 'LPAC art. 82',
-    description: 'Escrito de alegaciones en procedimiento sancionador con solicitud de prueba.',
+  { id: 'alegaciones-sancionador', title: 'Alegaciones a expediente sancionador', category: 'Administrativo', pages: 4, complexity: 'Intermedio', law: 'LPAC art. 82',
+    description: 'Escrito de alegaciones con solicitud de prueba y argumentos de defensa en procedimiento sancionador.',
     fields: [
       { id: 'interesado', label: 'Interesado', type: 'text', required: true },
       { id: 'expediente', label: 'Nº de expediente', type: 'text', required: true },
@@ -266,26 +208,19 @@ const TEMPLATES: Template[] = [
       { id: 'alegaciones', label: 'Alegaciones', type: 'textarea', required: true },
     ],
   },
-  {
-    id: 'recurso-contencioso',
-    title: 'Recurso contencioso-administrativo',
-    category: 'Administrativo', pages: 7, complexity: 'Avanzado', law: 'LJCA art. 45',
-    description: 'Recurso ante la jurisdicción contencioso-administrativa con suplico y fundamentos.',
+  { id: 'recurso-contencioso', title: 'Recurso contencioso-administrativo', category: 'Administrativo', pages: 8, complexity: 'Avanzado', law: 'LJCA art. 46',
+    description: 'Demanda contencioso-administrativa ante el TSJA o la Audiencia Nacional con súplica de nulidad.',
     fields: [
       { id: 'recurrente', label: 'Recurrente', type: 'text', required: true },
       { id: 'administracion', label: 'Administración demandada', type: 'text', required: true },
       { id: 'acto_impugnado', label: 'Acto impugnado', type: 'textarea', required: true },
-      { id: 'fecha_acto', label: 'Fecha del acto', type: 'date', required: true },
-      { id: 'pretension', label: 'Pretensión / suplico', type: 'textarea', required: true },
+      { id: 'fecha_notificacion', label: 'Fecha de notificación', type: 'date', required: true },
+      { id: 'pretension', label: 'Pretensión', type: 'textarea', placeholder: 'Nulidad del acto / Reconocimiento del derecho a…', required: true },
     ],
   },
-
   // INMOBILIARIO
-  {
-    id: 'contrato-arras',
-    title: 'Contrato de arras penitenciales',
-    category: 'Inmobiliario', pages: 4, complexity: 'Básico', popular: true, law: 'CC art. 1454',
-    description: 'Contrato de arras con precio, plazos para escritura y consecuencias del desistimiento.',
+  { id: 'contrato-arras', title: 'Contrato de arras penitenciales', category: 'Inmobiliario', pages: 4, complexity: 'Básico', popular: true, law: 'CC art. 1454',
+    description: 'Arras con precio, plazo para escritura y consecuencias del desistimiento para vendedor y comprador.',
     fields: [
       { id: 'vendedor', label: 'Vendedor', type: 'text', required: true },
       { id: 'comprador', label: 'Comprador', type: 'text', required: true },
@@ -295,11 +230,8 @@ const TEMPLATES: Template[] = [
       { id: 'plazo_escritura_dias', label: 'Plazo para escritura (días)', type: 'number', placeholder: '60', required: true },
     ],
   },
-  {
-    id: 'demanda-desahucio',
-    title: 'Demanda de desahucio por impago',
-    category: 'Inmobiliario', pages: 5, complexity: 'Intermedio', law: 'LEC art. 250.1.1',
-    description: 'Demanda de desahucio con acumulación de reclamación de rentas adeudadas.',
+  { id: 'demanda-desahucio', title: 'Demanda de desahucio por impago', category: 'Inmobiliario', pages: 5, complexity: 'Intermedio', law: 'LEC art. 250.1.1',
+    description: 'Demanda de desahucio con acumulación de reclamación de todas las rentas adeudadas e intereses.',
     fields: [
       { id: 'arrendador', label: 'Arrendador (demandante)', type: 'text', required: true },
       { id: 'arrendatario', label: 'Arrendatario (demandado)', type: 'text', required: true },
@@ -308,11 +240,8 @@ const TEMPLATES: Template[] = [
       { id: 'meses_impago', label: 'Meses de impago', type: 'number', required: true },
     ],
   },
-  {
-    id: 'acta-comunidad',
-    title: 'Acta de reunión de comunidad de propietarios',
-    category: 'Inmobiliario', pages: 3, complexity: 'Básico', law: 'LPH art. 19',
-    description: 'Acta de junta ordinaria o extraordinaria con acuerdos adoptados y votos.',
+  { id: 'acta-comunidad', title: 'Acta de reunión de comunidad de propietarios', category: 'Inmobiliario', pages: 3, complexity: 'Básico', law: 'LPH art. 19',
+    description: 'Acta de junta ordinaria o extraordinaria con acuerdos adoptados, votaciones y quórum.',
     fields: [
       { id: 'comunidad', label: 'Nombre de la comunidad', type: 'text', required: true },
       { id: 'presidente', label: 'Presidente', type: 'text', required: true },
@@ -323,22 +252,88 @@ const TEMPLATES: Template[] = [
   },
 ]
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── TemplateCard ─────────────────────────────────────────────────────────────
+
+function TemplateCard({ t, onClick }: { t: Template; onClick: () => void }) {
+  const [hovered, setHovered] = useState(false)
+  const c = CAT[t.category]
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: 'relative', overflow: 'hidden', borderRadius: 12, cursor: 'pointer',
+        background: 'var(--surface)',
+        border: `1px solid ${hovered ? c.color + '50' : 'var(--hairline)'}`,
+        boxShadow: hovered
+          ? `0 4px 20px -4px ${c.color}28, 0 1px 3px rgba(0,0,0,0.06)`
+          : '0 1px 3px rgba(0,0,0,0.04)',
+        transition: 'all 0.2s',
+      }}
+    >
+      {/* Top color stripe */}
+      <div style={{ height: 3, background: c.color, opacity: hovered ? 1 : 0.6, transition: 'opacity 0.2s' }} />
+
+      <div style={{ padding: '14px 16px 14px' }}>
+        {/* Badges row */}
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+          <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 600, background: c.bg, color: c.color }}>
+            {c.emoji} {t.category}
+          </span>
+          <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 600, background: COMPLEXITY_COLOR[t.complexity] + '14', color: COMPLEXITY_COLOR[t.complexity] }}>
+            {t.complexity}
+          </span>
+          {t.popular && (
+            <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 600, background: 'rgba(217,119,6,0.1)', color: '#D97706' }}>
+              Popular
+            </span>
+          )}
+        </div>
+
+        {/* Title */}
+        <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink-primary)', lineHeight: 1.3, marginBottom: 6 }}>
+          {t.title}
+        </p>
+        <p style={{ fontSize: 11.5, color: 'var(--ink-secondary)', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          {t.description}
+        </p>
+
+        {/* Footer */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--hairline-faint)' }}>
+          <div style={{ display: 'flex', gap: 8, fontSize: 11, color: 'var(--ink-tertiary)' }}>
+            <span>≈ {t.pages} págs.</span>
+            {t.law && <span>· {t.law}</span>}
+          </div>
+          <span style={{ fontSize: 11, fontWeight: 600, color: c.color, opacity: hovered ? 1 : 0, transition: 'opacity 0.15s' }}>
+            Usar →
+          </span>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function PlantillasPage() {
   const router = useRouter()
-  const [search, setSearch] = useState('')
+  const [search, setSearch]             = useState('')
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [activeComplexity, setActiveComplexity] = useState<string | null>(null)
-  const [selected, setSelected] = useState<Template | null>(null)
-  const [formValues, setFormValues] = useState<Record<string, string>>({})
+  const [selected, setSelected]         = useState<Template | null>(null)
+  const [formValues, setFormValues]     = useState<Record<string, string>>({})
 
-  const categories = Object.keys(CAT_CONFIG)
+  const categories = Object.keys(CAT)
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
     return TEMPLATES.filter(t =>
-      (!activeCategory || t.category === activeCategory) &&
+      (!activeCategory   || t.category   === activeCategory) &&
       (!activeComplexity || t.complexity === activeComplexity) &&
       (!q || t.title.toLowerCase().includes(q) || t.description.toLowerCase().includes(q))
     )
@@ -358,401 +353,211 @@ export default function PlantillasPage() {
   function handleGenerate() {
     if (!selected) return
     const params = new URLSearchParams({ templateId: selected.id, title: selected.title })
-    selected.fields.forEach(f => {
-      if (formValues[f.id]) params.set(f.id, formValues[f.id])
-    })
+    selected.fields.forEach(f => { if (formValues[f.id]) params.set(f.id, formValues[f.id]) })
     router.push(`/generate?${params.toString()}`)
   }
 
-  const cat = selected ? CAT_CONFIG[selected.category] : null
+  const selectedCat = selected ? CAT[selected.category] : null
 
   return (
-    <div className="relative">
+    <div style={{ maxWidth: 900, margin: '0 auto', paddingBottom: 80 }}>
 
-      {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <motion.section
-        initial={{ opacity: 0, y: 24 }}
+      {/* ── Hero ─────────────────────────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-        className="relative mb-12 px-0 pt-2 pb-10 overflow-hidden"
+        transition={{ duration: 0.4 }}
+        style={{ paddingBottom: 40, borderBottom: '1px solid var(--hairline)', marginBottom: 36 }}
       >
-        {/* Background radial glow */}
-        <div
-          className="pointer-events-none absolute -top-20 -left-32 w-[600px] h-[400px] rounded-full opacity-20"
-          style={{ background: 'radial-gradient(ellipse, #6366F1 0%, transparent 70%)' }}
-        />
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '4px 12px', borderRadius: 999, marginBottom: 20,
+          background: 'rgba(67,56,202,0.08)', border: '1px solid rgba(67,56,202,0.2)',
+          fontSize: 11, fontWeight: 600, color: '#4338CA', letterSpacing: '0.06em', textTransform: 'uppercase',
+        }}>
+          ✦ Documentos inteligentes · LEXIA
+        </div>
 
-        <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
-          {/* Left */}
-          <div className="max-w-xl">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6 text-xs font-semibold tracking-wide"
-              style={{
-                background: 'rgba(99,102,241,0.12)',
-                border: '1px solid rgba(99,102,241,0.30)',
-                color: '#818CF8',
-              }}>
-              <span style={{ color: '#6366F1' }}>✦</span>
-              Documentos inteligentes
-            </div>
-
-            {/* Headline */}
-            <h1 className="text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-white mb-4">
-              Genera cualquier
-              <br />
-              <span
-                style={{
-                  background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}
-              >
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 48, alignItems: 'start' }}>
+          <div>
+            <h1 style={{ fontSize: 36, fontWeight: 700, lineHeight: 1.15, color: 'var(--ink-primary)', marginBottom: 14 }}>
+              Genera cualquier{' '}
+              <span style={{ background: 'linear-gradient(135deg, #4338CA, #7C3AED)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 documento legal
               </span>
             </h1>
-
-            {/* Subtitle */}
-            <p className="text-zinc-400 text-base leading-relaxed max-w-md">
-              Selecciona una plantilla, rellena los datos clave y LEXIA redacta el documento completo en segundos.
-              Conforme al ordenamiento jurídico español vigente.
+            <p style={{ fontSize: 15, color: 'var(--ink-secondary)', lineHeight: 1.65, maxWidth: 500 }}>
+              Selecciona una plantilla, rellena los datos clave y LEXIA redacta el documento completo en segundos. Conforme al ordenamiento jurídico español vigente.
             </p>
+            <div style={{ display: 'flex', gap: 24, marginTop: 28 }}>
+              {[
+                { v: '20', l: 'plantillas' },
+                { v: '7', l: 'áreas jurídicas' },
+                { v: '< 30s', l: 'generación' },
+              ].map(s => (
+                <div key={s.l}>
+                  <p style={{ fontSize: 22, fontWeight: 700, color: 'var(--ink-primary)', lineHeight: 1 }}>{s.v}</p>
+                  <p style={{ fontSize: 11, color: 'var(--ink-tertiary)', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.l}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Right — feature chips */}
-          <div className="flex flex-col gap-3 lg:min-w-[300px]">
+          {/* Feature chips */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 200 }}>
             {[
-              { icon: '📋', title: '20 plantillas listas', desc: 'Para los documentos más frecuentes' },
-              { icon: '⚡', title: 'Generación en < 30s', desc: 'LEXIA rellena y adapta cada cláusula' },
-              { icon: '✅', title: 'Derecho español 2026', desc: 'CC, LEC, ET, LAU, LSC actualizados' },
-            ].map((chip, i) => (
+              { icon: '📋', title: '20 plantillas listas',    sub: 'Para los documentos más frecuentes' },
+              { icon: '⚡', title: 'Generación en < 30s',     sub: 'LEXIA rellena y adapta cada cláusula' },
+              { icon: '✅', title: 'Derecho español 2026',    sub: 'CC, LEC, ET, LAU, LSC actualizados' },
+            ].map((f, i) => (
               <motion.div
-                key={chip.title}
-                initial={{ opacity: 0, x: 20 }}
+                key={f.title}
+                initial={{ opacity: 0, x: 16 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.15 + i * 0.1, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                className="flex items-start gap-3 px-4 py-3 rounded-xl"
+                transition={{ delay: 0.15 + i * 0.1, duration: 0.35 }}
                 style={{
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.07)',
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '10px 14px', borderRadius: 10,
+                  background: 'var(--surface)', border: '1px solid var(--hairline)',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
                 }}
               >
-                <span className="text-lg mt-0.5">{chip.icon}</span>
+                <span style={{ fontSize: 16 }}>{f.icon}</span>
                 <div>
-                  <p className="text-sm font-semibold text-white leading-tight">{chip.title}</p>
-                  <p className="text-xs text-zinc-500 mt-0.5">{chip.desc}</p>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-primary)', lineHeight: 1.2 }}>{f.title}</p>
+                  <p style={{ fontSize: 11, color: 'var(--ink-tertiary)', marginTop: 1 }}>{f.sub}</p>
                 </div>
               </motion.div>
             ))}
           </div>
         </div>
-      </motion.section>
+      </motion.div>
 
-      {/* ── STATS BAR ────────────────────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.4 }}
-        className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10"
-      >
-        {[
-          { value: '20', label: 'Plantillas' },
-          { value: '7', label: 'Áreas jurídicas' },
-          { value: '100%', label: 'Normativa ES' },
-          { value: 'Gratis', label: 'Con tu plan' },
-        ].map(s => (
-          <div
-            key={s.label}
-            className="flex flex-col items-center justify-center py-4 rounded-2xl"
-            style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.06)',
-            }}
-          >
-            <span className="text-xl font-bold text-white tracking-tight">{s.value}</span>
-            <span className="text-[11px] text-zinc-500 mt-0.5">{s.label}</span>
-          </div>
+      {/* ── Buscador ─────────────────────────────────────────────────────── */}
+      <div style={{ position: 'relative', marginBottom: 14 }}>
+        <svg style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--ink-tertiary)' }}
+          width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8" strokeWidth="2" /><path d="m21 21-4.35-4.35" strokeWidth="2" />
+        </svg>
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Buscar plantilla jurídica…"
+          style={{
+            width: '100%', paddingLeft: 36, paddingRight: 16, paddingTop: 10, paddingBottom: 10,
+            borderRadius: 10, fontSize: 13, color: 'var(--ink-primary)',
+            background: 'var(--surface)', border: '1px solid var(--hairline)',
+            outline: 'none', boxSizing: 'border-box',
+          }}
+        />
+      </div>
+
+      {/* ── Filtros ───────────────────────────────────────────────────────── */}
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+        <button onClick={() => setActiveCategory(null)} style={{ padding: '6px 14px', borderRadius: 999, fontSize: 12, fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s', background: !activeCategory ? 'var(--obsidian)' : 'var(--surface)', color: !activeCategory ? 'var(--lime)' : 'var(--ink-secondary)', border: !activeCategory ? '1px solid var(--obsidian)' : '1px solid var(--hairline)' }}>Todas</button>
+        {categories.map(cat => (
+          <button key={cat} onClick={() => setActiveCategory(activeCategory === cat ? null : cat)} style={{ padding: '6px 14px', borderRadius: 999, fontSize: 12, fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s', background: activeCategory === cat ? CAT[cat].bg : 'var(--surface)', color: activeCategory === cat ? CAT[cat].color : 'var(--ink-secondary)', border: activeCategory === cat ? `1px solid ${CAT[cat].color}40` : '1px solid var(--hairline)' }}>
+            {CAT[cat].emoji} {cat}
+          </button>
         ))}
-      </motion.div>
-
-      {/* ── SEARCH + FILTERS ─────────────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.38, duration: 0.4 }}
-        className="mb-8 space-y-4"
-      >
-        {/* Search */}
-        <div className="relative">
-          <svg
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500"
-            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          >
-            <circle cx="11" cy="11" r="8" strokeWidth="2" />
-            <path d="m21 21-4.35-4.35" strokeWidth="2" />
-          </svg>
-          <input
-            type="text"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Buscar plantilla…"
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none transition-colors"
-            style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.08)',
-            }}
-          />
-        </div>
-
-        {/* Category pills */}
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setActiveCategory(null)}
-            className="px-3.5 py-1.5 rounded-full text-xs font-medium transition-all"
-            style={!activeCategory
-              ? { background: 'rgba(255,255,255,0.12)', color: '#fff' }
-              : { background: 'transparent', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)' }
-            }
-          >
-            Todas
+      </div>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 36 }}>
+        {(['Básico', 'Intermedio', 'Avanzado'] as const).map(c => (
+          <button key={c} onClick={() => setActiveComplexity(activeComplexity === c ? null : c)} style={{ padding: '5px 12px', borderRadius: 999, fontSize: 11, fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s', background: activeComplexity === c ? COMPLEXITY_COLOR[c] + '15' : 'transparent', color: activeComplexity === c ? COMPLEXITY_COLOR[c] : 'var(--ink-tertiary)', border: activeComplexity === c ? `1px solid ${COMPLEXITY_COLOR[c]}40` : '1px solid var(--hairline-faint)' }}>
+            {c}
           </button>
-          {categories.map(c => (
-            <button
-              key={c}
-              onClick={() => setActiveCategory(activeCategory === c ? null : c)}
-              className="px-3.5 py-1.5 rounded-full text-xs font-medium transition-all"
-              style={activeCategory === c
-                ? { background: CAT_CONFIG[c].light, color: CAT_CONFIG[c].color, border: `1px solid ${CAT_CONFIG[c].color}44` }
-                : { background: 'transparent', color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)' }
-              }
-            >
-              {CAT_CONFIG[c].emoji} {c}
-            </button>
-          ))}
-        </div>
+        ))}
+      </div>
 
-        {/* Complexity pills */}
-        <div className="flex flex-wrap gap-2">
-          <span className="text-[11px] text-zinc-600 self-center mr-1 uppercase tracking-wider font-medium">Complejidad:</span>
-          <button
-            onClick={() => setActiveComplexity(null)}
-            className="px-3 py-1 rounded-full text-[11px] font-medium transition-all"
-            style={!activeComplexity
-              ? { background: 'rgba(255,255,255,0.10)', color: '#fff' }
-              : { background: 'transparent', color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.07)' }
-            }
-          >
-            Todos
-          </button>
-          {(['Básico', 'Intermedio', 'Avanzado'] as const).map(cx => (
-            <button
-              key={cx}
-              onClick={() => setActiveComplexity(activeComplexity === cx ? null : cx)}
-              className="px-3 py-1 rounded-full text-[11px] font-medium transition-all"
-              style={activeComplexity === cx
-                ? { background: COMPLEXITY_COLOR[cx] + '22', color: COMPLEXITY_COLOR[cx], border: `1px solid ${COMPLEXITY_COLOR[cx]}44` }
-                : { background: 'transparent', color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.07)' }
-              }
-            >
-              {cx}
-            </button>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* ── TEMPLATE GRID ────────────────────────────────────────────────── */}
+      {/* ── Grid ─────────────────────────────────────────────────────────── */}
       <AnimatePresence mode="popLayout">
         {grouped.length === 0 ? (
-          <motion.div
-            key="empty"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="text-center py-24 text-zinc-500"
-          >
-            <p className="text-5xl mb-4">📂</p>
-            <p className="text-sm">No hay plantillas para esos filtros.</p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', padding: '60px 0', color: 'var(--ink-tertiary)' }}>
+            <p style={{ fontSize: 32, marginBottom: 12 }}>📂</p>
+            <p style={{ fontSize: 14 }}>No hay plantillas para esos filtros.</p>
           </motion.div>
         ) : (
-          grouped.map(({ cat: catName, items }) => {
-            const cfg = CAT_CONFIG[catName]
-            return (
-              <motion.section
-                key={catName}
-                layout
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.35 }}
-                className="mb-12"
-              >
-                {/* Group header */}
-                <div className="flex items-center gap-3 mb-5">
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0"
-                    style={{ background: cfg.light, border: `1px solid ${cfg.color}30` }}
-                  >
-                    {cfg.emoji}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2.5">
-                      <h2 className="text-sm font-semibold text-white">{catName}</h2>
-                      <span
-                        className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
-                        style={{ background: cfg.light, color: cfg.color }}
-                      >
-                        {items.length}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">{cfg.desc}</p>
-                  </div>
-                  <div className="flex-1 h-px ml-2" style={{ background: 'rgba(255,255,255,0.05)' }} />
+          grouped.map(({ cat: catName, items }) => (
+            <motion.section key={catName} layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} style={{ marginBottom: 44 }}>
+              {/* Group header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: CAT[catName].bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
+                  {CAT[catName].emoji}
                 </div>
-
-                {/* Cards grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                  {items.map((t, i) => (
-                    <TemplateCard
-                      key={t.id}
-                      template={t}
-                      cfg={cfg}
-                      index={i}
-                      onOpen={openTemplate}
-                    />
-                  ))}
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink-primary)', lineHeight: 1.2 }}>{catName}</p>
+                  <p style={{ fontSize: 12, color: 'var(--ink-tertiary)' }}>{CAT[catName].desc}</p>
                 </div>
-              </motion.section>
-            )
-          })
+                <span style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, background: CAT[catName].bg, color: CAT[catName].color }}>
+                  {items.length} plantillas
+                </span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
+                {items.map(t => <TemplateCard key={t.id} t={t} onClick={() => openTemplate(t)} />)}
+              </div>
+            </motion.section>
+          ))
         )}
       </AnimatePresence>
 
-      {/* ── SLIDE-IN PANEL ───────────────────────────────────────────────── */}
+      {/* ── Panel lateral ─────────────────────────────────────────────────── */}
       <AnimatePresence>
-        {selected && cat && (
+        {selected && selectedCat && (
           <>
-            {/* Overlay */}
-            <motion.div
-              key="overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={() => setSelected(null)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelected(null)}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(3px)', zIndex: 40 }}
             />
-
-            {/* Panel */}
             <motion.div
-              key="panel"
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
+              initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-              className="fixed right-0 top-0 h-full w-full max-w-[440px] z-50 flex flex-col overflow-hidden"
               style={{
-                background: '#0d0d11',
-                borderLeft: '1px solid rgba(255,255,255,0.07)',
-                boxShadow: '-24px 0 80px rgba(0,0,0,0.6)',
+                position: 'fixed', right: 0, top: 0, height: '100%', width: 440,
+                background: 'var(--surface)', borderLeft: '1px solid var(--hairline)',
+                boxShadow: '-8px 0 32px rgba(0,0,0,0.08)', zIndex: 50,
+                display: 'flex', flexDirection: 'column', overflow: 'hidden',
               }}
             >
               {/* Color stripe */}
-              <div className="h-[4px] w-full flex-shrink-0" style={{ background: cat.color }} />
+              <div style={{ height: 4, background: selectedCat.color, flexShrink: 0 }} />
 
               {/* Header */}
-              <div className="px-6 pt-5 pb-5 flex-shrink-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span
-                        className="px-2.5 py-1 rounded-full text-[11px] font-semibold"
-                        style={{ background: cat.light, color: cat.color }}
-                      >
-                        {cat.emoji} {selected.category}
-                      </span>
-                      {selected.law && (
-                        <span className="text-[10px] text-zinc-600 font-mono">{selected.law}</span>
-                      )}
+              <div style={{ padding: '20px 24px 18px', borderBottom: '1px solid var(--hairline)', flexShrink: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+                  <div>
+                    <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+                      <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 600, background: selectedCat.bg, color: selectedCat.color }}>{selectedCat.emoji} {selected.category}</span>
+                      {selected.law && <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 500, background: 'var(--surface-elevated)', color: 'var(--ink-tertiary)', border: '1px solid var(--hairline)' }}>{selected.law}</span>}
                     </div>
-                    <h2 className="text-base font-bold text-white leading-snug">{selected.title}</h2>
-                    <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">{selected.description}</p>
-
-                    <div className="flex items-center gap-2 mt-3">
-                      <span
-                        className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
-                        style={{
-                          background: COMPLEXITY_COLOR[selected.complexity] + '18',
-                          color: COMPLEXITY_COLOR[selected.complexity],
-                        }}
-                      >
-                        {selected.complexity}
-                      </span>
-                      <span className="text-[10px] text-zinc-600">≈ {selected.pages} páginas</span>
-                      {selected.popular && (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/15 text-amber-400">Popular</span>
-                      )}
-                    </div>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink-primary)', lineHeight: 1.3 }}>{selected.title}</p>
+                    <p style={{ fontSize: 12, color: 'var(--ink-secondary)', marginTop: 4, lineHeight: 1.5 }}>{selected.description}</p>
                   </div>
-                  <button
-                    onClick={() => setSelected(null)}
-                    className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white transition-colors text-xl leading-none"
-                    style={{ background: 'rgba(255,255,255,0.05)' }}
-                  >
-                    ×
-                  </button>
+                  <button onClick={() => setSelected(null)} style={{ width: 28, height: 28, borderRadius: 8, border: '1px solid var(--hairline)', background: 'var(--surface-elevated)', cursor: 'pointer', fontSize: 18, color: 'var(--ink-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>×</button>
                 </div>
               </div>
 
               {/* Form */}
-              <div className="flex-1 overflow-y-auto px-6 py-5">
-                <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-4">
-                  Datos para el documento
-                </p>
-                <div className="space-y-4">
+              <div style={{ flex: 1, padding: '20px 24px', overflowY: 'auto' }}>
+                <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink-tertiary)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>Datos para rellenar</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   {selected.fields.map(field => (
                     <div key={field.id}>
-                      <label className="block text-xs font-medium text-zinc-300 mb-1.5">
-                        {field.label}
-                        {field.required && <span className="text-rose-400 ml-1">*</span>}
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--ink-primary)', marginBottom: 6 }}>
+                        {field.label}{field.required && <span style={{ color: '#DC2626', marginLeft: 2 }}>*</span>}
                       </label>
                       {field.type === 'textarea' ? (
-                        <textarea
-                          value={formValues[field.id] ?? ''}
-                          onChange={e => setFormValues(prev => ({ ...prev, [field.id]: e.target.value }))}
-                          placeholder={field.placeholder}
-                          rows={3}
-                          className="w-full px-3 py-2.5 rounded-lg text-sm text-white placeholder-zinc-600 resize-none focus:outline-none transition-colors"
-                          style={{
-                            background: 'rgba(255,255,255,0.04)',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                          }}
+                        <textarea value={formValues[field.id] ?? ''} onChange={e => setFormValues(p => ({ ...p, [field.id]: e.target.value }))} placeholder={field.placeholder} rows={3}
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: 8, fontSize: 13, color: 'var(--ink-primary)', background: 'var(--surface-elevated)', border: '1px solid var(--hairline)', outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
                         />
                       ) : field.type === 'select' ? (
-                        <select
-                          value={formValues[field.id] ?? ''}
-                          onChange={e => setFormValues(prev => ({ ...prev, [field.id]: e.target.value }))}
-                          className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none transition-colors"
-                          style={{
-                            background: 'rgba(255,255,255,0.04)',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                          }}
-                        >
-                          <option value="">Seleccionar…</option>
-                          {field.options?.map(o => (
-                            <option key={o} value={o} style={{ background: '#1a1a22' }}>{o}</option>
-                          ))}
+                        <select value={formValues[field.id] ?? ''} onChange={e => setFormValues(p => ({ ...p, [field.id]: e.target.value }))}
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: 8, fontSize: 13, color: 'var(--ink-primary)', background: 'var(--surface-elevated)', border: '1px solid var(--hairline)', outline: 'none', boxSizing: 'border-box' }}>
+                          <option value=''>Seleccionar…</option>
+                          {field.options?.map(o => <option key={o} value={o}>{o}</option>)}
                         </select>
                       ) : (
-                        <input
-                          type={field.type}
-                          value={formValues[field.id] ?? ''}
-                          onChange={e => setFormValues(prev => ({ ...prev, [field.id]: e.target.value }))}
-                          placeholder={field.placeholder}
-                          className="w-full px-3 py-2.5 rounded-lg text-sm text-white placeholder-zinc-600 focus:outline-none transition-colors"
-                          style={{
-                            background: 'rgba(255,255,255,0.04)',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                          }}
+                        <input type={field.type} value={formValues[field.id] ?? ''} onChange={e => setFormValues(p => ({ ...p, [field.id]: e.target.value }))} placeholder={field.placeholder}
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: 8, fontSize: 13, color: 'var(--ink-primary)', background: 'var(--surface-elevated)', border: '1px solid var(--hairline)', outline: 'none', boxSizing: 'border-box' }}
                         />
                       )}
                     </div>
@@ -760,18 +565,13 @@ export default function PlantillasPage() {
                 </div>
               </div>
 
-              {/* CTA footer */}
-              <div className="flex-shrink-0 px-6 py-5" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                <button
-                  onClick={handleGenerate}
-                  className="w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-[0.98] flex items-center justify-center gap-2"
-                  style={{ background: 'linear-gradient(135deg, #7C3AED 0%, #6366F1 100%)' }}
-                >
-                  <span>✨</span>
-                  Generar con LEXIA
+              {/* CTA */}
+              <div style={{ padding: '16px 24px', borderTop: '1px solid var(--hairline)', flexShrink: 0 }}>
+                <button onClick={handleGenerate} style={{ width: '100%', padding: '13px', borderRadius: 10, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#fff', background: 'linear-gradient(135deg, #7C3AED, #6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                  <span>✨</span> Generar con LEXIA
                 </button>
-                <p className="text-center text-[10px] text-zinc-600 mt-2.5 leading-relaxed">
-                  LEXIA generará el documento completo en segundos,<br />conforme al derecho español vigente.
+                <p style={{ textAlign: 'center', fontSize: 10, color: 'var(--ink-tertiary)', marginTop: 8 }}>
+                  LEXIA generará el documento completo adaptado a tu caso
                 </p>
               </div>
             </motion.div>
@@ -779,105 +579,5 @@ export default function PlantillasPage() {
         )}
       </AnimatePresence>
     </div>
-  )
-}
-
-// ─── TemplateCard ──────────────────────────────────────────────────────────────
-
-function TemplateCard({
-  template: t,
-  cfg,
-  index,
-  onOpen,
-}: {
-  template: Template
-  cfg: { color: string; light: string; emoji: string; desc: string }
-  index: number
-  onOpen: (t: Template) => void
-}) {
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0, transition: { delay: index * 0.05 } }}
-      exit={{ opacity: 0, scale: 0.97 }}
-      whileHover={{ y: -2 }}
-      className="group relative rounded-2xl overflow-hidden cursor-pointer pt-[3px] transition-shadow duration-300"
-      style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.06)',
-      }}
-      onClick={() => onOpen(t)}
-      onMouseEnter={e => {
-        const el = e.currentTarget as HTMLElement
-        el.style.borderColor = cfg.color + '50'
-        el.style.boxShadow = `0 8px 32px -8px ${cfg.color}40`
-      }}
-      onMouseLeave={e => {
-        const el = e.currentTarget as HTMLElement
-        el.style.borderColor = 'rgba(255,255,255,0.06)'
-        el.style.boxShadow = 'none'
-      }}
-    >
-      {/* Top stripe */}
-      <div
-        className="absolute top-0 left-0 right-0 h-[3px]"
-        style={{ background: cfg.color }}
-      />
-
-      {/* Hover blob */}
-      <div
-        className="pointer-events-none absolute -top-6 -right-6 w-24 h-24 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{ background: `radial-gradient(circle, ${cfg.color}20 0%, transparent 70%)` }}
-      />
-
-      <div className="p-4 pt-5">
-        {/* Badges row */}
-        <div className="flex items-center gap-1.5 mb-3 flex-wrap">
-          <span
-            className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
-            style={{ background: COMPLEXITY_COLOR[t.complexity] + '1A', color: COMPLEXITY_COLOR[t.complexity] }}
-          >
-            {t.complexity}
-          </span>
-          {t.popular && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/15 text-amber-400">
-              Popular
-            </span>
-          )}
-          {t.isNew && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-400">
-              Nuevo
-            </span>
-          )}
-        </div>
-
-        {/* Title */}
-        <p className="text-sm font-semibold text-white leading-snug mb-1.5">{t.title}</p>
-
-        {/* Description */}
-        <p className="text-[11px] text-zinc-500 line-clamp-2 leading-relaxed">{t.description}</p>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between mt-4 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-          <div className="flex items-center gap-2 text-[10px] text-zinc-600">
-            <span>≈ {t.pages} págs.</span>
-            {t.law && (
-              <>
-                <span className="opacity-40">·</span>
-                <span className="font-mono">{t.law}</span>
-              </>
-            )}
-          </div>
-          <span
-            className="text-[11px] font-semibold opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-1"
-            style={{ color: cfg.color }}
-          >
-            Usar plantilla
-            <span className="group-hover:translate-x-0.5 transition-transform duration-200 inline-block">→</span>
-          </span>
-        </div>
-      </div>
-    </motion.div>
   )
 }
