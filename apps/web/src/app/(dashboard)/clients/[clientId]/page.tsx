@@ -794,7 +794,7 @@ function TabActivity({ client, cases }: { client: Client; cases: Case[] }) {
   }
 
   const events: { title: string; detail: string; date: string; type: EventType }[] = [
-    { title: 'Cliente registrado', detail: `${client.name} añadido al despacho`, date: client.created_at, type: 'client_created' },
+    { title: 'Cliente registrado', detail: `${client.name} añadido al despacho`, date: client.created_at, type: 'client_created' as EventType },
     ...cases.map((c) => ({ title: 'Expediente abierto', detail: c.title, date: c.created_at, type: 'case_created' as EventType })),
     ...cases.filter((c) => c.status === 'closed').map((c) => ({ title: 'Expediente cerrado', detail: c.title, date: c.created_at, type: 'note_added' as EventType })),
   ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -869,7 +869,7 @@ function TabHonorarios({ client }: { client: Client }) {
     { id: '3', concepto: 'Representación en juicio', importe: 1500, fecha: '2026-02-15', estado: 'pendiente' },
   ])
   const [showAdd, setShowAdd] = useState(false)
-  const [newEntry, setNewEntry] = useState({ concepto: '', importe: '', fecha: new Date().toISOString().split('T')[0], estado: 'pendiente' as const })
+  const [newEntry, setNewEntry] = useState<{ concepto: string; importe: string; fecha: string; estado: 'pendiente' | 'cobrado' }>({ concepto: '', importe: '', fecha: new Date().toISOString().split('T')[0], estado: 'pendiente' })
 
   const total     = entries.reduce((s, e) => s + e.importe, 0)
   const cobrado   = entries.filter((e) => e.estado === 'cobrado').reduce((s, e) => s + e.importe, 0)

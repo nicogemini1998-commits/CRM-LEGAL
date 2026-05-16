@@ -283,7 +283,7 @@ export default function CaseDetailPage({ params }: { params: Promise<{ caseId: s
               <TimelineEvent
                 type="info"
                 title="Expediente creado"
-                description={caseData.description}
+                description={caseData.description ?? undefined}
                 timestamp={formattedDate}
                 meta="Creado por ti"
                 isLast

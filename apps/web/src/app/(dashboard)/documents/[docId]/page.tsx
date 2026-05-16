@@ -59,7 +59,6 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ docId
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000))
-      AlertBox.showSuccess = true
     } finally {
       setAnalyzing(false)
     }
@@ -117,11 +116,9 @@ export default function DocumentDetailPage({ params }: { params: Promise<{ docId
         }
         breadcrumbs={[
           { label: 'Documentos', href: '/documents' },
-          docData.cases
-            ? { label: docData.cases.title, href: `/cases/${docData.cases.id}` }
-            : undefined,
+          ...(docData.cases ? [{ label: docData.cases.title, href: `/cases/${docData.cases.id}` }] : []),
           { label: docData.title },
-        ].filter(Boolean)}
+        ]}
         actions={
           <div className="flex gap-2">
             <button className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors font-medium">

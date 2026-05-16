@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth/auth'
 import { createServerClient } from '@/lib/supabase/server'
 import { withErrorHandler, UnauthorizedError } from '@/lib/security/apiResponse'
@@ -16,6 +16,6 @@ export async function GET(req: NextRequest) {
       .order('updated_at', { ascending: false })
       .limit(50)
 
-    return Response.json({ conversations: conversations || [] })
+    return NextResponse.json({ conversations: conversations || [] })
   })
 }

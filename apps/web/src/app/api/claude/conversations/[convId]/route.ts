@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth/auth'
 import { createServerClient } from '@/lib/supabase/server'
 import { withErrorHandler, UnauthorizedError, ValidationError } from '@/lib/security/apiResponse'
@@ -29,6 +29,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ conv
       .eq('conversation_id', id)
       .order('created_at', { ascending: true })
 
-    return Response.json({ messages: (messages || []).map(m => ({ role: m.role, content: m.content })) })
+    return NextResponse.json({ messages: (messages || []).map(m => ({ role: m.role, content: m.content })) })
   })
 }

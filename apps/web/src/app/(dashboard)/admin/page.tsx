@@ -91,8 +91,8 @@ export default function AdminPanel() {
     return labels[role] || role
   }
 
-  const getRoleColor = (role: string) => {
-    const colors: Record<string, string> = {
+  const getRoleColor = (role: string): 'primary' | 'success' | 'info' | 'secondary' => {
+    const colors: Record<string, 'primary' | 'success' | 'info' | 'secondary'> = {
       partner: 'primary',
       senior: 'success',
       junior: 'info',
