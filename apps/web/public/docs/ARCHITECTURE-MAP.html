@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IURALEX — Architecture Map</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0D0D0F;
+    --surface: #18181B;
+    --surface2: #1F1F23;
+    --border: #2A2A2F;
+    --accent: #7C3AED;
+    --accent-light: #A855F7;
+    --accent-glow: rgba(124, 58, 237, 0.35);
+    --blue: #3B82F6;
+    --blue-glow: rgba(59, 130, 246, 0.3);
+    --green: #10B981;
+    --green-glow: rgba(16, 185, 129, 0.3);
+    --orange: #F59E0B;
+    --orange-glow: rgba(245, 158, 11, 0.3);
+    --text: #F4F4F5;
+    --text-muted: #71717A;
+    --text-sub: #A1A1AA;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BG GLOW */
+  .bg-glow {
+    position: fixed;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 900px; height: 600px;
+    background: radial-gradient(ellipse at center top, rgba(124,58,237,0.08) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    padding: 60px 24px 44px;
+    position: relative;
+    z-index: 1;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 700px; max-width: 90vw; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(124,58,237,0.3), transparent);
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(124, 58, 237, 0.1);
+    border: 1px solid rgba(124, 58, 237, 0.28);
+    color: var(--accent-light);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    padding: 5px 13px;
+    border-radius: 100px;
+    margin-bottom: 22px;
+  }
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: var(--accent-light);
+    border-radius: 50%;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.65); }
+  }
+  .header h1 {
+    font-size: clamp(34px, 5vw, 54px);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+    background: linear-gradient(140deg, #FFFFFF 0%, #C4B5FD 45%, #7C3AED 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header p {
+    color: var(--text-sub);
+    font-size: 16px;
+    margin-top: 11px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  /* CANVAS */
+  .canvas {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 44px 24px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* LAYER */
+  .layer {
+    position: relative;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .layer:hover { transform: translateY(-3px); }
+
+  .layer-inner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px 20px 30px;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .layer-inner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  }
+
+  /* color bar */
+  .layer-bar {
+    position: absolute;
+    left: 0; top: 14px; bottom: 14px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: var(--accent);
+  }
+  .layer-blue  .layer-bar  { background: var(--blue); }
+  .layer-green .layer-bar  { background: var(--green); }
+  .layer-orange .layer-bar { background: var(--orange); }
+
+  /* hover glow */
+  .layer:hover .layer-inner {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent), 0 0 36px var(--accent-glow), 0 10px 36px rgba(0,0,0,0.45);
+  }
+  .layer-blue:hover .layer-inner {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue), 0 0 36px var(--blue-glow), 0 10px 36px rgba(0,0,0,0.45);
+  }
+  .layer-green:hover .layer-inner {
+    border-color: var(--green);
+    box-shadow: 0 0 0 1px var(--green), 0 0 36px var(--green-glow), 0 10px 36px rgba(0,0,0,0.45);
+  }
+  .layer-orange:hover .layer-inner {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 1px var(--orange), 0 0 36px var(--orange-glow), 0 10px 36px rgba(0,0,0,0.45);
+  }
+
+  /* layer header */
+  .layer-header {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-bottom: 15px;
+  }
+  .layer-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+    background: rgba(124,58,237,0.14);
+    border: 1px solid rgba(124,58,237,0.2);
+  }
+  .layer-blue  .layer-icon { background: rgba(59,130,246,0.14); border-color: rgba(59,130,246,0.2); }
+  .layer-green .layer-icon { background: rgba(16,185,129,0.14); border-color: rgba(16,185,129,0.2); }
+  .layer-orange .layer-icon { background: rgba(245,158,11,0.14); border-color: rgba(245,158,11,0.2); }
+
+  .layer-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+  }
+  .layer-blue  .layer-title  { color: var(--blue); }
+  .layer-green .layer-title  { color: var(--green); }
+  .layer-orange .layer-title { color: var(--orange); }
+
+  .layer-subtitle {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 2px;
+    letter-spacing: -0.01em;
+  }
+
+  .expand-hint {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+  .layer:hover .expand-hint { color: var(--text-sub); }
+  .expand-arrow {
+    display: inline-block;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .layer.expanded .expand-arrow { transform: rotate(180deg); }
+
+  /* chips */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-sub);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 11px;
+    border-radius: 100px;
+    transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.15s;
+    white-space: nowrap;
+    cursor: default;
+  }
+  .chip:hover {
+    border-color: var(--accent);
+    color: var(--accent-light);
+    background: rgba(124,58,237,0.09);
+    transform: translateY(-1px);
+  }
+  .chip-blue:hover  { border-color: var(--blue)!important; color: var(--blue)!important; background: rgba(59,130,246,0.09)!important; }
+  .chip-green:hover { border-color: var(--green)!important; color: var(--green)!important; background: rgba(16,185,129,0.09)!important; }
+  .chip-orange:hover { border-color: var(--orange)!important; color: var(--orange)!important; background: rgba(245,158,11,0.09)!important; }
+  .chip-purple {
+    color: var(--accent-light)!important;
+    border-color: rgba(124,58,237,0.35)!important;
+  }
+  .chip-purple:hover {
+    border-color: var(--accent)!important;
+    background: rgba(124,58,237,0.12)!important;
+  }
+
+  /* expanded details */
+  .layer-details {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.42s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease;
+  }
+  .layer.expanded .layer-details {
+    max-height: 420px;
+    opacity: 1;
+  }
+  .details-inner {
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    margin-top: 14px;
+  }
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 9px;
+  }
+  .detail-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 13px;
+  }
+  .detail-label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .detail-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .dv-accent  { color: var(--accent-light); }
+  .dv-blue    { color: var(--blue); }
+  .dv-green   { color: var(--green); }
+  .dv-orange  { color: var(--orange); }
+
+  /* CLIENTS GRID */
+  .clients-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .client-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+  .client-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px var(--accent-glow);
+  }
+  .client-card-icon { font-size: 24px; margin-bottom: 7px; }
+  .client-card-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .client-card-sub  { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+  .tenant-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--orange);
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.22);
+    padding: 5px 12px;
+    border-radius: 100px;
+  }
+
+  /* INFRA GRID */
+  .infra-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .infra-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 13px 15px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+  .infra-card:hover {
+    border-color: var(--green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px var(--green-glow);
+  }
+  .infra-card-icon { font-size: 21px; }
+  .infra-card-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .infra-card-sub  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* CONNECTOR */
+  .connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 34px;
+    justify-content: center;
+    gap: 3px;
+    position: relative;
+    z-index: 1;
+  }
+  .flow-dots {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .flow-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0;
+    animation: flow-down 2s ease-in-out infinite;
+  }
+  .flow-dot:nth-child(1) { animation-delay: 0s; }
+  .flow-dot:nth-child(2) { animation-delay: 0.35s; }
+  .flow-dot:nth-child(3) { animation-delay: 0.7s; }
+  .flow-dot.blue   { background: var(--blue); }
+  .flow-dot.green  { background: var(--green); }
+  .flow-dot.orange { background: var(--orange); }
+  @keyframes flow-down {
+    0%   { opacity: 0; transform: translateY(-5px); }
+    25%  { opacity: 1; }
+    75%  { opacity: 1; }
+    100% { opacity: 0; transform: translateY(5px); }
+  }
+  .connector-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    max-width: 1080px;
+    margin: 38px auto 0;
+    padding: 0 24px 64px;
+    position: relative;
+    z-index: 1;
+  }
+  .stats-inner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    position: relative;
+    overflow: hidden;
+  }
+  .stats-inner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--accent-light), var(--accent), transparent);
+    opacity: 0.6;
+  }
+  .stat {
+    text-align: center;
+    padding: 18px 8px;
+    position: relative;
+  }
+  .stat + .stat::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 22%; bottom: 22%;
+    width: 1px;
+    background: var(--border);
+  }
+  .stat-number {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, #ffffff 0%, var(--accent-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+
+  /* TOOLTIP */
+  .tooltip {
+    position: fixed;
+    background: #1C1C21;
+    border: 1px solid #36363D;
+    border-radius: 10px;
+    padding: 11px 15px;
+    font-size: 12.5px;
+    color: var(--text-sub);
+    max-width: 270px;
+    line-height: 1.55;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+    transition: opacity 0.16s, transform 0.16s;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  }
+  .tooltip.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  .tooltip-title {
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 5px;
+    font-size: 13px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 680px) {
+    .clients-grid { grid-template-columns: 1fr; }
+    .infra-grid   { grid-template-columns: repeat(2, 1fr); }
+    .stats-inner  { grid-template-columns: repeat(2, 1fr); }
+    .stat + .stat::before { display: none; }
+    .detail-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="tooltip" id="tooltip">
+  <div class="tooltip-title" id="tt-title"></div>
+  <div id="tt-body"></div>
+</div>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header class="header">
+  <div class="badge"><span class="badge-dot"></span>Architecture Map v1.0 — 2025</div>
+  <h1>IURALEX Platform</h1>
+  <p>SaaS LegalTech CRM — Arquitectura técnica completa para despachos de abogados españoles</p>
+</header>
+
+<!-- ═══════════════ CANVAS ═══════════════ -->
+<main class="canvas">
+
+  <!-- LAYER 1: CLIENTES -->
+  <div class="layer layer-orange" id="l-clients" onclick="toggleLayer('l-clients')">
+    <div class="layer-inner">
+      <div class="layer-bar"></div>
+      <div class="layer-header">
+        <div class="layer-icon">🏛️</div>
+        <div>
+          <div class="layer-title">Capa 1 — Clientes</div>
+          <div class="layer-subtitle">Despachos de Abogados</div>
+        </div>
+        <div class="expand-hint">Más info <span class="expand-arrow">▾</span></div>
+      </div>
+
+      <div class="clients-grid">
+        <div class="client-card"
+          onmouseenter="tt(event,'Browser (Next.js PWA)','Funciona en cualquier navegador moderno. Chrome, Firefox, Safari, Edge. Responsive design completo.')"
+          onmouseleave="ht()">
+          <div class="client-card-icon">🌐</div>
+          <div class="client-card-name">Browser</div>
+          <div class="client-card-sub">Next.js PWA</div>
+        </div>
+        <div class="client-card"
+          onmouseenter="tt(event,'iOS App (PWA instalable)','Instalable desde Safari en iPhone y iPad. Sin comisión App Store. Icono nativo, modo pantalla completa, acceso offline parcial.')"
+          onmouseleave="ht()">
+          <div class="client-card-icon">📱</div>
+          <div class="client-card-name">iOS App</div>
+          <div class="client-card-sub">PWA instalable</div>
+        </div>
+        <div class="client-card"
+          onmouseenter="tt(event,'Windows App (PWA instalable)','Instalable desde Chrome o Edge en Windows 10/11. Acceso directo en escritorio y barra de tareas.')"
+          onmouseleave="ht()">
+          <div class="client-card-icon">💻</div>
+          <div class="client-card-name">Windows App</div>
+          <div class="client-card-sub">PWA instalable</div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+        <span class="tenant-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Multi-tenant isolation — cada despacho ve únicamente sus datos
+        </span>
+        <span class="chip chip-orange" style="font-size:11px">organization_id RLS</span>
+      </div>
+
+      <div class="layer-details">
+        <div class="details-inner">
+          <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label">Tecnología</div><div class="detail-value dv-accent">Next.js 15 PWA</div></div>
+            <div class="detail-item"><div class="detail-label">Plataformas</div><div class="detail-value">Browser · iOS · Windows</div></div>
+            <div class="detail-item"><div class="detail-label">Aislamiento</div><div class="detail-value dv-orange">organization_id RLS</div></div>
+            <div class="detail-item"><div class="detail-label">Distribución</div><div class="detail-value">Sin App Store</div></div>
+            <div class="detail-item"><div class="detail-label">Offline</div><div class="detail-value">Service Worker parcial</div></div>
+            <div class="detail-item"><div class="detail-label">Instalación</div><div class="detail-value">1 clic desde navegador</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTOR -->
+  <div class="connector">
+    <div class="flow-dots">
+      <div class="flow-dot orange"></div>
+      <div class="flow-dot orange"></div>
+      <div class="flow-dot orange"></div>
+    </div>
+    <div class="connector-label">HTTPS · TLS 1.3</div>
+  </div>
+
+  <!-- LAYER 2: FRONTEND -->
+  <div class="layer" id="l-frontend" onclick="toggleLayer('l-frontend')">
+    <div class="layer-inner">
+      <div class="layer-bar"></div>
+      <div class="layer-header">
+        <div class="layer-icon">⚡</div>
+        <div>
+          <div class="layer-title">Capa 2 — Frontend</div>
+          <div class="layer-subtitle">Next.js 15 App Router</div>
+        </div>
+        <div class="expand-hint">Más info <span class="expand-arrow">▾</span></div>
+      </div>
+
+      <div class="chips" style="margin-bottom:9px">
+        <span class="chip" onmouseenter="tt(event,'Dashboard','Panel principal con KPIs del despacho: expedientes activos, clientes nuevos, plazos próximos, actividad reciente y alertas.')" onmouseleave="ht()">Dashboard</span>
+        <span class="chip" onmouseenter="tt(event,'Expedientes','Gestión completa de casos legales. Estados, timeline, documentos asociados, historial, notas internas y asignación de abogados.')" onmouseleave="ht()">Expedientes</span>
+        <span class="chip" onmouseenter="tt(event,'Clientes','CRM de clientes. Datos de contacto, NIF, historial de casos, comunicaciones y archivos adjuntos.')" onmouseleave="ht()">Clientes</span>
+        <span class="chip" onmouseenter="tt(event,'Documentos','Repositorio centralizado de documentos legales. Upload, búsqueda full-text, versiones y previsualización.')" onmouseleave="ht()">Documentos</span>
+        <span class="chip chip-purple" onmouseenter="tt(event,'Generador IA','Genera contratos y escritos automáticamente con IA. 18 tipos disponibles. Streaming en tiempo real.')" onmouseleave="ht()">Generador IA</span>
+        <span class="chip" onmouseenter="tt(event,'Plantillas','Biblioteca de plantillas jurídicas personalizables. Relleno automático de campos variables.')" onmouseleave="ht()">Plantillas</span>
+        <span class="chip chip-purple" onmouseenter="tt(event,'Chat LEXIA','Asistente jurídico conversacional. Base de conocimiento de 869 líneas. Streaming SSE en tiempo real.')" onmouseleave="ht()">Chat LEXIA</span>
+        <span class="chip" onmouseenter="tt(event,'Plazos','Gestión de plazos procesales y vencimientos. Alertas automáticas y calendario integrado.')" onmouseleave="ht()">Plazos</span>
+        <span class="chip" onmouseenter="tt(event,'Administración','Panel de admin del despacho: usuarios, roles, permisos, facturación, configuración general.')" onmouseleave="ht()">Administración</span>
+      </div>
+
+      <div class="chips">
+        <span class="chip" style="font-size:11px;color:var(--text-muted)">Framer Motion</span>
+        <span class="chip" style="font-size:11px;color:var(--text-muted)">Tailwind CSS 3</span>
+        <span class="chip" style="font-size:11px;color:var(--text-muted)">shadcn/ui</span>
+        <span class="chip chip-orange" style="font-size:11px">NextAuth v4 JWT</span>
+        <span class="chip chip-orange" style="font-size:11px">HttpOnly Cookies</span>
+        <span class="chip" style="font-size:11px;color:var(--text-muted)">TypeScript 5</span>
+      </div>
+
+      <div class="layer-details">
+        <div class="details-inner">
+          <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label">Framework</div><div class="detail-value dv-accent">Next.js 15</div></div>
+            <div class="detail-item"><div class="detail-label">Router</div><div class="detail-value">App Router (RSC)</div></div>
+            <div class="detail-item"><div class="detail-label">UI Library</div><div class="detail-value">shadcn/ui + Tailwind</div></div>
+            <div class="detail-item"><div class="detail-label">Animaciones</div><div class="detail-value">Framer Motion</div></div>
+            <div class="detail-item"><div class="detail-label">Auth UI</div><div class="detail-value dv-orange">NextAuth v4</div></div>
+            <div class="detail-item"><div class="detail-label">Módulos</div><div class="detail-value dv-accent">11 páginas</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTOR -->
+  <div class="connector">
+    <div class="flow-dots">
+      <div class="flow-dot"></div>
+      <div class="flow-dot"></div>
+      <div class="flow-dot"></div>
+    </div>
+    <div class="connector-label">Middleware chain</div>
+  </div>
+
+  <!-- LAYER 3: MIDDLEWARE -->
+  <div class="layer layer-orange" id="l-middleware" onclick="toggleLayer('l-middleware')">
+    <div class="layer-inner">
+      <div class="layer-bar"></div>
+      <div class="layer-header">
+        <div class="layer-icon">🛡️</div>
+        <div>
+          <div class="layer-title">Capa 3 — Seguridad</div>
+          <div class="layer-subtitle">Middleware Layer</div>
+        </div>
+        <div class="expand-hint">Más info <span class="expand-arrow">▾</span></div>
+      </div>
+
+      <div class="chips">
+        <span class="chip chip-orange" onmouseenter="tt(event,'Auth Check (middleware.ts)','Intercepta cada request antes de servir la página. Verifica JWT en cookie HttpOnly. Redirige a /login si la sesión expiró o es inválida.')" onmouseleave="ht()">🔐 Auth Check</span>
+        <span class="chip chip-orange" onmouseenter="tt(event,'HSTS + CSP + X-Frame-Options','HSTS fuerza HTTPS por 1 año. Content Security Policy bloquea scripts externos y XSS. X-Frame-Options previene clickjacking.')" onmouseleave="ht()">🔒 HSTS · CSP · XFO</span>
+        <span class="chip chip-orange" onmouseenter="tt(event,'Rate Limiting (Upstash Redis)','Limita peticiones por IP y por usuario autenticado. Protege endpoints IA de abuso. Responde 429 con Retry-After.')" onmouseleave="ht()">⚡ Rate Limiting</span>
+        <span class="chip chip-orange" onmouseenter="tt(event,'Zod Validation','Todos los inputs validados con Zod antes de procesarse. Previene SQL injection, datos malformados y ataques de payload.')" onmouseleave="ht()">✅ Zod Validation</span>
+      </div>
+
+      <div class="layer-details">
+        <div class="details-inner">
+          <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label">Auth Token</div><div class="detail-value dv-orange">JWT HttpOnly</div></div>
+            <div class="detail-item"><div class="detail-label">Rate Limit</div><div class="detail-value">Upstash Redis</div></div>
+            <div class="detail-item"><div class="detail-label">Headers</div><div class="detail-value">HSTS · CSP · XFO</div></div>
+            <div class="detail-item"><div class="detail-label">Validación</div><div class="detail-value">Zod schemas</div></div>
+            <div class="detail-item"><div class="detail-label">Ejecución</div><div class="detail-value">Edge Runtime</div></div>
+            <div class="detail-item"><div class="detail-label">Latencia</div><div class="detail-value dv-green">&lt;1ms overhead</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTOR -->
+  <div class="connector">
+    <div class="flow-dots">
+      <div class="flow-dot"></div>
+      <div class="flow-dot"></div>
+      <div class="flow-dot"></div>
+    </div>
+    <div class="connector-label">API dispatch</div>
+  </div>
+
+  <!-- LAYER 4: API ROUTES -->
+  <div class="layer" id="l-api" onclick="toggleLayer('l-api')">
+    <div class="layer-inner">
+      <div class="layer-bar"></div>
+      <div class="layer-header">
+        <div class="layer-icon">🔌</div>
+        <div>
+          <div class="layer-title">Capa 4 — API</div>
+          <div class="layer-subtitle">Next.js API Routes</div>
+        </div>
+        <div class="expand-hint">Más info <span class="expand-arrow">▾</span></div>
+      </div>
+
+      <div class="chips">
+        <span class="chip" onmouseenter="tt(event,'/api/cases','CRUD completo de expedientes. GET lista paginada, POST crear, PUT actualizar estado/datos, DELETE archivar.')" onmouseleave="ht()">/api/cases</span>
+        <span class="chip" onmouseenter="tt(event,'/api/clients','Gestión de clientes del despacho. Vinculación a expedientes. Búsqueda y filtros.')" onmouseleave="ht()">/api/clients</span>
+        <span class="chip" onmouseenter="tt(event,'/api/documents','Upload y gestión de documentos. Validación de tipo MIME y tamaño. Genera URL firmada de descarga.')" onmouseleave="ht()">/api/documents</span>
+        <span class="chip chip-purple" onmouseenter="tt(event,'/api/claude/chat — SSE Streaming','Chat con LEXIA. Server-Sent Events: el texto aparece token a token en tiempo real. Historial de conversación incluido.')" onmouseleave="ht()">/api/claude/chat ⟳ SSE</span>
+        <span class="chip chip-purple" onmouseenter="tt(event,'/api/claude/analyze-document — SSE','Análisis IA de documentos. Extrae cláusulas clave, identifica riesgos, genera resumen ejecutivo. Streaming en tiempo real.')" onmouseleave="ht()">/api/claude/analyze-document ⟳ SSE</span>
+        <span class="chip chip-purple" onmouseenter="tt(event,'/api/claude/generate-contract — SSE','Genera contratos completos con IA. 18 tipos disponibles. El contrato aparece mientras se redacta, token a token.')" onmouseleave="ht()">/api/claude/generate-contract ⟳ SSE</span>
+        <span class="chip" onmouseenter="tt(event,'/api/storage/upload','Upload seguro a Supabase Storage. Validación MIME, límite 10MB, nombre único UUID, bucket privado.')" onmouseleave="ht()">/api/storage/upload</span>
+        <span class="chip chip-orange" onmouseenter="tt(event,'/api/auth/*','Endpoints NextAuth: signin, signout, session, callback OAuth. JWT almacenado en cookie HttpOnly segura.')" onmouseleave="ht()">/api/auth/*</span>
+      </div>
+
+      <div class="layer-details">
+        <div class="details-inner">
+          <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label">Runtime</div><div class="detail-value dv-accent">Node.js + Edge</div></div>
+            <div class="detail-item"><div class="detail-label">Streaming</div><div class="detail-value dv-accent">SSE (3 endpoints IA)</div></div>
+            <div class="detail-item"><div class="detail-label">Auth</div><div class="detail-value dv-orange">JWT verificado</div></div>
+            <div class="detail-item"><div class="detail-label">Storage API</div><div class="detail-value dv-blue">Supabase Buckets</div></div>
+            <div class="detail-item"><div class="detail-label">Validación</div><div class="detail-value">Zod en todos</div></div>
+            <div class="detail-item"><div class="detail-label">Tenant</div><div class="detail-value dv-blue">RLS automático</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTOR (AI) -->
+  <div class="connector">
+    <div class="flow-dots">
+      <div class="flow-dot"></div>
+      <div class="flow-dot"></div>
+      <div class="flow-dot"></div>
+    </div>
+    <div class="connector-label">HTTPS · SSE stream</div>
+  </div>
+
+  <!-- LAYER 5: AI ENGINE -->
+  <div class="layer" id="l-ai" onclick="toggleLayer('l-ai')">
+    <div class="layer-inner">
+      <div class="layer-bar"></div>
+      <div class="layer-header">
+        <div class="layer-icon">🧠</div>
+        <div>
+          <div class="layer-title">Capa 5 — Inteligencia Artificial</div>
+          <div class="layer-subtitle">AI Engine — Claude API · Anthropic</div>
+        </div>
+        <div class="expand-hint">Más info <span class="expand-arrow">▾</span></div>
+      </div>
+
+      <div class="chips">
+        <span class="chip chip-purple" onmouseenter="tt(event,'Modelo: claude-haiku-4-5','El modelo más eficiente de Anthropic. Latencia baja (~1s primer token), coste óptimo para producción SaaS.')" onmouseleave="ht()">claude-haiku-4-5</span>
+        <span class="chip chip-purple" onmouseenter="tt(event,'Prompt Caching — 90% ahorro','Los system prompts se cachean en Anthropic. Al repetirse (misma sesión), coste de tokens se reduce ~90%. Clave para escalar con coste controlado.')" onmouseleave="ht()">Prompt Caching — 90% ahorro</span>
+        <span class="chip chip-purple" onmouseenter="tt(event,'LEXIA Knowledge Base','869 líneas de conocimiento jurídico español en el system prompt. 18 secciones: contratos, procesal civil, laboral, mercantil, penal, RGPD, propiedad intelectual...')" onmouseleave="ht()">LEXIA KB — 869 líneas</span>
+        <span class="chip chip-purple" onmouseenter="tt(event,'SSE Streaming','Server-Sent Events: respuestas token a token en tiempo real. El usuario ve el texto mientras se genera. Latencia percibida mínima.')" onmouseleave="ht()">SSE Streaming</span>
+        <span class="chip" onmouseenter="tt(event,'Análisis Documental','Sube un contrato o escritura → IA analiza estructura, extrae cláusulas clave, identifica cláusulas abusivas y genera resumen ejecutivo para el abogado.')" onmouseleave="ht()">Análisis Documental</span>
+        <span class="chip" onmouseenter="tt(event,'Generación de Contratos','18 tipos: compraventa, arrendamiento, prestación de servicios, NDA, contrato laboral, poder notarial, acuerdo de socios... Completamente personalizable.')" onmouseleave="ht()">Generación Contratos</span>
+        <span class="chip" onmouseenter="tt(event,'Chat Jurídico','Consultas de derecho español en lenguaje natural. Especializado en legislación vigente, procedimiento civil y jurisprudencia del TS.')" onmouseleave="ht()">Chat Jurídico</span>
+      </div>
+
+      <div class="layer-details">
+        <div class="details-inner">
+          <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label">Modelo</div><div class="detail-value dv-accent">claude-haiku-4-5</div></div>
+            <div class="detail-item"><div class="detail-label">Base legal</div><div class="detail-value dv-accent">869 líneas</div></div>
+            <div class="detail-item"><div class="detail-label">Secciones KB</div><div class="detail-value dv-accent">18 áreas jurídicas</div></div>
+            <div class="detail-item"><div class="detail-label">Ahorro caching</div><div class="detail-value dv-green">~90% en tokens</div></div>
+            <div class="detail-item"><div class="detail-label">Tipos contrato</div><div class="detail-value dv-accent">18 plantillas IA</div></div>
+            <div class="detail-item"><div class="detail-label">Streaming</div><div class="detail-value">SSE real-time</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTOR (DB) -->
+  <div class="connector">
+    <div class="flow-dots">
+      <div class="flow-dot blue"></div>
+      <div class="flow-dot blue"></div>
+      <div class="flow-dot blue"></div>
+    </div>
+    <div class="connector-label">PostgreSQL · Supabase SDK</div>
+  </div>
+
+  <!-- LAYER 6: DATABASE -->
+  <div class="layer layer-blue" id="l-db" onclick="toggleLayer('l-db')">
+    <div class="layer-inner">
+      <div class="layer-bar"></div>
+      <div class="layer-header">
+        <div class="layer-icon">🗄️</div>
+        <div>
+          <div class="layer-title">Capa 6 — Datos</div>
+          <div class="layer-subtitle">Database — Supabase · PostgreSQL</div>
+        </div>
+        <div class="expand-hint">Más info <span class="expand-arrow">▾</span></div>
+      </div>
+
+      <div class="chips" style="margin-bottom:9px">
+        <span class="chip chip-blue" onmouseenter="tt(event,'users','Email, rol (admin/lawyer/assistant), organization_id, avatar, timestamps. Clave de todo el sistema multi-tenant.')" onmouseleave="ht()">users</span>
+        <span class="chip chip-blue" onmouseenter="tt(event,'clients','Clientes del despacho. Nombre, NIF/CIF, email, teléfono, tipo persona/empresa, RLS por org.')" onmouseleave="ht()">clients</span>
+        <span class="chip chip-blue" onmouseenter="tt(event,'cases','Expedientes legales. Número de referencia, estado, tipo de asunto, cliente vinculado, abogado asignado, fechas clave.')" onmouseleave="ht()">cases</span>
+        <span class="chip chip-blue" onmouseenter="tt(event,'documents','Metadatos de documentos. URL Storage firmada, tipo MIME, tamaño, expediente vinculado, fecha subida.')" onmouseleave="ht()">documents</span>
+        <span class="chip chip-blue" onmouseenter="tt(event,'document_analyses','Resultados de análisis IA. Resumen ejecutivo, cláusulas extraídas, riesgos detectados, fecha de análisis y coste en tokens.')" onmouseleave="ht()">document_analyses</span>
+        <span class="chip chip-blue" onmouseenter="tt(event,'chat_conversations','Conversaciones con LEXIA. ID único, usuario, contexto (expediente opcional), timestamps, título auto-generado.')" onmouseleave="ht()">chat_conversations</span>
+        <span class="chip chip-blue" onmouseenter="tt(event,'chat_messages','Mensajes del chat. Rol (user/assistant), contenido completo, tokens usados, timestamp exacto.')" onmouseleave="ht()">chat_messages</span>
+        <span class="chip chip-blue" onmouseenter="tt(event,'generated_contracts','Contratos generados con IA. Tipo, parámetros de entrada, contenido final en Markdown, versiones históricas.')" onmouseleave="ht()">generated_contracts</span>
+        <span class="chip chip-blue" onmouseenter="tt(event,'contract_templates','Plantillas de contratos del despacho. Variables configurables, secciones, estado activo/inactivo.')" onmouseleave="ht()">contract_templates</span>
+        <span class="chip chip-blue" onmouseenter="tt(event,'audit_logs','Log inmutable de acciones críticas. Quién, qué, cuándo, desde qué IP. Obligatorio para GDPR y cumplimiento.')" onmouseleave="ht()">audit_logs</span>
+      </div>
+
+      <div class="chips">
+        <span class="chip chip-blue" style="font-size:11px">🔐 Row Level Security en todas las tablas</span>
+        <span class="chip chip-blue" style="font-size:11px">🏢 Multi-tenant via organization_id</span>
+        <span class="chip chip-blue" style="font-size:11px">📦 Storage: legal-documents (privado)</span>
+        <span class="chip chip-blue" style="font-size:11px">⚖️ 10MB límite por fichero</span>
+      </div>
+
+      <div class="layer-details">
+        <div class="details-inner">
+          <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label">Motor</div><div class="detail-value dv-blue">PostgreSQL 15</div></div>
+            <div class="detail-item"><div class="detail-label">Proveedor</div><div class="detail-value dv-blue">Supabase</div></div>
+            <div class="detail-item"><div class="detail-label">Seguridad</div><div class="detail-value dv-orange">RLS en 10 tablas</div></div>
+            <div class="detail-item"><div class="detail-label">Tablas</div><div class="detail-value dv-blue">10 tablas</div></div>
+            <div class="detail-item"><div class="detail-label">Storage</div><div class="detail-value">legal-documents bucket</div></div>
+            <div class="detail-item"><div class="detail-label">Backups</div><div class="detail-value dv-green">Automáticos diarios</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECTOR (INFRA) -->
+  <div class="connector">
+    <div class="flow-dots">
+      <div class="flow-dot green"></div>
+      <div class="flow-dot green"></div>
+      <div class="flow-dot green"></div>
+    </div>
+    <div class="connector-label">Deploy · CI/CD</div>
+  </div>
+
+  <!-- LAYER 7: INFRASTRUCTURE -->
+  <div class="layer layer-green" id="l-infra" onclick="toggleLayer('l-infra')">
+    <div class="layer-inner">
+      <div class="layer-bar"></div>
+      <div class="layer-header">
+        <div class="layer-icon">☁️</div>
+        <div>
+          <div class="layer-title">Capa 7 — Infraestructura</div>
+          <div class="layer-subtitle">Cloud · Hosting · CI/CD</div>
+        </div>
+        <div class="expand-hint">Más info <span class="expand-arrow">▾</span></div>
+      </div>
+
+      <div class="infra-grid">
+        <div class="infra-card"
+          onmouseenter="tt(event,'Vercel','Hosting de Next.js optimizado. Edge Network global (100+ regiones). Deploys automáticos desde GitHub push. Preview URLs por cada PR.')"
+          onmouseleave="ht()">
+          <div class="infra-card-icon">▲</div>
+          <div>
+            <div class="infra-card-name">Vercel</div>
+            <div class="infra-card-sub">Hosting + Edge CDN</div>
+          </div>
+        </div>
+        <div class="infra-card"
+          onmouseenter="tt(event,'Supabase','PostgreSQL managed + Storage + Realtime. Plan Free: 500MB DB, 1GB Storage. Escalable a Pro sin cambios de código.')"
+          onmouseleave="ht()">
+          <div class="infra-card-icon">🟢</div>
+          <div>
+            <div class="infra-card-name">Supabase</div>
+            <div class="infra-card-sub">DB + Storage + Auth</div>
+          </div>
+        </div>
+        <div class="infra-card"
+          onmouseenter="tt(event,'Anthropic API','API de Claude. Pay-per-use: solo pagas por tokens consumidos. Sin servidores IA propios. SLA 99.9% uptime.')"
+          onmouseleave="ht()">
+          <div class="infra-card-icon">🤖</div>
+          <div>
+            <div class="infra-card-name">Anthropic</div>
+            <div class="infra-card-sub">Claude API</div>
+          </div>
+        </div>
+        <div class="infra-card"
+          onmouseenter="tt(event,'GitHub CI/CD','Repositorio + GitHub Actions. Pipeline: lint → typecheck → build → deploy automático a Vercel en cada push a main.')"
+          onmouseleave="ht()">
+          <div class="infra-card-icon">⚙️</div>
+          <div>
+            <div class="infra-card-name">GitHub</div>
+            <div class="infra-card-sub">Repo + CI/CD</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layer-details">
+        <div class="details-inner">
+          <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label">Uptime SLA</div><div class="detail-value dv-green">99.9%</div></div>
+            <div class="detail-item"><div class="detail-label">CDN Regions</div><div class="detail-value">100+ (Vercel Edge)</div></div>
+            <div class="detail-item"><div class="detail-label">CI/CD</div><div class="detail-value">GitHub Actions</div></div>
+            <div class="detail-item"><div class="detail-label">Coste base</div><div class="detail-value dv-green">~€0 hasta escala</div></div>
+            <div class="detail-item"><div class="detail-label">Deploy time</div><div class="detail-value dv-green">&lt;60s</div></div>
+            <div class="detail-item"><div class="detail-label">Rollback</div><div class="detail-value">1 clic (Vercel)</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat">
+      <div class="stat-number" data-target="11">11</div>
+      <div class="stat-label">Páginas / Módulos</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number" data-target="18">18</div>
+      <div class="stat-label">Tipos de Contrato IA</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number" data-target="869">869</div>
+      <div class="stat-label">Líneas Base Legal</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">RLS</div>
+      <div class="stat-label">Multi-tenant Isolation</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // TOOLTIP
+  const tooltip = document.getElementById('tooltip');
+  const ttTitle = document.getElementById('tt-title');
+  const ttBody  = document.getElementById('tt-body');
+
+  function tt(e, title, body) {
+    ttTitle.textContent = title;
+    ttBody.textContent  = body;
+    tooltip.classList.add('visible');
+    posTooltip(e);
+  }
+  function ht() { tooltip.classList.remove('visible'); }
+  function posTooltip(e) {
+    const W = 274, H = 90;
+    let x = e.clientX + 16;
+    let y = e.clientY - 14;
+    if (x + W > window.innerWidth - 8) x = e.clientX - W - 16;
+    if (y + H > window.innerHeight - 8) y = e.clientY - H - 8;
+    tooltip.style.left = x + 'px';
+    tooltip.style.top  = y + 'px';
+  }
+  document.addEventListener('mousemove', e => {
+    if (tooltip.classList.contains('visible')) posTooltip(e);
+  });
+
+  // TOGGLE LAYER
+  function toggleLayer(id) {
+    document.getElementById(id).classList.toggle('expanded');
+  }
+
+  // ENTRANCE ANIMATION
+  const layers = document.querySelectorAll('.layer, .connector, .stats-bar');
+  layers.forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = el.classList.contains('layer') ? 'translateY(22px)' : 'none';
+    setTimeout(() => {
+      el.style.transition = 'opacity 0.5s ease, transform 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 80 + i * 90);
+  });
+
+  // STATS COUNTER ANIMATION
+  function countUp(el, target, duration) {
+    if (isNaN(target)) return;
+    const start = performance.now();
+    function step(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * ease);
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = target;
+    }
+    requestAnimationFrame(step);
+  }
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el  = e.target;
+      const val = parseInt(el.dataset.target || el.textContent);
+      countUp(el, val, 1400);
+      io.unobserve(el);
+    });
+  }, { threshold: 0.6 });
+
+  document.querySelectorAll('.stat-number[data-target]').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
