@@ -19,6 +19,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { getSkill } from '@/lib/legal-skills'
 import { loadSkillPrompt, loadPluginProfile } from '@/lib/legal-skills-server'
 import { z } from 'zod'
+import { auth } from '@/lib/auth/auth'
 
 const client = new Anthropic()
 
@@ -50,6 +51,14 @@ IMPORTANTE: Todo análisis es informativo. El usuario debe consultar con abogado
 }
 
 export async function POST(req: NextRequest) {
+  const session = await auth().catch(() => null)
+  if (!session?.user?.id) {
+    return new Response(JSON.stringify({ error: 'No autorizado' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
   const encoder = new TextEncoder()
 
   const stream = new ReadableStream({

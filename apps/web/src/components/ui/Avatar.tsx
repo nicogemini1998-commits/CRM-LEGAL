@@ -23,9 +23,9 @@ const sizeStyles: Record<AvatarSize, { container: string; text: string }> = {
 }
 
 const typeStyles: Record<AvatarType, string> = {
-  user: 'bg-gradient-to-br from-indigo-500 to-cyan-500',
-  client: 'bg-gradient-to-br from-indigo-400 to-blue-500',
-  company: 'bg-gradient-to-br from-purple-500 to-pink-500',
+  user: 'bg-gradient-to-br from-[#A99BF0] to-[#6A5BC1]',
+  client: 'bg-gradient-to-br from-[#8F7EE9] to-[#7C6BD6]',
+  company: 'bg-gradient-to-br from-[#6A5BC1] to-[#1E2839]',
 }
 
 export function Avatar({

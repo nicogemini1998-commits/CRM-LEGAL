@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>IURALEX Keynote</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body {
+    width:1920px; height:1080px; overflow:hidden;
+    background:#000; color:#fff;
+    font-family:'Inter', -apple-system, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  .stage {
+    position:fixed; inset:0; width:1920px; height:1080px;
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column;
+    opacity:0; pointer-events:none;
+    transition: opacity .6s ease;
+    overflow:hidden;
+  }
+  .stage.active { opacity:1; }
+
+  /* SCENE 1 - C logo */
+  #s1 .clogo {
+    width:340px; height:340px; border-radius:50%;
+    background:linear-gradient(135deg,#8F7EE9,#6B5BD3);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Playfair Display', serif;
+    font-size:240px; font-weight:700; color:#fff;
+    box-shadow: 0 0 80px rgba(143,126,233,.6), 0 0 160px rgba(143,126,233,.3);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform:scale(1); box-shadow:0 0 80px rgba(143,126,233,.6), 0 0 160px rgba(143,126,233,.3); }
+    50% { transform:scale(1.05); box-shadow:0 0 120px rgba(143,126,233,.8), 0 0 240px rgba(143,126,233,.4); }
+  }
+
+  /* SCENE 2 - IURALEX letter by letter */
+  #s2 .word { display:flex; gap:14px; }
+  #s2 .word span {
+    font-family:'Playfair Display', serif;
+    font-size:240px; font-weight:700; color:#fff;
+    opacity:0; transform:translateY(40px);
+    transition: opacity .5s ease, transform .5s ease;
+    letter-spacing:-4px;
+  }
+  #s2.active .word span { opacity:1; transform:translateY(0); }
+  #s2.active .word span:nth-child(1){ transition-delay:.0s; }
+  #s2.active .word span:nth-child(2){ transition-delay:.15s; }
+  #s2.active .word span:nth-child(3){ transition-delay:.30s; }
+  #s2.active .word span:nth-child(4){ transition-delay:.45s; }
+  #s2.active .word span:nth-child(5){ transition-delay:.60s; }
+  #s2.active .word span:nth-child(6){ transition-delay:.75s; }
+  #s2.active .word span:nth-child(7){ transition-delay:.90s; }
+
+  /* SCENE 3 - tagline */
+  #s3 .tag {
+    font-family:'Playfair Display', serif;
+    font-size:88px; font-weight:500; font-style:italic;
+    text-align:center; max-width:1500px; line-height:1.15;
+    color:#E8E5F7;
+    opacity:0; transform:translateY(50px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+  #s3.active .tag { opacity:1; transform:translateY(0); }
+
+  /* SCENE 4 - 4 horas */
+  #s4 .line {
+    font-family:'Inter', sans-serif;
+    font-size:96px; font-weight:600;
+    text-align:center; line-height:1.2;
+    opacity:0; transform:translateY(30px);
+    transition: opacity .8s ease, transform .8s ease;
+  }
+  #s4.active .line { opacity:1; transform:translateY(0); }
+  #s4 .red {
+    color:#FF5C5C; font-weight:800;
+    animation: pulseRed 1.2s ease-in-out infinite;
+  }
+  @keyframes pulseRed {
+    0%,100% { text-shadow:0 0 20px rgba(255,92,92,.4); }
+    50% { text-shadow:0 0 60px rgba(255,92,92,.9), 0 0 120px rgba(255,92,92,.4); }
+  }
+
+  /* SCENE 5 - stagger numbers */
+  #s5 { gap:30px; }
+  #s5 .row {
+    font-family:'Inter', sans-serif;
+    font-weight:800; text-align:center;
+    opacity:0; transform:translateY(40px);
+    transition: opacity .8s ease, transform .8s ease;
+  }
+  #s5.active .row { opacity:1; transform:translateY(0); }
+  #s5.active .row:nth-child(1){ transition-delay:.0s; }
+  #s5.active .row:nth-child(2){ transition-delay:.4s; }
+  #s5.active .row:nth-child(3){ transition-delay:.8s; }
+  #s5 .row1 { font-size:120px; color:#fff; }
+  #s5 .row2 { font-size:120px; color:#FF5C5C; }
+  #s5 .row3 { font-size:64px; color:#B8B3CC; font-weight:500; font-style:italic; font-family:'Playfair Display',serif; }
+
+  /* SCENE 6 - cream / LEXIA intro */
+  #s6 { background:#F5EFE3; }
+  #s6 .small {
+    font-family:'Inter', sans-serif;
+    font-size:42px; color:#8F7EE9; font-weight:600;
+    letter-spacing:6px; text-transform:uppercase;
+    margin-bottom:30px;
+    opacity:0; transform:translateY(20px);
+    transition: opacity .8s ease .2s, transform .8s ease .2s;
+  }
+  #s6 .big {
+    font-family:'Playfair Display', serif;
+    font-size:180px; font-weight:600; color:#1A1A2E;
+    text-align:center; line-height:1.05; letter-spacing:-3px;
+    opacity:0; transform:translateY(40px);
+    transition: opacity 1s ease .5s, transform 1s ease .5s;
+  }
+  #s6 .big em { font-style:italic; color:#8F7EE9; }
+  #s6.active .small, #s6.active .big { opacity:1; transform:translateY(0); }
+
+  /* SCENE 7 - chat */
+  #s7 {
+    background:#0A0A14;
+    justify-content:flex-start;
+    padding-top:140px;
+  }
+  #s7 h3 {
+    font-family:'Playfair Display', serif;
+    font-size:54px; color:#8F7EE9; font-weight:500;
+    margin-bottom:50px;
+    opacity:0; transform:translateY(20px);
+    transition: opacity .8s ease, transform .8s ease;
+  }
+  #s7 .chat { width:1200px; display:flex; flex-direction:column; gap:30px; }
+  #s7 .msg {
+    padding:32px 44px; border-radius:24px;
+    font-size:38px; line-height:1.4;
+    opacity:0; transform:translateY(20px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  #s7 .user {
+    align-self:flex-end;
+    background:#1F1F33; color:#E8E5F7;
+    max-width:780px;
+  }
+  #s7 .ai {
+    align-self:flex-start;
+    background:linear-gradient(135deg,#8F7EE9,#6B5BD3); color:#fff;
+    max-width:980px;
+    box-shadow: 0 20px 60px rgba(143,126,233,.3);
+  }
+  #s7 .ai .label {
+    font-size:22px; font-weight:700; letter-spacing:3px;
+    opacity:.8; margin-bottom:12px; display:block;
+  }
+  #s7 .typed { display:inline-block; overflow:hidden; white-space:normal; }
+  #s7.active h3 { opacity:1; transform:translateY(0); }
+  #s7.active .user { opacity:1; transform:translateY(0); transition-delay:.5s; }
+  #s7.active .ai { opacity:1; transform:translateY(0); transition-delay:1.8s; }
+
+  /* SCENE 8 - 4 cards */
+  #s8 { gap:60px; }
+  #s8 h3 {
+    font-family:'Playfair Display',serif;
+    font-size:60px; font-weight:500; color:#E8E5F7;
+    margin-bottom:20px;
+    opacity:0; transform:translateY(20px);
+    transition: opacity .8s ease, transform .8s ease;
+  }
+  #s8 .grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:36px; width:1400px;
+  }
+  #s8 .card {
+    background:linear-gradient(135deg, rgba(143,126,233,.12), rgba(143,126,233,.04));
+    border:1px solid rgba(143,126,233,.3);
+    border-radius:28px; padding:60px;
+    opacity:0; transform:translateY(40px);
+    transition: opacity .7s ease, transform .7s ease;
+    backdrop-filter:blur(20px);
+  }
+  #s8 .card .n {
+    font-family:'Playfair Display', serif;
+    font-size:96px; font-weight:700;
+    background:linear-gradient(135deg,#8F7EE9,#C8BCFB);
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent;
+    line-height:1; margin-bottom:18px;
+  }
+  #s8 .card .l { font-size:32px; font-weight:500; color:#E8E5F7; }
+  #s8.active h3 { opacity:1; transform:translateY(0); }
+  #s8.active .card { opacity:1; transform:translateY(0); }
+  #s8.active .card:nth-child(1){ transition-delay:.3s; }
+  #s8.active .card:nth-child(2){ transition-delay:.5s; }
+  #s8.active .card:nth-child(3){ transition-delay:.7s; }
+  #s8.active .card:nth-child(4){ transition-delay:.9s; }
+
+  /* SCENE 9 - cifras */
+  #s9 .stat {
+    text-align:center;
+    opacity:0; transform:translateY(40px);
+    transition: opacity .8s ease, transform .8s ease;
+  }
+  #s9 .stat .big {
+    font-family:'Playfair Display',serif;
+    font-size:160px; font-weight:700;
+    background:linear-gradient(135deg,#fff,#8F7EE9);
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent; line-height:1;
+  }
+  #s9 .stat .lab { font-size:36px; color:#B8B3CC; margin-top:10px; font-weight:500; }
+  #s9.active .stat { opacity:1; transform:translateY(0); }
+  #s9.active .stat:nth-child(1){ transition-delay:.0s; }
+  #s9.active .stat:nth-child(2){ transition-delay:.3s; }
+  #s9.active .stat:nth-child(3){ transition-delay:.6s; }
+  #s9 .row { display:flex; gap:160px; align-items:center; justify-content:center; }
+
+  /* SCENE 10 - CTA */
+  #s10 { background: radial-gradient(circle at center, #8F7EE9 0%, #4A3FA0 50%, #1A1340 100%); }
+  #s10 .title {
+    font-family:'Playfair Display',serif;
+    font-size:140px; font-weight:600; color:#fff;
+    text-align:center; line-height:1.05;
+    text-shadow: 0 8px 40px rgba(0,0,0,.4);
+    opacity:0; transform:translateY(40px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+  #s10 .sub {
+    font-size:48px; color:#E8E5F7; margin-top:30px; font-weight:400;
+    opacity:0; transform:translateY(20px);
+    transition: opacity 1s ease .4s, transform 1s ease .4s;
+  }
+  #s10 .pill {
+    margin-top:80px;
+    background:#fff; color:#4A3FA0;
+    padding:36px 80px; border-radius:100px;
+    font-size:42px; font-weight:700;
+    display:flex; align-items:center; gap:18px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.4);
+    opacity:0; transform:scale(.9);
+    transition: opacity .8s ease .8s, transform .8s ease .8s;
+  }
+  #s10 .pill .arrow { display:inline-block; animation: arrowSlide 1.6s ease-in-out infinite; }
+  @keyframes arrowSlide {
+    0%,100% { transform:translateX(0); }
+    50% { transform:translateX(12px); }
+  }
+  #s10.active .title, #s10.active .sub, #s10.active .pill {
+    opacity:1; transform:translate(0) scale(1);
+  }
+
+  /* SCENE 11 - by Cliender Tech */
+  #s11 .ct-logo {
+    font-family:'Playfair Display',serif;
+    font-size:120px; font-weight:700;
+    background:linear-gradient(135deg,#8F7EE9,#fff);
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent;
+    margin-bottom:30px;
+    opacity:0; transform:translateY(30px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+  #s11 .by {
+    font-family:'Inter', sans-serif;
+    font-size:36px; color:#B8B3CC; font-weight:300;
+    letter-spacing:4px;
+    opacity:0; transform:translateY(20px);
+    transition: opacity 1s ease .4s, transform 1s ease .4s;
+  }
+  #s11 .flag {
+    margin-top:40px; font-size:54px;
+    opacity:0; transform:scale(.8);
+    transition: opacity 1s ease .8s, transform 1s ease .8s;
+  }
+  #s11.active .ct-logo, #s11.active .by, #s11.active .flag {
+    opacity:1; transform:translate(0) scale(1);
+  }
+
+  .grain {
+    position:fixed; inset:0; pointer-events:none; z-index:9999;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/></svg>");
+    opacity:.04; mix-blend-mode:overlay;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="s1"><div class="clogo">C</div></div>
+
+<div class="stage" id="s2">
+  <div class="word">
+    <span>I</span><span>U</span><span>R</span><span>A</span><span>L</span><span>E</span><span>X</span>
+  </div>
+</div>
+
+<div class="stage" id="s3">
+  <div class="tag">La IA jurídica<br/>que entiende el derecho español</div>
+</div>
+
+<div class="stage" id="s4">
+  <div class="line">Tu abogado pierde</div>
+  <div class="line"><span class="red">4 horas</span> al día en gestión</div>
+</div>
+
+<div class="stage" id="s5">
+  <div class="row row1">20 horas / semana</div>
+  <div class="row row2">880 horas / año</div>
+  <div class="row row3">Más de un mes laboral perdido</div>
+</div>
+
+<div class="stage" id="s6">
+  <div class="small">Hasta hoy</div>
+  <div class="big">Conoce a <em>LEXIA</em></div>
+</div>
+
+<div class="stage" id="s7">
+  <h3>Conversación real con LEXIA</h3>
+  <div class="chat">
+    <div class="msg user">¿Cuál es el plazo para reclamar un despido improcedente?</div>
+    <div class="msg ai">
+      <span class="label">LEXIA</span>
+      <span class="typed" id="lexia-text"></span>
+    </div>
+  </div>
+</div>
+
+<div class="stage" id="s8">
+  <h3>Todo lo que tu despacho necesita</h3>
+  <div class="grid">
+    <div class="card"><div class="n">12</div><div class="l">expedientes simultáneos por abogado</div></div>
+    <div class="card"><div class="n">80+</div><div class="l">acciones IA prediseñadas</div></div>
+    <div class="card"><div class="n">41</div><div class="l">tipos de plazos del derecho español</div></div>
+    <div class="card"><div class="n">24/7</div><div class="l">LEXIA siempre disponible</div></div>
+  </div>
+</div>
+
+<div class="stage" id="s9">
+  <div class="row">
+    <div class="stat"><div class="big">40%</div><div class="lab">menos tiempo en gestión</div></div>
+    <div class="stat"><div class="big">100%</div><div class="lab">derecho español</div></div>
+    <div class="stat"><div class="big">0</div><div class="lab">alucinaciones · grounding BOE</div></div>
+  </div>
+</div>
+
+<div class="stage" id="s10">
+  <div class="title">IURALEX.<br/>Listo para tu despacho.</div>
+  <div class="sub">Implantación en 7 días. Sin fricciones.</div>
+  <div class="pill">Pide tu demo <span class="arrow">→</span></div>
+</div>
+
+<div class="stage" id="s11">
+  <div class="ct-logo">Cliender Tech</div>
+  <div class="by">HECHO EN ESPAÑA</div>
+  <div class="flag">🇪🇸</div>
+</div>
+
+<div class="grain"></div>
+
+<script>
+  const scenes = [
+    { id:'s1',  in:0,    out:4000 },
+    { id:'s2',  in:4000, out:8000 },
+    { id:'s3',  in:8000, out:13000 },
+    { id:'s4',  in:13000,out:18000 },
+    { id:'s5',  in:18000,out:24000 },
+    { id:'s6',  in:24000,out:32000 },
+    { id:'s7',  in:32000,out:42000 },
+    { id:'s8',  in:42000,out:52000 },
+    { id:'s9',  in:52000,out:60000 },
+    { id:'s10', in:60000,out:70000 },
+    { id:'s11', in:70000,out:80000 },
+  ];
+  scenes.forEach(s => {
+    setTimeout(() => document.getElementById(s.id).classList.add('active'), s.in);
+    setTimeout(() => document.getElementById(s.id).classList.remove('active'), s.out);
+  });
+  const lexiaTxt = "20 días hábiles desde la notificación. Art. 59.3 ET. Plazo de caducidad — no se interrumpe.";
+  setTimeout(() => {
+    const el = document.getElementById('lexia-text');
+    let i = 0;
+    const tick = () => {
+      if (i <= lexiaTxt.length) {
+        el.textContent = lexiaTxt.slice(0, i);
+        i++;
+        setTimeout(tick, 45);
+      }
+    };
+    tick();
+  }, 32000 + 2200);
+  window.__keynoteReady = true;
+</script>
+</body>
+</html>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { cachedFetchJSON, invalidate as invalidateCache } from '@/lib/hooks/useCachedFetch'
 
 interface Client {
   id: string
@@ -59,8 +60,8 @@ function NewClientModal({ onClose, onSuccess }: { onClose: () => void; onSuccess
                   onClick={() => set('type', t)}
                   className={`flex-1 py-3 rounded-xl text-sm font-semibold border-2 transition ${
                     form.type === t
-                      ? 'bg-gradient-to-r from-indigo-600 to-cyan-600 text-white border-transparent shadow-lg shadow-indigo-500/30'
-                      : 'border-slate-200 text-slate-600 hover:border-indigo-300'
+                      ? 'bg-gradient-to-r from-violet-600 to-purple-700 text-white border-transparent shadow-lg shadow-violet-500/30'
+                      : 'border-slate-200 text-slate-600 hover:border-violet-300'
                   }`}
                   whileHover={form.type !== t ? { scale: 1.02 } : {}}
                   whileTap={{ scale: 0.98 }}
@@ -76,7 +77,7 @@ function NewClientModal({ onClose, onSuccess }: { onClose: () => void; onSuccess
               value={form.name}
               onChange={e => set('name', e.target.value)}
               placeholder={form.type === 'company' ? 'Empresa S.L.' : 'Juan García López'}
-              className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition"
+              className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition"
               whileFocus={{ scale: 1.01 }}
             />
           </div>
@@ -87,7 +88,7 @@ function NewClientModal({ onClose, onSuccess }: { onClose: () => void; onSuccess
                 value={form.nif_cif}
                 onChange={e => set('nif_cif', e.target.value)}
                 placeholder={form.type === 'company' ? 'B12345678' : '12345678A'}
-                className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition"
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition"
               />
             </div>
             <div>
@@ -96,7 +97,7 @@ function NewClientModal({ onClose, onSuccess }: { onClose: () => void; onSuccess
                 value={form.phone}
                 onChange={e => set('phone', e.target.value)}
                 placeholder="600 123 456"
-                className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition"
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition"
               />
             </div>
           </div>
@@ -107,7 +108,7 @@ function NewClientModal({ onClose, onSuccess }: { onClose: () => void; onSuccess
               value={form.email}
               onChange={e => set('email', e.target.value)}
               placeholder="cliente@email.com"
-              className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition"
+              className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition"
             />
           </div>
           {error && (
@@ -132,7 +133,7 @@ function NewClientModal({ onClose, onSuccess }: { onClose: () => void; onSuccess
             <motion.button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-600 to-cyan-600 text-white rounded-xl text-sm font-semibold hover:shadow-lg shadow-indigo-500/30 transition disabled:opacity-50"
+              className="flex-1 px-4 py-3 bg-[#8F7EE9] hover:bg-[#7C6BD6] text-white rounded-xl text-sm font-semibold hover:shadow-lg shadow-[#8F7EE9]/30 transition disabled:opacity-50"
               whileHover={!loading ? { scale: 1.02 } : {}}
               whileTap={!loading ? { scale: 0.98 } : {}}
             >
@@ -147,8 +148,8 @@ function NewClientModal({ onClose, onSuccess }: { onClose: () => void; onSuccess
 
 function ClientAvatar({ name, type }: { name: string; type: string }) {
   return (
-    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${type === 'company' ? 'bg-purple-50' : 'bg-blue-50'}`}>
-      <span className={`text-sm font-bold ${type === 'company' ? 'text-purple-600' : 'text-blue-600'}`}>
+    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${type === 'company' ? 'bg-fuchsia-50' : 'bg-violet-50'}`}>
+      <span className={`text-sm font-bold ${type === 'company' ? 'text-fuchsia-700' : 'text-violet-700'}`}>
         {name[0].toUpperCase()}
       </span>
     </div>
@@ -162,11 +163,16 @@ export default function ClientsPage() {
   const [showNew, setShowNew] = useState(false)
   const [search, setSearch] = useState('')
 
-  const fetch_ = async () => {
-    const res = await fetch('/api/clients')
-    const data = await res.json()
-    setClients(data.clients || [])
-    setLoading(false)
+  const fetch_ = async (force = false) => {
+    try {
+      if (force) invalidateCache('/api/clients')
+      const data = await cachedFetchJSON<any>('/api/clients')
+      setClients(data?.clients || [])
+    } catch (err) {
+      console.error('[clients] fetch failed:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { fetch_() }, [])
@@ -232,25 +238,40 @@ export default function ClientsPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
           className="text-center py-20 rounded-2xl"
           style={{ background: 'var(--surface)', border: '1px solid var(--hairline)' }}
         >
-          <div className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: 'var(--lime-bg-soft)' }}>
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" style={{ color: 'var(--lime-text-soft)' }}>
+          <motion.div
+            animate={{ y: [0, -4, 0] }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center"
+            style={{
+              background: 'var(--lime-bg-soft)',
+              boxShadow: '0 8px 24px -10px rgba(124,58,237,0.25), inset 0 0 0 1px rgba(124,58,237,0.10)',
+            }}
+          >
+            <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24" style={{ color: 'var(--lime-text-soft)' }}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-          </div>
-          <h3 className="font-display text-[22px]" style={{ color: 'var(--ink-primary)' }}>{search ? 'Sin resultados' : 'Sin clientes'}</h3>
+          </motion.div>
+          <h3 className="font-display text-[24px] leading-tight" style={{ color: 'var(--ink-primary)' }}>
+            {search ? 'Sin resultados' : <>Tu primera <em style={{ fontStyle: 'italic' }}>cartera</em>.</>}
+          </h3>
           {!search && (
             <>
-              <p className="text-[13px] mt-1 mb-6" style={{ color: 'var(--ink-secondary)' }}>Añade tu primer cliente para vincularlo a expedientes.</p>
+              <p className="text-[13px] mt-2 max-w-sm mx-auto" style={{ color: 'var(--ink-secondary)' }}>
+                Añade tu primer cliente para vincularlo a expedientes.
+              </p>
               <motion.button
                 onClick={() => setShowNew(true)}
+                whileHover={{ y: -1 }}
                 whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium"
+                className="mt-6 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium"
                 style={{ background: 'var(--obsidian)', color: 'var(--lime)' }}
               >
-                Añadir cliente
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                Añadir primer cliente
               </motion.button>
             </>
           )}
@@ -298,8 +319,8 @@ export default function ClientsPage() {
                       <span
                         className="text-[10px] font-medium uppercase tracking-wider px-1.5 py-0.5 rounded"
                         style={{
-                          background: c.type === 'company' ? 'var(--plum-bg)' : 'var(--info-bg)',
-                          color: c.type === 'company' ? 'var(--plum)' : '#1E40AF',
+                          background: c.type === 'company' ? 'var(--plum-bg)' : 'var(--lime-bg-soft)',
+                          color: c.type === 'company' ? 'var(--plum)' : 'var(--lime-text-soft)',
                         }}
                       >
                         {c.type === 'company' ? 'Empresa' : 'Particular'}
@@ -332,7 +353,7 @@ export default function ClientsPage() {
       )}
 
       <AnimatePresence>
-        {showNew && <NewClientModal onClose={() => setShowNew(false)} onSuccess={() => { setShowNew(false); fetch_() }} />}
+        {showNew && <NewClientModal onClose={() => setShowNew(false)} onSuccess={() => { setShowNew(false); fetch_(true) }} />}
       </AnimatePresence>
     </div>
   )

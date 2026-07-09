@@ -1,0 +1,45 @@
+Para: ethan@cliender.com
+Cc: nicolas@cliender.com
+Asunto: URGENTE - Materiales reunión abogado CRM (mañana) - IURALEX demo
+
+Ethan,
+
+Te paso URGENTE los materiales para la reunión "abogado CRM" de mañana. Por favor lee el brief antes de la videollamada.
+
+Adjuntos:
+1. BRIEF-DEMO-ABOGADOS.md — resumen ejecutivo 1-pager con lo que sí o sí hay que mostrar (orden, tiempos, wow moments)
+2. iuralex-demo.mp4 — video corto presentación (60-90s) para abrir la demo antes del tour en vivo
+3. demo-script.md — script completo 12min paso a paso
+4. objection-handling.md — 10 objeciones típicas + respuestas
+5. demo-data-talking-points.md — los datos del demo más impactantes
+
+LO MÁS IMPORTANTE QUE HAY QUE MOSTRAR:
+
+WOW MOMENTS (en este orden):
+1. LEXIA chat live → pregunta jurídica real → respuesta streaming con citas exactas (art. X Ley Y)
+2. Análisis IA documento → detección automática riesgos ALTO/MEDIO/BAJO
+3. Ficha cliente → botón "Chat con LEXIA sobre este cliente" → LEXIA conoce TODO del cliente
+
+CÓMO ABRIR LA DEMO:
+- Reproducir el video iuralex-demo.mp4 (60-90s)
+- Pasar a pantalla compartida con http://localhost:3002 ya logueado
+- Empezar por dashboard, no por login
+
+POR QUÉ FUNCIONA:
+- No vendemos "otro CRM". Vendemos "la IA que hace el trabajo administrativo del despacho"
+- Diferencial vs vLex/Iberley/Aranzadi: ellos consultan, nosotros EJECUTAMOS (generamos escritos, calculamos plazos, analizamos docs)
+- Brand Cliender Tech visible en cada pantalla = profesionalidad
+
+PRICING (NO dar hasta que pidan):
+99€/mes/abogado · 5 abogados = 495€/mes · onboarding sin coste primer mes
+
+CONTACTO DEMO EN VIVO:
+- Si LEXIA falla durante la demo, WhatsApp a Nicolas inmediato
+- Container Docker iuralex tiene que estar Up antes (docker ps | grep iuralex)
+
+Cualquier duda hoy o mañana, mensaje directo.
+
+Suerte mañana,
+Nico
+nicolas@cliender.com
+HBD Revolution SL · Cliender Tech · Sagunto, Valencia

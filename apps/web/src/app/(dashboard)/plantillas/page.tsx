@@ -1,8 +1,11 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+
+const BRAND = '#8F7EE9'
+const BRAND_DARK = '#7C6BD6'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -25,7 +28,9 @@ interface Template {
   fields: TemplateField[]
   popular?: boolean
   isNew?: boolean
+  isUser?: boolean
   law?: string
+  durationMin?: number
 }
 
 // ─── Category config ──────────────────────────────────────────────────────────
@@ -252,69 +257,192 @@ const TEMPLATES: Template[] = [
   },
 ]
 
-// ─── TemplateCard ─────────────────────────────────────────────────────────────
+// ─── Category icons (lucide-style inline SVG) ─────────────────────────────────
 
-function TemplateCard({ t, onClick }: { t: Template; onClick: () => void }) {
+function CategoryIcon({ cat, color }: { cat: string; color: string }) {
+  const p = { width: 22, height: 22, fill: 'none', stroke: color, strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, viewBox: '0 0 24 24' }
+  switch (cat) {
+    case 'Contratos':      return (<svg {...p}><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>)
+    case 'Laboral':        return (<svg {...p}><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>)
+    case 'Mercantil':      return (<svg {...p}><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/></svg>)
+    case 'Civil':          return (<svg {...p}><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>)
+    case 'Penal':          return (<svg {...p}><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>)
+    case 'Administrativo': return (<svg {...p}><path d="M3 21h18"/><path d="M6 21V8a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v13"/><path d="M9 9h6"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>)
+    case 'Inmobiliario':   return (<svg {...p}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>)
+    default:               return (<svg {...p}><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/></svg>)
+  }
+}
+
+// ─── TemplateCard (dashboard-style) ───────────────────────────────────────────
+
+interface CardActions {
+  onUse: () => void
+  onEdit?: () => void
+  onDuplicate: () => void
+  onDelete?: () => void
+}
+
+function TemplateCard({ t, actions }: { t: Template; actions: CardActions }) {
   const [hovered, setHovered] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
   const c = CAT[t.category]
+  const isUser = !!t.isUser
+  const fieldCount = t.fields.length
+  const estDuration = t.durationMin ?? Math.max(1, Math.round(t.pages * 0.7))
+
+  useEffect(() => {
+    if (!menuOpen) return
+    function onDoc(e: MouseEvent) {
+      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', onDoc)
+    return () => document.removeEventListener('mousedown', onDoc)
+  }, [menuOpen])
+
   return (
     <motion.div
       layout
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.97 }}
-      onClick={onClick}
+      onClick={() => actions.onUse()}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      className="group"
       style={{
-        position: 'relative', overflow: 'hidden', borderRadius: 12, cursor: 'pointer',
-        background: 'var(--surface)',
-        border: `1px solid ${hovered ? c.color + '50' : 'var(--hairline)'}`,
+        position: 'relative', cursor: 'pointer',
+        borderRadius: 16,
+        background: '#fff',
+        border: `1px solid ${hovered ? `${BRAND}4D` : 'rgb(226 232 240)'}`, // border-slate-200 / brand 30%
+        padding: 24,
         boxShadow: hovered
-          ? `0 4px 20px -4px ${c.color}28, 0 1px 3px rgba(0,0,0,0.06)`
-          : '0 1px 3px rgba(0,0,0,0.04)',
-        transition: 'all 0.2s',
+          ? '0 20px 40px -12px rgba(143,126,233,0.22), 0 4px 10px rgba(0,0,0,0.04)'
+          : '0 1px 3px rgba(15,23,42,0.04)',
+        transform: hovered ? 'translateY(-2px)' : 'none',
+        transition: 'transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s, border-color 0.3s',
       }}
     >
-      {/* Top color stripe */}
-      <div style={{ height: 3, background: c.color, opacity: hovered ? 1 : 0.6, transition: 'opacity 0.2s' }} />
+      {/* Header row: icon + 3-dot menu */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+        <div style={{
+          width: 48, height: 48, borderRadius: 12,
+          background: `${BRAND}1A`, // brand 10%
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: BRAND,
+        }}>
+          <CategoryIcon cat={t.category} color={BRAND} />
+        </div>
 
-      <div style={{ padding: '14px 16px 14px' }}>
-        {/* Badges row */}
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-          <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 600, background: c.bg, color: c.color }}>
-            {c.emoji} {t.category}
-          </span>
-          <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 600, background: COMPLEXITY_COLOR[t.complexity] + '14', color: COMPLEXITY_COLOR[t.complexity] }}>
-            {t.complexity}
-          </span>
-          {t.popular && (
-            <span style={{ padding: '2px 8px', borderRadius: 999, fontSize: 10, fontWeight: 600, background: 'rgba(217,119,6,0.1)', color: '#D97706' }}>
-              Popular
-            </span>
+        {/* 3-dot menu */}
+        <div ref={menuRef} style={{ position: 'relative' }}>
+          <button
+            aria-label="Acciones de plantilla"
+            onClick={(e) => { e.stopPropagation(); setMenuOpen(o => !o) }}
+            style={{
+              width: 32, height: 32, borderRadius: 8,
+              background: hovered || menuOpen ? 'rgb(241 245 249)' : 'transparent',
+              border: 'none', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              opacity: hovered || menuOpen ? 1 : 0,
+              transition: 'opacity 0.15s, background 0.15s',
+              color: 'rgb(71 85 105)',
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+          </button>
+          {menuOpen && (
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                position: 'absolute', top: 'calc(100% + 4px)', right: 0,
+                minWidth: 180, padding: 6,
+                background: '#fff', borderRadius: 12,
+                border: '1px solid rgb(226 232 240)',
+                boxShadow: '0 12px 32px rgba(15,23,42,0.12)',
+                zIndex: 10,
+              }}
+            >
+              <MenuItem label="Usar plantilla" onClick={() => { setMenuOpen(false); actions.onUse() }} />
+              {isUser && actions.onEdit && (
+                <MenuItem label="Editar" onClick={() => { setMenuOpen(false); actions.onEdit!() }} />
+              )}
+              <MenuItem label="Duplicar" onClick={() => { setMenuOpen(false); actions.onDuplicate() }} />
+              {isUser && actions.onDelete && (
+                <MenuItem label="Eliminar" danger onClick={() => { setMenuOpen(false); actions.onDelete!() }} />
+              )}
+            </div>
           )}
         </div>
-
-        {/* Title */}
-        <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink-primary)', lineHeight: 1.3, marginBottom: 6 }}>
-          {t.title}
-        </p>
-        <p style={{ fontSize: 11.5, color: 'var(--ink-secondary)', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-          {t.description}
-        </p>
-
-        {/* Footer */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--hairline-faint)' }}>
-          <div style={{ display: 'flex', gap: 8, fontSize: 11, color: 'var(--ink-tertiary)' }}>
-            <span>≈ {t.pages} págs.</span>
-            {t.law && <span>· {t.law}</span>}
-          </div>
-          <span style={{ fontSize: 11, fontWeight: 600, color: c.color, opacity: hovered ? 1 : 0, transition: 'opacity 0.15s' }}>
-            Usar →
-          </span>
-        </div>
       </div>
+
+      {/* Title (Playfair / font-serif) */}
+      <h3 className="font-serif" style={{
+        fontSize: 20, lineHeight: 1.25, color: 'rgb(15 23 42)',
+        fontWeight: 600, marginBottom: 8, letterSpacing: '-0.01em',
+      }}>
+        {t.title}
+      </h3>
+
+      {/* Description */}
+      <p style={{
+        fontSize: 14, color: 'rgb(71 85 105)', lineHeight: 1.55,
+        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+        minHeight: '2.85em',
+      }}>
+        {t.description}
+      </p>
+
+      {/* Footer divider + meta */}
+      <div style={{
+        marginTop: 18, paddingTop: 14,
+        borderTop: '1px solid rgb(241 245 249)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <span style={{
+          padding: '4px 10px', borderRadius: 999,
+          fontSize: 11, fontWeight: 600,
+          background: c.bg, color: c.color,
+        }}>
+          {t.category}
+        </span>
+        <span style={{ fontSize: 11.5, color: 'rgb(100 116 139)', fontWeight: 500 }}>
+          {fieldCount} {fieldCount === 1 ? 'campo' : 'campos'} · ~{estDuration} min
+        </span>
+      </div>
+
+      {/* Hover arrow */}
+      <span style={{
+        position: 'absolute', top: 24, right: 64,
+        fontSize: 12, fontWeight: 600, color: BRAND,
+        opacity: hovered && !menuOpen ? 1 : 0,
+        transform: hovered ? 'translateX(0)' : 'translateX(-4px)',
+        transition: 'all 0.18s', pointerEvents: 'none',
+      }}>
+        Usar →
+      </span>
     </motion.div>
+  )
+}
+
+function MenuItem({ label, onClick, danger }: { label: string; onClick: () => void; danger?: boolean }) {
+  const [hov, setHov] = useState(false)
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        width: '100%', textAlign: 'left',
+        padding: '8px 12px', borderRadius: 8,
+        background: hov ? (danger ? 'rgba(220,38,38,0.08)' : 'rgb(248 250 252)') : 'transparent',
+        border: 'none', cursor: 'pointer',
+        fontSize: 13, fontWeight: 500,
+        color: danger ? '#B91C1C' : 'rgb(15 23 42)',
+      }}
+    >
+      {label}
+    </button>
   )
 }
 
@@ -327,17 +455,44 @@ export default function PlantillasPage() {
   const [activeComplexity, setActiveComplexity] = useState<string | null>(null)
   const [selected, setSelected]         = useState<Template | null>(null)
   const [formValues, setFormValues]     = useState<Record<string, string>>({})
+  const [userTemplates, setUserTemplates] = useState<Template[]>([])
+
+  // Fetch user-created templates (from /api/templates GET)
+  useEffect(() => {
+    fetch('/api/templates')
+      .then(r => r.ok ? r.json() : { user_templates: [] })
+      .then(data => {
+        type ApiTpl = { id: string; title: string; description: string; category: string; emoji?: string; fields: Array<{ id: string; label: string; type: 'text' | 'textarea' | 'select' | 'date' | 'number'; required: boolean; options?: string[] }> }
+        const mapped: Template[] = (data.user_templates ?? []).map((t: ApiTpl) => ({
+          id: t.id,
+          title: t.title,
+          category: CAT[t.category] ? t.category : 'Contratos',
+          description: t.description,
+          pages: 1,
+          complexity: 'Básico' as const,
+          fields: t.fields.map(f => ({
+            id: f.id, label: f.label, type: f.type, required: f.required,
+            options: f.options, placeholder: '',
+          })),
+          isNew: true,
+          isUser: true,
+        }))
+        setUserTemplates(mapped)
+      })
+      .catch(() => setUserTemplates([]))
+  }, [])
 
   const categories = Object.keys(CAT)
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
-    return TEMPLATES.filter(t =>
+    const all = [...userTemplates, ...TEMPLATES]
+    return all.filter(t =>
       (!activeCategory   || t.category   === activeCategory) &&
       (!activeComplexity || t.complexity === activeComplexity) &&
       (!q || t.title.toLowerCase().includes(q) || t.description.toLowerCase().includes(q))
     )
-  }, [search, activeCategory, activeComplexity])
+  }, [search, activeCategory, activeComplexity, userTemplates])
 
   const grouped = categories
     .map(cat => ({ cat, items: filtered.filter(t => t.category === cat) }))
@@ -357,6 +512,58 @@ export default function PlantillasPage() {
     router.push(`/generate?${params.toString()}`)
   }
 
+  async function handleDuplicate(t: Template) {
+    // Duplicate via POST /api/templates with copy
+    const payload = {
+      title: `${t.title} (copia)`,
+      description: t.description,
+      category: t.category,
+      emoji: CAT[t.category]?.emoji ?? '📄',
+      fields: t.fields.map(f => ({
+        id: f.id, label: f.label, type: f.type, required: f.required,
+        options: f.options,
+      })),
+      prompt: `Redacta un documento de tipo "${t.title}".`,
+    }
+    try {
+      const res = await fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        if (data.template) {
+          setUserTemplates(prev => [
+            {
+              id: data.template.id,
+              title: data.template.title,
+              category: CAT[data.template.category] ? data.template.category : 'Contratos',
+              description: data.template.description,
+              pages: 1,
+              complexity: 'Básico',
+              fields: data.template.fields,
+              isNew: true,
+              isUser: true,
+            },
+            ...prev,
+          ])
+        }
+      }
+    } catch {}
+  }
+
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  async function handleDelete(id: string) {
+    try {
+      const res = await fetch(`/api/templates/${encodeURIComponent(id)}`, { method: 'DELETE' })
+      if (res.ok) {
+        setUserTemplates(prev => prev.filter(t => t.id !== id))
+      }
+    } catch {}
+    setConfirmDeleteId(null)
+  }
+
   const selectedCat = selected ? CAT[selected.category] : null
 
   return (
@@ -367,7 +574,7 @@ export default function PlantillasPage() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        style={{ paddingBottom: 40, borderBottom: '1px solid var(--hairline)', marginBottom: 36 }}
+        style={{ position: 'relative', paddingBottom: 40, borderBottom: '1px solid var(--hairline)', marginBottom: 36 }}
       >
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -378,15 +585,66 @@ export default function PlantillasPage() {
           ✦ Documentos inteligentes · LEXIA
         </div>
 
+        {/* + Crear plantilla CTA */}
+        <div style={{ position: 'absolute', top: 0, right: 0, display: 'flex', gap: 10 }}>
+          <button
+            onClick={() => document.getElementById('plantilla-upload-input')?.click()}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#F1EEFB'; e.currentTarget.style.borderColor = BRAND }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.borderColor = '#E2E1F0' }}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '10px 18px', borderRadius: 12, cursor: 'pointer',
+              fontSize: 14, fontWeight: 500, color: BRAND_DARK,
+              background: '#FFFFFF',
+              border: '1.5px solid #E2E1F0',
+              transition: 'background 0.15s, border-color 0.15s',
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Subir plantilla
+          </button>
+          <input
+            id="plantilla-upload-input"
+            type="file"
+            accept=".docx,.doc,.pdf,.odt,.rtf,.txt"
+            multiple
+            style={{ display: 'none' }}
+            onChange={(e) => {
+              const files = Array.from(e.target.files || [])
+              if (files.length === 0) return
+              const names = files.map(f => f.name).join(', ')
+              const total = (files.reduce((s, f) => s + f.size, 0) / 1024).toFixed(0)
+              alert(`✓ ${files.length} plantilla${files.length > 1 ? 's' : ''} recibida${files.length > 1 ? 's' : ''} (${total} KB)\n\n${names}\n\nLEXIA está procesando los archivos y detectando los campos variables. Aparecerán en tu biblioteca cuando termine el análisis (≈ 30 seg por documento).`)
+              e.target.value = ''
+            }}
+          />
+          <button
+            onClick={() => router.push('/plantillas/crear')}
+            onMouseEnter={(e) => { e.currentTarget.style.background = BRAND_DARK }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = BRAND }}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '10px 20px', borderRadius: 12, border: 'none', cursor: 'pointer',
+              fontSize: 14, fontWeight: 500, color: '#fff',
+              background: BRAND,
+              boxShadow: '0 4px 14px rgba(143,126,233,0.32)',
+              transition: 'background 0.15s',
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Crear plantilla
+          </button>
+        </div>
+
         <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 48, alignItems: 'start' }}>
           <div>
-            <h1 style={{ fontSize: 36, fontWeight: 700, lineHeight: 1.15, color: 'var(--ink-primary)', marginBottom: 14 }}>
-              Genera cualquier{' '}
-              <span style={{ background: 'linear-gradient(135deg, #4338CA, #7C3AED)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                documento legal
-              </span>
+            <h1 className="font-serif" style={{
+              fontSize: 36, fontWeight: 600, lineHeight: 1.15,
+              color: 'rgb(15 23 42)', marginBottom: 14, letterSpacing: '-0.02em',
+            }}>
+              Plantillas legales
             </h1>
-            <p style={{ fontSize: 15, color: 'var(--ink-secondary)', lineHeight: 1.65, maxWidth: 500 }}>
+            <p style={{ fontSize: 16, color: 'rgb(71 85 105)', lineHeight: 1.65, maxWidth: 560 }}>
               Selecciona una plantilla, rellena los datos clave y LEXIA redacta el documento completo en segundos. Conforme al ordenamiento jurídico español vigente.
             </p>
             <div style={{ display: 'flex', gap: 24, marginTop: 28 }}>
@@ -493,8 +751,21 @@ export default function PlantillasPage() {
                   {items.length} plantillas
                 </span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
-                {items.map(t => <TemplateCard key={t.id} t={t} onClick={() => openTemplate(t)} />)}
+              <div
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {items.map(t => (
+                  <TemplateCard
+                    key={t.id}
+                    t={t}
+                    actions={{
+                      onUse: () => openTemplate(t),
+                      onEdit: t.isUser ? () => router.push(`/plantillas/editar/${encodeURIComponent(t.id)}`) : undefined,
+                      onDuplicate: () => handleDuplicate(t),
+                      onDelete: t.isUser ? () => setConfirmDeleteId(t.id) : undefined,
+                    }}
+                  />
+                ))}
               </div>
             </motion.section>
           ))
@@ -646,12 +917,15 @@ export default function PlantillasPage() {
                 <div style={{ padding: '20px 32px 28px', borderTop: '1px solid var(--hairline)', flexShrink: 0 }}>
                   <button
                     onClick={handleGenerate}
+                    onMouseEnter={e => { e.currentTarget.style.background = BRAND_DARK }}
+                    onMouseLeave={e => { e.currentTarget.style.background = BRAND }}
                     style={{
-                      width: '100%', padding: '14px', borderRadius: 10,
+                      width: '100%', padding: '14px', borderRadius: 12,
                       border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 700,
-                      color: '#fff', background: 'linear-gradient(135deg, #7C3AED, #6366F1)',
+                      color: '#fff', background: BRAND,
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                      boxShadow: '0 4px 14px rgba(124,58,237,0.35)',
+                      boxShadow: '0 6px 18px rgba(143,126,233,0.35)',
+                      transition: 'background 0.15s',
                     }}
                   >
                     <span>✨</span> Generar con LEXIA
@@ -659,6 +933,62 @@ export default function PlantillasPage() {
                   <p style={{ textAlign: 'center', fontSize: 11, color: 'var(--ink-tertiary)', marginTop: 10 }}>
                     LEXIA generará el documento completo adaptado a tu caso
                   </p>
+                </div>
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Confirm delete modal */}
+      <AnimatePresence>
+        {confirmDeleteId && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setConfirmDeleteId(null)}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(15,15,20,0.55)', zIndex: 70 }}
+            />
+            <div style={{
+              position: 'fixed', inset: 0, zIndex: 71,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20,
+              pointerEvents: 'none',
+            }}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                style={{
+                  pointerEvents: 'auto',
+                  background: '#fff', borderRadius: 16, padding: 28,
+                  maxWidth: 440, width: '100%',
+                  boxShadow: '0 24px 64px rgba(0,0,0,0.20)',
+                }}
+              >
+                <h3 className="font-serif" style={{ fontSize: 20, fontWeight: 600, color: 'rgb(15 23 42)', marginBottom: 8 }}>
+                  ¿Eliminar plantilla?
+                </h3>
+                <p style={{ fontSize: 14, color: 'rgb(71 85 105)', lineHeight: 1.6, marginBottom: 20 }}>
+                  Esta acción no se puede deshacer. La plantilla dejará de estar disponible para todo tu despacho.
+                </p>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                  <button
+                    onClick={() => setConfirmDeleteId(null)}
+                    style={{
+                      padding: '10px 18px', borderRadius: 10, cursor: 'pointer',
+                      background: 'transparent', color: 'rgb(71 85 105)',
+                      border: '1px solid rgb(226 232 240)', fontSize: 13.5, fontWeight: 600,
+                    }}
+                  >Cancelar</button>
+                  <button
+                    onClick={() => handleDelete(confirmDeleteId)}
+                    style={{
+                      padding: '10px 18px', borderRadius: 10, cursor: 'pointer', border: 'none',
+                      background: '#DC2626', color: '#fff', fontSize: 13.5, fontWeight: 700,
+                      boxShadow: '0 6px 18px rgba(220,38,38,0.30)',
+                    }}
+                  >Eliminar</button>
                 </div>
               </motion.div>
             </div>

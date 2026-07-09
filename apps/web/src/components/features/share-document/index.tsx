@@ -148,7 +148,7 @@ export function ShareDocumentModal({ documentTitle, documentId, onClose }: Share
                 <motion.button
                   onClick={handleShare}
                   disabled={!email.trim() || sending}
-                  className="flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2.5 bg-[#8F7EE9] text-white rounded-xl text-sm font-medium hover:bg-[#7C6BD6] transition disabled:opacity-50 flex items-center justify-center gap-2"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >

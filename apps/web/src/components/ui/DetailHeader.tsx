@@ -54,14 +54,14 @@ export function DetailHeader({
       <div className="flex items-start justify-between gap-6">
         <div className="flex items-start gap-4 flex-1">
           {icon && (
-            <div className="flex-shrink-0 w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+            <div className="flex-shrink-0 w-12 h-12 bg-[#F1EEFB] text-[#6A5BC1] rounded-xl flex items-center justify-center">
               {icon}
             </div>
           )}
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap mb-2">
-              <h1 className="text-4xl font-bold text-slate-900 truncate">{title}</h1>
+              <h1 className="text-4xl font-display font-semibold tracking-tight text-slate-900 truncate">{title}</h1>
               {badge && <div>{badge}</div>}
             </div>
 

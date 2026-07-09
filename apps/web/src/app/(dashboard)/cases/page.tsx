@@ -8,6 +8,7 @@ import { StatusPill } from '@/components/ui/status-pill'
 import { ShimmerSkeleton } from '@/components/ui/shimmer-skeleton'
 import { CommandShortcut } from '@/components/ui/command-shortcut'
 import { ease } from '@/lib/motion'
+import { cachedFetchJSON, invalidate as invalidateCache } from '@/lib/hooks/useCachedFetch'
 
 interface Case {
   id: string
@@ -48,7 +49,9 @@ function NewCaseModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: 
   const [error, setError] = useState('')
 
   useEffect(() => {
-    fetch('/api/clients').then(r => r.json()).then(d => setClients(d.clients || [])).catch(() => {})
+    cachedFetchJSON<any>('/api/clients')
+      .then((d) => setClients(d?.clients || []))
+      .catch((err) => console.error('[cases:new-modal] clients fetch failed:', err))
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -177,12 +180,16 @@ export default function CasesPage() {
   const [filter, setFilter] = useState<Filter>('all')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const refresh = async () => {
-    const res = await fetch('/api/cases').catch(() => null)
-    if (!res?.ok) { setLoading(false); return }
-    const data = await res.json()
-    setCases(data.cases || [])
-    setLoading(false)
+  const refresh = async (force = false) => {
+    try {
+      if (force) invalidateCache('/api/cases')
+      const data = await cachedFetchJSON<any>('/api/cases')
+      setCases(data?.cases || [])
+    } catch (err) {
+      console.error('[cases] refresh failed:', err)
+    } finally {
+      setLoading(false)
+    }
   }
   useEffect(() => { refresh() }, [])
 
@@ -414,7 +421,7 @@ export default function CasesPage() {
       )}
 
       <AnimatePresence>
-        {showNew && <NewCaseModal onClose={() => setShowNew(false)} onSuccess={() => { setShowNew(false); refresh() }} />}
+        {showNew && <NewCaseModal onClose={() => setShowNew(false)} onSuccess={() => { setShowNew(false); refresh(true) }} />}
       </AnimatePresence>
     </div>
   )

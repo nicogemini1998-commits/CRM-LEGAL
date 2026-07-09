@@ -682,14 +682,16 @@ function TabCases({
 
 // ─── Tab: Documentos ──────────────────────────────────────────────────────────
 
+const DEMO_CLIENT_DOCS = [
+  { id: 'd1', title: 'Contrato de servicios jurídicos', type: 'contrato', date: '2025-11-10T10:00:00Z', case: 'EXP-2025-0142', size: '142 KB' },
+  { id: 'd2', title: 'Demanda inicial — primera instancia', type: 'demanda', date: '2025-12-01T10:00:00Z', case: 'EXP-2025-0142', size: '380 KB' },
+  { id: 'd3', title: 'Escrito de contestación', type: 'escrito', date: '2026-01-15T10:00:00Z', case: 'EXP-2025-0143', size: '210 KB' },
+]
+
 function TabDocuments({ clientId }: { clientId: string }) {
   const [dragging, setDragging] = useState(false)
 
-  const DEMO_DOCS = [
-    { id: 'd1', title: 'Contrato de servicios jurídicos', type: 'contrato', date: '2025-11-10T10:00:00Z', case: 'EXP-2025-0142', size: '142 KB' },
-    { id: 'd2', title: 'Demanda inicial — primera instancia', type: 'demanda', date: '2025-12-01T10:00:00Z', case: 'EXP-2025-0142', size: '380 KB' },
-    { id: 'd3', title: 'Escrito de contestación', type: 'escrito', date: '2026-01-15T10:00:00Z', case: 'EXP-2025-0143', size: '210 KB' },
-  ]
+  const DEMO_DOCS = DEMO_CLIENT_DOCS
 
   const TYPE_ICON_COLORS: Record<string, { bg: string; color: string }> = {
     contrato: { bg: '#EDE9FE', color: '#5B21B6' },
@@ -1206,12 +1208,15 @@ export default function ClientDetailPage({ params }: { params: Promise<{ clientI
               <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
               Documento
             </button>
-            <button
-              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', border: '1px solid rgba(124,58,237,0.25)', borderRadius: 8, fontSize: 13, fontWeight: 600, color: '#7C3AED', background: 'rgba(124,58,237,0.05)', cursor: 'pointer', whiteSpace: 'nowrap' }}
+            <Link
+              href={`/chat?clientId=${client.id}`}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', border: '1px solid rgba(124,58,237,0.25)', borderRadius: 8, fontSize: 13, fontWeight: 600, color: '#7C3AED', background: 'rgba(124,58,237,0.05)', cursor: 'pointer', whiteSpace: 'nowrap', textDecoration: 'none' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(124,58,237,0.12)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(124,58,237,0.05)' }}
             >
               <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-              Chat LEXIA
-            </button>
+              Chat con LEXIA sobre este cliente
+            </Link>
           </div>
         </div>
 
@@ -1220,7 +1225,7 @@ export default function ClientDetailPage({ params }: { params: Promise<{ clientI
           {[
             { label: 'Expedientes',    value: cases.length,   icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z', highlight: false },
             { label: 'Casos activos',  value: activeCases,    icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', highlight: activeCases > 0 },
-            { label: 'Documentos',     value: '—',            icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', highlight: false },
+            { label: 'Documentos',     value: DEMO_CLIENT_DOCS.length,  icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', highlight: false },
             { label: 'Cliente desde',  value: memberSince,    icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', highlight: false },
           ].map((stat, i) => (
             <div key={stat.label}

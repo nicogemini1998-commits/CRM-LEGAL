@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chuleta DEMO · DocFlow · Luis Roca</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800;900&family=Inconsolata:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --purple:#927EEC; --purple-lt:#B0A1F2; --purple-dk:#6B58C8;
+  --navy:#1E2839; --navy-lt:#253247; --black:#14181E;
+  --cream:#EBEAE4; --white:#FFFFFF;
+  --sidebar:#0E1218; --sidebar2:#131920;
+  --green:#4ADE80; --orange:#FB923C; --red:#F87171; --yellow:#FACC15;
+  --text:rgba(255,255,255,0.88); --muted:rgba(255,255,255,0.45); --faint:rgba(255,255,255,0.20);
+  --border:rgba(255,255,255,0.06); --border2:rgba(255,255,255,0.12);
+  --pborder:rgba(146,126,236,0.22);
+}
+
+html, body {
+  font-family:'Manrope',sans-serif;
+  background:var(--black);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  line-height:1.55;
+}
+
+body { padding:48px 32px 96px; max-width:1180px; margin:0 auto; }
+
+.header {
+  border-bottom:1px solid var(--border);
+  padding-bottom:28px;
+  margin-bottom:40px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:32px;
+}
+.header-left h1 {
+  font-size:38px; font-weight:800; letter-spacing:-0.02em; line-height:1.1; margin-bottom:10px;
+}
+.header-left h1 span { color:var(--purple); }
+.header-left .sub { color:var(--muted); font-size:15px; font-weight:400; }
+.header-right {
+  text-align:right;
+  font-family:'Inconsolata',monospace;
+  font-size:12px; color:var(--muted); line-height:1.8;
+}
+.header-right .label { color:var(--purple-lt); font-weight:600; }
+
+.private-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(248,113,113,0.1);
+  border:1px solid rgba(248,113,113,0.3);
+  color:var(--red);
+  padding:6px 14px; border-radius:100px;
+  font-size:11px; font-weight:700; letter-spacing:0.08em;
+  text-transform:uppercase; font-family:'Inconsolata',monospace;
+  margin-bottom:16px;
+}
+.private-badge::before {
+  content:''; width:6px; height:6px;
+  background:var(--red); border-radius:50%;
+  box-shadow:0 0 8px var(--red);
+}
+
+.quick-access {
+  background:linear-gradient(135deg,rgba(146,126,236,0.12),rgba(146,126,236,0.04));
+  border:1px solid var(--pborder);
+  border-radius:18px;
+  padding:24px 28px; margin-bottom:40px;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
+}
+.qa-block .qa-label {
+  font-family:'Inconsolata',monospace;
+  font-size:10px; letter-spacing:0.12em;
+  color:var(--purple-lt); text-transform:uppercase;
+  margin-bottom:6px; font-weight:700;
+}
+.qa-block .qa-value {
+  font-family:'Inconsolata',monospace;
+  font-size:15px; color:var(--white); font-weight:600; word-break:break-all;
+}
+
+.section { margin-bottom:48px; }
+.section-header {
+  display:flex; align-items:center; gap:14px; margin-bottom:20px;
+}
+.section-number {
+  width:36px; height:36px;
+  background:var(--purple); color:var(--white);
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:15px;
+  font-family:'Inconsolata',monospace; flex-shrink:0;
+}
+.section h2 { font-size:24px; font-weight:700; letter-spacing:-0.01em; }
+.section h2 .time {
+  color:var(--muted); font-size:14px; font-weight:500;
+  font-family:'Inconsolata',monospace; margin-left:10px;
+}
+
+.step {
+  background:var(--navy);
+  border:1px solid var(--border2);
+  border-radius:16px;
+  padding:24px 28px; margin-bottom:14px;
+  display:grid; grid-template-columns:120px 1fr; gap:24px;
+}
+.step .step-meta { border-right:1px solid var(--border); padding-right:20px; }
+.step .step-meta .duration {
+  font-family:'Inconsolata',monospace;
+  font-size:13px; color:var(--purple-lt);
+  font-weight:700; margin-bottom:4px;
+}
+.step .step-meta .action-label {
+  font-size:11px; color:var(--muted);
+  text-transform:uppercase; letter-spacing:0.08em; font-weight:600;
+}
+.step h3 { font-size:17px; font-weight:700; margin-bottom:14px; color:var(--white); }
+.step .do { font-size:14px; color:var(--text); margin-bottom:14px; }
+.step .do strong { color:var(--purple-lt); font-weight:700; }
+
+.script {
+  background:rgba(146,126,236,0.08);
+  border-left:3px solid var(--purple);
+  padding:14px 18px;
+  border-radius:0 10px 10px 0;
+  font-style:italic; color:var(--white);
+  font-size:14.5px; line-height:1.6; margin:10px 0;
+}
+.script::before {
+  content:'"'; color:var(--purple); font-size:24px; font-weight:800;
+  margin-right:4px; font-style:normal; vertical-align:-4px;
+}
+.script::after {
+  content:'"'; color:var(--purple); font-size:24px; font-weight:800;
+  margin-left:4px; font-style:normal; vertical-align:-4px;
+}
+
+.wow {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(74,222,128,0.12);
+  border:1px solid rgba(74,222,128,0.3);
+  color:var(--green);
+  padding:6px 14px; border-radius:100px;
+  font-size:11px; font-weight:700; letter-spacing:0.08em;
+  text-transform:uppercase; font-family:'Inconsolata',monospace;
+  margin-top:10px;
+}
+.wow::before { content:'✦'; }
+
+.danger-zone {
+  background:rgba(248,113,113,0.06);
+  border:1px solid rgba(248,113,113,0.25);
+  border-radius:16px;
+  padding:24px 28px; margin-bottom:32px;
+}
+.danger-zone .dz-title {
+  display:flex; align-items:center; gap:10px;
+  font-weight:800; font-size:14px; color:var(--red);
+  text-transform:uppercase; letter-spacing:0.08em;
+  margin-bottom:18px; font-family:'Inconsolata',monospace;
+}
+.danger-zone .dz-title::before { content:'⚠'; font-size:18px; }
+
+.rule-pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:14px; }
+.rule { padding:14px 18px; border-radius:10px; font-size:14px; line-height:1.5; }
+.rule.no { background:rgba(248,113,113,0.08); border-left:3px solid var(--red); }
+.rule.no::before {
+  content:'NO digas: '; color:var(--red); font-weight:700;
+  font-family:'Inconsolata',monospace; font-size:11px; letter-spacing:0.05em;
+}
+.rule.yes { background:rgba(74,222,128,0.08); border-left:3px solid var(--green); }
+.rule.yes::before {
+  content:'SÍ di: '; color:var(--green); font-weight:700;
+  font-family:'Inconsolata',monospace; font-size:11px; letter-spacing:0.05em;
+}
+
+.pricing-box {
+  background:linear-gradient(135deg,var(--navy),var(--sidebar2));
+  border:1px solid var(--pborder);
+  border-radius:18px;
+  padding:32px; margin-bottom:32px;
+}
+.pricing-box h3 { font-size:18px; font-weight:700; margin-bottom:16px; color:var(--purple-lt); }
+.pricing-box .when {
+  font-size:13px; color:var(--muted); margin-bottom:18px;
+  font-family:'Inconsolata',monospace; text-transform:uppercase; letter-spacing:0.08em;
+}
+
+.obj-table {
+  width:100%; border-collapse:collapse;
+  background:var(--navy); border-radius:14px; overflow:hidden;
+}
+.obj-table th, .obj-table td {
+  padding:14px 18px; text-align:left;
+  border-bottom:1px solid var(--border);
+  font-size:13.5px; vertical-align:top;
+}
+.obj-table th {
+  background:var(--sidebar);
+  font-size:11px; text-transform:uppercase; letter-spacing:0.08em;
+  color:var(--purple-lt); font-weight:700; font-family:'Inconsolata',monospace;
+}
+.obj-table tr:last-child td { border-bottom:0; }
+.obj-table td.obj { color:var(--white); font-weight:600; width:32%; }
+.obj-table td.ans { color:var(--text); }
+
+.roadmap { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:20px; }
+.rm-card {
+  padding:20px 22px; border-radius:14px;
+  background:var(--navy); border:1px solid var(--border2);
+}
+.rm-card h4 { font-size:15px; font-weight:700; margin-bottom:8px; }
+.rm-card .when-tag {
+  display:inline-block; padding:3px 10px; border-radius:100px;
+  font-size:10px; font-weight:700; letter-spacing:0.05em;
+  text-transform:uppercase; font-family:'Inconsolata',monospace;
+  margin-bottom:10px;
+}
+.rm-card.now .when-tag { background:rgba(74,222,128,0.15); color:var(--green); }
+.rm-card.next .when-tag { background:rgba(146,126,236,0.15); color:var(--purple-lt); }
+.rm-card ul { list-style:none; margin-top:8px; }
+.rm-card ul li {
+  padding-left:22px; position:relative;
+  font-size:13.5px; margin-bottom:6px; color:var(--text);
+}
+.rm-card.now ul li::before {
+  content:'✓'; position:absolute; left:0; color:var(--green); font-weight:800;
+}
+.rm-card.next ul li::before {
+  content:'→'; position:absolute; left:0; color:var(--purple-lt); font-weight:800;
+}
+
+.checklist {
+  background:var(--sidebar2);
+  border:1px solid var(--border);
+  border-radius:14px; padding:22px 26px;
+}
+.checklist h3 {
+  font-size:15px; font-weight:700; margin-bottom:14px;
+  color:var(--purple-lt); text-transform:uppercase;
+  letter-spacing:0.06em; font-family:'Inconsolata',monospace;
+}
+.checklist ul { list-style:none; }
+.checklist ul li {
+  padding:8px 0 8px 30px; position:relative;
+  font-size:14px; color:var(--text);
+  border-bottom:1px dashed var(--border);
+}
+.checklist ul li:last-child { border-bottom:0; }
+.checklist ul li::before {
+  content:''; position:absolute; left:0; top:11px;
+  width:16px; height:16px;
+  border:2px solid var(--purple); border-radius:4px;
+}
+.checklist code {
+  font-family:'Inconsolata',monospace;
+  background:rgba(146,126,236,0.15);
+  padding:1px 6px; border-radius:4px;
+  font-size:12.5px; color:var(--purple-lt);
+}
+
+.close-box {
+  background:var(--purple); color:var(--white);
+  border-radius:20px; padding:32px 36px;
+  margin-bottom:32px; text-align:center;
+}
+.close-box .close-label {
+  font-family:'Inconsolata',monospace;
+  font-size:11px; letter-spacing:0.1em;
+  text-transform:uppercase; opacity:0.7; margin-bottom:14px;
+}
+.close-box .close-phrase {
+  font-size:22px; font-weight:700; line-height:1.4;
+  font-style:italic; letter-spacing:-0.01em;
+}
+
+.footer {
+  text-align:center;
+  padding-top:32px; margin-top:48px;
+  border-top:1px solid var(--border);
+  font-family:'Inconsolata',monospace;
+  font-size:11px; color:var(--muted); letter-spacing:0.06em;
+}
+
+@media print {
+  body { background:white; color:black; padding:20px; }
+  .step, .quick-access, .danger-zone, .pricing-box, .obj-table, .rm-card, .checklist, .close-box {
+    page-break-inside:avoid;
+    background:white !important; color:black !important;
+    border:1px solid #ddd !important;
+  }
+  .script { background:#f5f3ff !important; color:black !important; }
+  .header-left h1 span, .qa-block .qa-label, .section-number, .wow { color:#6B58C8 !important; }
+}
+
+@media (max-width:768px) {
+  body { padding:24px 16px; }
+  .header { flex-direction:column; }
+  .header-right { text-align:left; }
+  .quick-access { grid-template-columns:1fr; gap:14px; }
+  .step { grid-template-columns:1fr; }
+  .step .step-meta { border-right:0; border-bottom:1px solid var(--border); padding-right:0; padding-bottom:12px; }
+  .rule-pair { grid-template-columns:1fr; }
+  .roadmap { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="private-badge">PRIVADO · NO COMPARTIR · USO INTERNO</div>
+    <h1>Demo <span>DocFlow</span> · Luis Roca</h1>
+    <div class="sub">Guion completo · 6 minutos · IURALEX CRM by Cliender Tech</div>
+  </div>
+  <div class="header-right">
+    <div><span class="label">FECHA:</span> 2026-05-28</div>
+    <div><span class="label">DURACIÓN:</span> 6 min demo + 4 min Q&amp;A</div>
+    <div><span class="label">VERSIÓN:</span> v1.0</div>
+    <div><span class="label">AUDIENCIA:</span> Luis Roca · socio fundador</div>
+  </div>
+</div>
+
+<div class="quick-access">
+  <div class="qa-block">
+    <div class="qa-label">URL DEMO</div>
+    <div class="qa-value">http://localhost:3002</div>
+  </div>
+  <div class="qa-block">
+    <div class="qa-label">EMAIL LOGIN</div>
+    <div class="qa-value">nicolas@cliender.com</div>
+  </div>
+  <div class="qa-block">
+    <div class="qa-label">PASSWORD</div>
+    <div class="qa-value">DemoCliender123</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">0</div>
+    <h2>Apertura<span class="time">· 30 seg</span></h2>
+  </div>
+  <div class="step">
+    <div class="step-meta">
+      <div class="duration">0:00 – 0:30</div>
+      <div class="action-label">Romper hielo</div>
+    </div>
+    <div>
+      <h3>Antes de enseñar nada, calibrar</h3>
+      <div class="do"><strong>Pregunta obligada:</strong> ¿Cómo lleváis hoy presupuestos, encargos y facturas? ¿Word + PDF + email? ¿Sage? ¿A4 + escáner?</div>
+      <div class="script">Luis, antes de enseñarte la herramienta una pregunta: ¿cómo lleváis hoy todo el papeleo financiero de cada expediente? Presupuesto, hoja de encargo, factura final. Word, PDF, email, Sage… ¿qué hacéis?</div>
+      <div class="do">→ <strong>Si dice "Word + email":</strong> enfatiza tiempo perdido. → <strong>Si dice "Sage":</strong> enfatiza vinculación al expediente (Sage no la tiene).</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">1</div>
+    <h2>Login + aterrizaje<span class="time">· 30 seg</span></h2>
+  </div>
+  <div class="step">
+    <div class="step-meta">
+      <div class="duration">0:30 – 1:00</div>
+      <div class="action-label">Entrar</div>
+    </div>
+    <div>
+      <h3>Login premium → /finanzas</h3>
+      <div class="do"><strong>Acción:</strong> abre Chrome en pantalla compartida → URL → login (NO enseñes la password en pantalla, tenla en post-it físico).</div>
+      <div class="script">Esto es IURALEX. Hoy lo ves como demo, mañana lleva tu logo, tus colores y tu dominio: iuralex.luis-roca.es. Marca blanca total.</div>
+      <div class="do"><strong>Click sidebar:</strong> "Finanzas" → aterriza en /finanzas tab Facturas.</div>
+      <div class="wow">WOW 1 · Limpieza visual, no parece software jurídico</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">2</div>
+    <h2>Tab Facturas<span class="time">· 1 min 30 seg · empieza por aquí, es lo que duele</span></h2>
+  </div>
+  <div class="step">
+    <div class="step-meta">
+      <div class="duration">1:00 – 1:30</div>
+      <div class="action-label">Vista general</div>
+    </div>
+    <div>
+      <h3>Los 4 KPIs que el socio mira cada lunes</h3>
+      <div class="do"><strong>Señala arriba:</strong> Facturado · Cobrado · Pendiente · Vencidas.</div>
+      <div class="script">Lo primero que veo al entrar: cuánto he facturado, cuánto he cobrado, cuánto me deben, y cuántas facturas están vencidas. En vez de pedírselo al contable los viernes, lo tienes en 2 segundos.</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-meta">
+      <div class="duration">1:30 – 2:00</div>
+      <div class="action-label">El dolor real</div>
+    </div>
+    <div>
+      <h3>Factura vencida en rojo (María García · 1.815€)</h3>
+      <div class="do"><strong>Señala F-2026-0003:</strong> badge rojo "Vencida".</div>
+      <div class="script">Mira esta. María García, divorcio contencioso, factura de hace 45 días, vencida hace 15. Antes esto lo descubrías cuando te llamaba el contable o cuando ya era tarde. Aquí salta sola.</div>
+      <div class="wow">WOW 2 · Visibilidad cobros sin tener que pedirla</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-meta">
+      <div class="duration">2:00 – 2:30</div>
+      <div class="action-label">PDF + acción</div>
+    </div>
+    <div>
+      <h3>Descargar PDF + emitir factura draft</h3>
+      <div class="do"><strong>Click descargar PDF en F-2026-0001</strong> (Construcciones Mediterráneo · 4.235€ cobrada). Abre el PDF, enseña 2 seg, ciérralo.</div>
+      <div class="script">PDF generado con tus datos fiscales, tu numeración, listo para enviar. Esto antes os llevaba 15-20 minutos por factura.</div>
+      <div class="do"><strong>Click "Emitir" en F-2026-0005</strong> (TechNova draft NDA). Estado cambia a Emitida.</div>
+      <div class="script">Borrador a emitida en un click. En la fase 2, este botón lo dispara solo GoHighLevel cuando marcas el caso como cerrado.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">3</div>
+    <h2>Tab Presupuestos<span class="time">· 1 min 30 seg</span></h2>
+  </div>
+  <div class="step">
+    <div class="step-meta">
+      <div class="duration">2:30 – 3:00</div>
+      <div class="action-label">Cambiar tab</div>
+    </div>
+    <div>
+      <h3>Los 4 estados del ciclo comercial</h3>
+      <div class="do"><strong>Click tab "Presupuestos".</strong> Señala los 4 con sus badges.</div>
+      <div class="script">Antes del encargo, el presupuesto. Aquí tenéis los 4 estados: borrador, enviado, aceptado, rechazado. Sabes en qué punto está cada caso comercialmente sin abrir email.</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-meta">
+      <div class="duration">3:00 – 3:45</div>
+      <div class="action-label">Caso ejemplo</div>
+    </div>
+    <div>
+      <h3>P-2026-0001 aceptado · días de respuesta</h3>
+      <div class="do"><strong>Señala:</strong> P-2026-0001 enviado hace 92 días, aceptado a los 3.</div>
+      <div class="script">Este se mandó hace 92 días, aceptado a los 3. Sabes exactamente cuánto tarda cada tipo de cliente en decidir. Datos para tu pipeline comercial.</div>
+      <div class="do"><strong>Señala P-2026-0002:</strong> TechNova NDA+JV, enviado hace 5 días, sin respuesta. Vence en 25.</div>
+      <div class="script">Y este vence en 25 días. Recordatorio automático al cliente — eso lo activamos en fase 2.</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-meta">
+      <div class="duration">3:45 – 4:00</div>
+      <div class="action-label">Crear nuevo</div>
+    </div>
+    <div>
+      <h3>Wizard nuevo presupuesto (15 seg)</h3>
+      <div class="do"><strong>Click "+ Nuevo Presupuesto".</strong> Enseña el formulario 5 seg, cierra sin guardar.</div>
+      <div class="script">En 30 segundos creo un presupuesto formal. En fase 2, Claude lee el tipo de caso al abrirlo y rellena las líneas y honorarios él solo, según tu tarifa interna.</div>
+      <div class="wow">WOW 3 · Anclar promesa fase 2 IA</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">4</div>
+    <h2>Tab Hojas de encargo<span class="time">· 1 min 30 seg</span></h2>
+  </div>
+  <div class="step">
+    <div class="step-meta">
+      <div class="duration">4:00 – 4:30</div>
+      <div class="action-label">Cambiar tab</div>
+    </div>
+    <div>
+      <h3>El puente entre comercial y trabajo</h3>
+      <div class="do"><strong>Click tab "Hojas de encargo".</strong></div>
+      <div class="script">Entre presupuesto aceptado y empezar a trabajar, el encargo firmado. Sin esto, no avanza el caso. Y esto es lo que más se pierde en despachos: encargos firmados por WhatsApp, escaneados a medias, o nunca firmados.</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-meta">
+      <div class="duration">4:30 – 5:00</div>
+      <div class="action-label">Encargo firmado</div>
+    </div>
+    <div>
+      <h3>eng-001 Construcciones Mediterráneo · contenido real</h3>
+      <div class="do"><strong>Click en eng-001 (estado "Firmado").</strong> Muestra contenido markdown: despacho, cliente, asunto, objeto, honorarios.</div>
+      <div class="script">Texto formal completo, no plantilla genérica. Vinculado al expediente, al cliente, al presupuesto que se aceptó. Trazabilidad total.</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-meta">
+      <div class="duration">5:00 – 5:30</div>
+      <div class="action-label">Encargo pendiente</div>
+    </div>
+    <div>
+      <h3>eng-003 María García · marcar firmado</h3>
+      <div class="do"><strong>Vuelve a la lista.</strong> Señala eng-002 enviado hace 5 días sin firmar. Señala eng-003 pendiente firma.</div>
+      <div class="script">Estos dos los veis sin perseguir a nadie. Y en fase 2: integración Signaturit, el cliente firma desde el móvil en 2 minutos y se marca solo. Adiós escáner.</div>
+      <div class="do"><strong>Click "Marcar firmado" en eng-003.</strong> Estado cambia.</div>
+      <div class="wow">WOW 4 · Firma móvil + adiós papel</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">5</div>
+    <h2>Cross-link al expediente<span class="time">· 30 seg</span></h2>
+  </div>
+  <div class="step">
+    <div class="step-meta">
+      <div class="duration">5:30 – 6:00</div>
+      <div class="action-label">Cerrar el loop</div>
+    </div>
+    <div>
+      <h3>Todo vinculado: cliente → caso → docs financieros</h3>
+      <div class="do"><strong>Click sidebar "Expedientes" → abre cualquier caso con datos.</strong> Señala que tiene presupuesto, encargo y facturas asociadas.</div>
+      <div class="script">Y todo esto está vinculado. Abro el expediente del cliente y aquí están su presupuesto, su encargo, sus facturas. Tu becario nuevo entra el lunes y en 2 minutos sabe dónde estás con ese cliente, comercial y económicamente.</div>
+      <div class="wow">WOW 5 · Onboarding interno cero fricción</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">R</div>
+    <h2>Roadmap honesto: ahora vs sprint 2</h2>
+  </div>
+  <div class="roadmap">
+    <div class="rm-card now">
+      <span class="when-tag">DISPONIBLE HOY</span>
+      <h4>Lo que Luis ve funcionando</h4>
+      <ul>
+        <li>Tabla presupuestos, encargos, facturas con estados</li>
+        <li>Generación de PDFs descargables</li>
+        <li>Vinculación cliente + expediente</li>
+        <li>Cambio manual de estados con un click</li>
+        <li>Numeración secuencial automática</li>
+        <li>Cálculo IVA + IRPF</li>
+        <li>KPIs financieros en tiempo real</li>
+      </ul>
+    </div>
+    <div class="rm-card next">
+      <span class="when-tag">SPRINT 2 · 4 SEMANAS</span>
+      <h4>Lo que se automatiza</h4>
+      <ul>
+        <li>Claude genera presupuesto auto al abrir caso</li>
+        <li>Signaturit: firma móvil cliente en 2 min</li>
+        <li>Caso cerrado en GoHighLevel → factura auto</li>
+        <li>Envío automático email cliente con PDF</li>
+        <li>Recordatorios facturas vencidas</li>
+        <li>Recordatorios presupuestos sin respuesta</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">⚠</div>
+    <h2>Anti-mentira · lectura obligada</h2>
+  </div>
+  <div class="danger-zone">
+    <div class="dz-title">No prometas lo que no está construido</div>
+    <div class="rule-pair">
+      <div class="rule no">"Claude genera el presupuesto solo"</div>
+      <div class="rule yes">"En fase 2 Claude lo genera. Hoy lo creas manual en 30 seg."</div>
+    </div>
+    <div class="rule-pair">
+      <div class="rule no">"El cliente firma desde el móvil"</div>
+      <div class="rule yes">"En fase 2 con Signaturit. Hoy se marca manualmente."</div>
+    </div>
+    <div class="rule-pair">
+      <div class="rule no">"Al cerrar el caso, factura sola"</div>
+      <div class="rule yes">"En fase 2 con webhook GoHighLevel. Hoy un click."</div>
+    </div>
+    <div class="rule-pair">
+      <div class="rule no">"Se envía email automático al cliente"</div>
+      <div class="rule yes">"En fase 2 con Resend. Hoy descargas el PDF y lo mandas tú."</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">Q</div>
+    <h2>Objeciones probables de Luis</h2>
+  </div>
+  <table class="obj-table">
+    <thead>
+      <tr><th>Si dice…</th><th>Respondes…</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="obj">Ya tenemos Sage / Holded</td>
+        <td class="ans">DocFlow no reemplaza tu contabilidad. Vincula los documentos al expediente. Sage no sabe qué expediente generó qué factura. Aquí sí. Y exportamos a Sage cuando lo necesitas.</td>
+      </tr>
+      <tr>
+        <td class="obj">¿Y si Claude se equivoca generando un presupuesto?</td>
+        <td class="ans">Por eso en fase 2 Claude lo genera en estado borrador. Tú revisas, ajustas, apruebas. Solo cambia el tiempo de redacción inicial, no la responsabilidad.</td>
+      </tr>
+      <tr>
+        <td class="obj">¿Cumple con RGPD y AEAT?</td>
+        <td class="ans">Servidores UE (Supabase Frankfurt), RLS multi-tenant, audit logs inmutables, numeración fiscal correlativa según AEAT, exportación Facturae XML preparada para fase 2.</td>
+      </tr>
+      <tr>
+        <td class="obj">Mi gente no va a usarlo</td>
+        <td class="ans">La curva es 1 día. Y no hay que cambiar de herramienta para nada — esto reemplaza Word + carpetas, no Aranzadi ni Sage. Onboarding de tu equipo lo hacemos nosotros incluido.</td>
+      </tr>
+      <tr>
+        <td class="obj">¿Cuánto cuesta?</td>
+        <td class="ans">Pricing por abogado activo. Para un despacho como el tuyo (X abogados) está entre lo que pagas a Aranzadi y un becario junior, y esto no se va de vacaciones. Te paso propuesta exacta mañana.</td>
+      </tr>
+      <tr>
+        <td class="obj">¿Cuándo estaría lista la fase 2?</td>
+        <td class="ans">4 semanas desde que firmemos. Empezamos por Signaturit + Claude presupuesto auto, que son las dos que más te ahorran tiempo desde el día uno.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="close-box">
+  <div class="close-label">Frase de cierre · 6:00</div>
+  <div class="close-phrase">
+    Esto es DocFlow hoy: estructura completa, PDFs, vinculación al expediente.<br>
+    Lo que viene en 4 semanas: Claude genera, Signaturit firma, GHL dispara, Resend envía.<br>
+    Tú hoy ya tienes el sistema. Mañana, los robots dentro.
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">→</div>
+    <h2>Next steps · cierra con compromiso</h2>
+  </div>
+  <div class="step">
+    <div class="step-meta">
+      <div class="duration">6:00 – 7:00</div>
+      <div class="action-label">Cerrar</div>
+    </div>
+    <div>
+      <h3>Propuesta concreta, no abstracta</h3>
+      <div class="script">Te propongo: te dejo un entorno con tus primeros 5 expedientes reales precargados durante 10 días. Tú entras, lo tocas, ves cómo se comporta con tu casuística real. El viernes que viene hablamos 20 minutos y decides. ¿Te parece?</div>
+      <div class="do"><strong>Si dice sí:</strong> agenda en el momento la llamada del viernes + pídele 5 expedientes de muestra (anonimizados si quiere).</div>
+      <div class="do"><strong>Si duda:</strong> oferta menor — "Te paso vídeo de 1 minuto de DocFlow y propuesta con números mañana antes de las 12, y nos vemos el lunes."</div>
+    </div>
+  </div>
+</div>
+
+<div class="pricing-box">
+  <div class="when">⚠ Solo si Luis pregunta antes — no lo sueltes voluntariamente</div>
+  <h3>Pricing approach</h3>
+  <div class="script">El pricing va por número de abogados activos. Setup incluido, formación incluida, account manager dedicado de Cliender. Para un despacho como el tuyo el rango está entre lo que pagas a Aranzadi y un becario junior. Te paso propuesta con número exacto en 24h.</div>
+  <div class="do" style="margin-top:14px; color:var(--text); font-size:14px;"><strong style="color:var(--purple-lt);">NO sueltes:</strong> "99€/mes/abogado" hasta que pregunte 2ª vez. Si pregunta 2ª vez: "Tier entrada €99/mes por abogado. Despacho 5 abogados ≈ €495/mes. ¿Cuántos tendrías usando esto?"</div>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <div class="section-number">✓</div>
+    <h2>Checklist T-30 minutos antes</h2>
+  </div>
+  <div class="checklist">
+    <h3>Verificaciones técnicas</h3>
+    <ul>
+      <li>Container <code>iuralex</code> Up · <code>docker ps | grep iuralex</code></li>
+      <li>Login funciona en navegador limpio (incógnito) · DemoCliender123</li>
+      <li>Página /finanzas carga las 3 tabs con datos</li>
+      <li>F-2026-0001 descarga PDF correctamente</li>
+      <li>Audio/vídeo Zoom o Meet testado con 2ª persona</li>
+      <li>Pantalla compartida en modo presentación (Chrome a pantalla completa)</li>
+      <li>Esta chuleta abierta en 2º monitor o tablet · NO en pantalla compartida</li>
+      <li>Password en post-it físico para no tipear en pantalla</li>
+      <li>WhatsApp Nicolas abierto por si algo falla en vivo</li>
+      <li>Vídeo de 1 min DocFlow descargado por si demo en vivo falla</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">
+  IURALEX CRM · DocFlow · by Cliender Tech<br>
+  Documento privado · uso interno · no compartir con Luis Roca<br>
+  HBD Revolution SL · Sagunto, Valencia · 🇪🇸
+</div>
+
+</body>
+</html>

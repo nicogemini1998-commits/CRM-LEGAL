@@ -1,0 +1,42 @@
+services:
+  iuralex:
+    image: node:24-alpine
+    container_name: iuralex
+    ports:
+      - "127.0.0.1:3002:3000"
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_APP_URL: http://localhost:3002
+      NEXTAUTH_URL: http://localhost:3002
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET_IURALEX:?NEXTAUTH_SECRET_IURALEX required}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      NEXT_PUBLIC_SUPABASE_URL: ${IURALEX_SUPABASE_URL:?IURALEX_SUPABASE_URL required}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${IURALEX_SUPABASE_ANON_KEY:?IURALEX_SUPABASE_ANON_KEY required}
+      SUPABASE_SERVICE_ROLE_KEY: ${IURALEX_SUPABASE_SERVICE_KEY:?IURALEX_SUPABASE_SERVICE_KEY required}
+      NEXT_PUBLIC_DEMO_MODE: ${IURALEX_DEMO_MODE:-1}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-Master123Demo}
+      DEMO_DATA_DIR: /data/iuralex
+      FIRECRAWL_API_KEY: ${FIRECRAWL_API_KEY:-}
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+      - /app/.next
+      - iuralex-data:/data/iuralex
+    networks:
+      - iuralex-net
+    working_dir: /app
+    command: sh -c "npm install --legacy-peer-deps && npm run dev"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '3.0'
+          memory: 3G
+
+networks:
+  iuralex-net:
+    driver: bridge
+
+volumes:
+  iuralex-data:
+    driver: local

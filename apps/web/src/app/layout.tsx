@@ -25,10 +25,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'IURALEX — La IA que entiende el derecho español',
-  description: 'Plataforma LegalTech premium para despachos de abogados. Análisis de contratos, generación de escritos y gestión de expedientes con IA. Por Cliender.',
-  keywords: 'software abogados, IA legal, legaltech españa, gestión expedientes, generación contratos, análisis jurídico IA',
-  authors: [{ name: 'Cliender', url: 'https://cliender.com' }],
+  description: 'Plataforma LegalTech premium para despachos de abogados españoles. Análisis de contratos, generación de escritos y gestión de expedientes con IA. Desarrollado por Cliender Tech — soluciones SaaS+IA para profesionales en España.',
+  keywords: 'software abogados, IA legal, legaltech españa, gestión expedientes, generación contratos, análisis jurídico IA, Cliender Tech',
+  authors: [{ name: 'Cliender Tech', url: 'https://cliender.com' }],
   manifest: '/manifest.json',
+  icons: {
+    icon: [{ url: '/icon-cliender.svg', type: 'image/svg+xml' }],
+    apple: [{ url: '/icon-cliender.svg' }],
+    shortcut: ['/icon-cliender.svg'],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',

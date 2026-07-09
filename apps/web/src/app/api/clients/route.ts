@@ -15,7 +15,7 @@ const ClientSchema = z.object({
   address: z.string().max(500).optional().nullable(),
 })
 
-const IS_DEV_WITHOUT_DB = !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')
+const IS_DEV_WITHOUT_DB = process.env.NEXT_PUBLIC_DEMO_MODE === '1' || !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')
 
 export async function GET() {
   return withErrorHandler(async () => {
@@ -56,6 +56,19 @@ export async function POST(req: NextRequest) {
 
     const parsed = ClientSchema.safeParse(body)
     if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message || 'Datos inválidos')
+
+    if (IS_DEV_WITHOUT_DB) {
+      const { DEMO_CLIENTS, DEMO_USER_ID } = await import('@/lib/dev/demo-data')
+      const newClient = {
+        id: `c${Date.now()}-demo`,
+        user_id: DEMO_USER_ID,
+        ...parsed.data,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }
+      DEMO_CLIENTS.push(newClient as any)
+      return NextResponse.json({ client: newClient }, { status: 201 })
+    }
 
     const supabase = createServerClient()
     const { data, error } = await supabase

@@ -10,6 +10,7 @@ import { ShimmerSkeleton } from '@/components/ui/shimmer-skeleton'
 import { DuotoneIcon } from '@/components/ui/duotone-icon'
 import { StatusPill } from '@/components/ui/status-pill'
 import { staggerContainer, staggerItem, ease } from '@/lib/motion'
+import { cachedFetchJSON } from '@/lib/hooks/useCachedFetch'
 
 interface DashboardStats {
   cases: number
@@ -19,11 +20,8 @@ interface DashboardStats {
   trend?: number[]
 }
 
-const today = new Date().toLocaleDateString('es-ES', {
-  weekday: 'long', day: 'numeric', month: 'long',
-})
-
 export default function DashboardPage() {
+  const [today, setToday] = useState('')
   const [stats, setStats] = useState<DashboardStats>({
     cases: 0, documents: 0, clients: 0, contracts_generated: 0,
     trend: [3, 5, 4, 7, 6, 8, 5],
@@ -31,32 +29,128 @@ export default function DashboardPage() {
   const [recent, setRecent] = useState<any[]>([])
   const [firstName, setFirstName] = useState('Abogado')
   const [loading, setLoading] = useState(true)
+  const [showDemoBanner, setShowDemoBanner] = useState(false)
 
   useEffect(() => {
-    Promise.all([
-      fetch('/api/cases').then(r => r.json()).catch(() => ({})),
-      fetch('/api/documents').then(r => r.json()).catch(() => ({})),
-      fetch('/api/clients').then(r => r.json()).catch(() => ({})),
-      fetch('/api/auth/session').then(r => r.json()).catch(() => ({})),
-    ]).then(([cases, docs, clients, session]) => {
-      const openCount = cases.cases?.filter((c: any) => c.status === 'open').length || 0
-      setStats({
-        cases: openCount,
-        documents: docs.documents?.length || 0,
-        clients: clients.clients?.length || 0,
-        contracts_generated: docs.documents?.filter((d: any) => d.document_type === 'contract').length || 0,
-        trend: [Math.max(1, openCount - 2), openCount - 1, openCount, openCount + 1, openCount, openCount + 2, openCount].map(n => Math.max(1, n)),
+    setToday(new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }))
+    if (typeof window === 'undefined') return
+    const dismissed = localStorage.getItem('iuralex-demo-banner-dismissed') === '1'
+    const isDemo =
+      process.env.NEXT_PUBLIC_DEMO_MODE === '1' ||
+      window.location.search.includes('demo=1') ||
+      /demo|preview/i.test(window.location.hostname)
+    setShowDemoBanner(!dismissed && isDemo)
+  }, [])
+
+  const dismissDemoBanner = () => {
+    setShowDemoBanner(false)
+    try { localStorage.setItem('iuralex-demo-banner-dismissed', '1') } catch {}
+  }
+
+  const isEmpty = !loading && stats.cases === 0 && stats.documents === 0 && stats.clients === 0
+
+  useEffect(() => {
+    let cancelled = false
+
+    // Each fetch resolves independently — one failure must NOT block the rest.
+    const safe = <T,>(p: Promise<T>, label: string): Promise<T | null> =>
+      p.catch((err) => {
+        console.error(`[dashboard] ${label} failed:`, err)
+        return null
       })
-      setRecent((cases.cases || []).slice(0, 5))
-      const name = session.user?.name?.split(' ')[0] || session.user?.email?.split('@')[0] || 'Abogado'
-      setFirstName(name.charAt(0).toUpperCase() + name.slice(1))
-      setLoading(false)
-    })
+
+    Promise.all([
+      safe(cachedFetchJSON<any>('/api/cases'), 'cases'),
+      safe(cachedFetchJSON<any>('/api/documents'), 'documents'),
+      safe(cachedFetchJSON<any>('/api/clients'), 'clients'),
+      safe(cachedFetchJSON<any>('/api/auth/session'), 'session'),
+    ])
+      .then(([cases, docs, clients, session]) => {
+        if (cancelled) return
+        try {
+          const casesList: any[] = cases?.cases || []
+          const docsList: any[] = docs?.documents || []
+          const clientsList: any[] = clients?.clients || []
+
+          const openCount = casesList.filter((c) => c?.status === 'open').length
+          setStats({
+            cases: openCount,
+            documents: docsList.length,
+            clients: clientsList.length,
+            contracts_generated: docsList.filter((d) => d?.document_type === 'contract').length,
+            trend: [
+              Math.max(1, openCount - 2),
+              Math.max(1, openCount - 1),
+              Math.max(1, openCount),
+              Math.max(1, openCount + 1),
+              Math.max(1, openCount),
+              Math.max(1, openCount + 2),
+              Math.max(1, openCount),
+            ],
+          })
+          setRecent(casesList.slice(0, 5))
+
+          const rawName: string | undefined =
+            session?.user?.name?.split(' ')[0] ||
+            session?.user?.email?.split('@')[0] ||
+            'Abogado'
+          const name = rawName || 'Abogado'
+          setFirstName(name.charAt(0).toUpperCase() + name.slice(1))
+        } catch (err) {
+          // Never let a render-prep error leave the dashboard blank.
+          console.error('[dashboard] render-prep error:', err)
+        }
+      })
+      .catch((err) => {
+        // Defensive: Promise.all should never reject here (we caught individually).
+        console.error('[dashboard] unexpected fetch error:', err)
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   return (
     <div className="relative space-y-12">
       <MeshGradient variant="lime" />
+
+      {/* ── Demo banner (dismissible) ────────────────────────────── */}
+      {showDemoBanner && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.35, ease: ease.outExpo }}
+          className="relative z-20 flex items-center gap-3 px-4 py-2.5"
+          style={{
+            background: 'var(--lime-bg-soft)',
+            border: '1px solid rgba(124,58,237,0.18)',
+            borderRadius: 'var(--r-lg)',
+            color: 'var(--lime-text-soft)',
+          }}
+        >
+          <span className="text-[14px]" aria-hidden>👋</span>
+          <p className="text-[12.5px] font-medium flex-1" style={{ color: 'var(--lime-text-soft)' }}>
+            Bienvenido a la demo. Datos cargados para previa.
+          </p>
+          <button
+            onClick={dismissDemoBanner}
+            aria-label="Cerrar aviso de demo"
+            className="w-6 h-6 rounded-md flex items-center justify-center transition-colors"
+            style={{ color: 'var(--lime-text-soft)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(91,33,182,0.08)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
+          >
+            <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+              <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+            </svg>
+          </button>
+        </motion.div>
+      )}
 
       {/* ── Hero ─────────────────────────────────────────────────── */}
       <motion.div
@@ -237,7 +331,7 @@ export default function DashboardPage() {
           <motion.div variants={staggerItem} className="col-span-12 md:col-span-3">
             <Link href="/generate">
               <motion.div
-                whileHover={{ y: -3 }}
+                whileHover={{ y: -3, scale: 1.02 }}
                 whileTap={{ scale: 0.985 }}
                 transition={{ duration: 0.2, ease: ease.outQuart }}
                 className="h-full p-6 cursor-pointer group"
@@ -246,8 +340,8 @@ export default function DashboardPage() {
                   border: '1px solid var(--hairline)',
                   borderRadius: 'var(--r-2xl)',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--lime-hover)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--lime-hover)'; e.currentTarget.style.boxShadow = '0 12px 32px -12px rgba(124,58,237,0.22)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)'; e.currentTarget.style.boxShadow = 'none' }}
               >
                 <div className="flex items-start justify-between mb-8">
                   <div
@@ -272,7 +366,7 @@ export default function DashboardPage() {
           <motion.div variants={staggerItem} className="col-span-12 md:col-span-3">
             <Link href="/chat">
               <motion.div
-                whileHover={{ y: -3 }}
+                whileHover={{ y: -3, scale: 1.02 }}
                 whileTap={{ scale: 0.985 }}
                 transition={{ duration: 0.2, ease: ease.outQuart }}
                 className="h-full p-6 cursor-pointer group relative overflow-hidden"
@@ -281,8 +375,8 @@ export default function DashboardPage() {
                   border: '1px solid var(--hairline)',
                   borderRadius: 'var(--r-2xl)',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--lime-hover)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--lime-hover)'; e.currentTarget.style.boxShadow = '0 12px 32px -12px rgba(124,58,237,0.22)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--hairline)'; e.currentTarget.style.boxShadow = 'none' }}
               >
                 <div className="flex items-start justify-between mb-8">
                   <div
@@ -337,10 +431,43 @@ export default function DashboardPage() {
               {[1, 2, 3, 4].map(i => <ShimmerSkeleton key={i} className="h-12 w-full" />)}
             </div>
           ) : recent.length === 0 ? (
-            <div className="px-6 py-12 text-center">
-              <DuotoneIcon name="briefcase" size={28} primary="var(--ink-tertiary)" secondary="var(--lime)" className="mx-auto opacity-60" />
-              <p className="text-[14px] mt-3" style={{ color: 'var(--ink-secondary)' }}>No tienes expedientes activos.</p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, ease: ease.outExpo }}
+              className="px-6 py-14 text-center"
+            >
+              <motion.div
+                animate={{ y: [0, -4, 0] }}
+                transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+                className="w-16 h-16 rounded-2xl mx-auto mb-5 flex items-center justify-center"
+                style={{
+                  background: 'var(--lime-bg-soft)',
+                  boxShadow: '0 8px 24px -10px rgba(124,58,237,0.25), inset 0 0 0 1px rgba(124,58,237,0.10)',
+                }}
+              >
+                <DuotoneIcon name="briefcase" size={26} primary="var(--lime-text-soft)" secondary="var(--lime-hover)" />
+              </motion.div>
+              <h3 className="font-display text-[24px] leading-tight" style={{ color: 'var(--ink-primary)' }}>
+                Tu despacho está <em style={{ fontStyle: 'italic' }}>impoluto</em>.
+              </h3>
+              <p className="text-[13px] mt-2 max-w-sm mx-auto" style={{ color: 'var(--ink-secondary)' }}>
+                Crea tu primer expediente y LEXIA te acompaña desde el primer escrito.
+              </p>
+              <div className="mt-6 inline-flex items-center gap-2">
+                <Link href="/cases">
+                  <motion.span
+                    whileHover={{ y: -1 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[13px] font-medium"
+                    style={{ background: 'var(--obsidian)', color: 'var(--lime)' }}
+                  >
+                    <DuotoneIcon name="plus" size={13} primary="var(--lime)" />
+                    Crear primer expediente
+                  </motion.span>
+                </Link>
+              </div>
+            </motion.div>
           ) : (
             recent.map((c, idx) => (
               <Link key={c.id} href={`/cases/${c.id}`}>

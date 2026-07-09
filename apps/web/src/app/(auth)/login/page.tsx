@@ -40,11 +40,18 @@ export default function LoginPage() {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+      transition={{ duration: 0.32, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-white tracking-tight">Accede a tu despacho</h2>
-        <p className="text-neutral-500 text-sm mt-1.5">Tu asistente jurídico te espera</p>
+        <h2
+          className="text-[34px] tracking-tight leading-[1.05]"
+          style={{ fontFamily: 'var(--font-instrument), Georgia, serif', color: '#14181E' }}
+        >
+          Bienvenido
+        </h2>
+        <p className="text-[14.5px] mt-2" style={{ color: '#525252' }}>
+          Accede a tu despacho
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -52,14 +59,15 @@ export default function LoginPage() {
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-red-500/10 border border-red-500/20 rounded-xl p-3.5 text-sm text-red-400"
+            className="rounded-xl p-3.5 text-sm"
+            style={{ background: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.18)', color: '#B91C1C' }}
           >
             {error}
           </motion.div>
         )}
 
         <div>
-          <label htmlFor="email" className="block text-[13px] font-medium text-neutral-400 mb-1.5">
+          <label htmlFor="email" className="block text-[12.5px] font-medium mb-1.5" style={{ color: '#525252' }}>
             Email profesional
           </label>
           <input
@@ -68,7 +76,16 @@ export default function LoginPage() {
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="abogado@despacho.com"
-            className="w-full px-4 py-[11px] bg-neutral-900 border border-neutral-700/60 rounded-xl text-sm text-neutral-100 placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/50 transition"
+            className="w-full px-4 py-[11px] rounded-xl text-sm transition outline-none"
+            style={{ background: '#FFFFFF', border: '1px solid #E7E5E4', color: '#14181E' }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = '#8F7EE9'
+              e.currentTarget.style.boxShadow = '0 0 0 4px rgba(143,126,233,0.18)'
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = '#E7E5E4'
+              e.currentTarget.style.boxShadow = 'none'
+            }}
             required
             disabled={isLoading}
             autoComplete="email"
@@ -77,10 +94,10 @@ export default function LoginPage() {
 
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label htmlFor="password" className="block text-[13px] font-medium text-neutral-400">
+            <label htmlFor="password" className="block text-[12.5px] font-medium" style={{ color: '#525252' }}>
               Contraseña
             </label>
-            <button type="button" className="text-[12px] text-blue-500 hover:text-blue-400 transition">
+            <button type="button" className="text-[12px] transition" style={{ color: '#8F7EE9' }}>
               ¿Olvidaste tu contraseña?
             </button>
           </div>
@@ -90,7 +107,16 @@ export default function LoginPage() {
             value={password}
             onChange={e => setPassword(e.target.value)}
             placeholder="••••••••"
-            className="w-full px-4 py-[11px] bg-neutral-900 border border-neutral-700/60 rounded-xl text-sm text-neutral-100 placeholder-neutral-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/50 transition"
+            className="w-full px-4 py-[11px] rounded-xl text-sm transition outline-none"
+            style={{ background: '#FFFFFF', border: '1px solid #E7E5E4', color: '#14181E' }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = '#8F7EE9'
+              e.currentTarget.style.boxShadow = '0 0 0 4px rgba(143,126,233,0.18)'
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = '#E7E5E4'
+              e.currentTarget.style.boxShadow = 'none'
+            }}
             required
             disabled={isLoading}
             autoComplete="current-password"
@@ -100,7 +126,10 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold py-[11px] px-4 rounded-xl transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed text-sm mt-2 shadow-lg shadow-blue-500/20"
+          className="w-full text-white font-semibold py-[12px] px-4 rounded-xl transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed text-sm mt-2"
+          style={{ background: '#8F7EE9', boxShadow: '0 6px 18px -4px rgba(143,126,233,0.45)' }}
+          onMouseEnter={(e) => { if (!isLoading) e.currentTarget.style.background = '#7C6BD6' }}
+          onMouseLeave={(e) => { if (!isLoading) e.currentTarget.style.background = '#8F7EE9' }}
         >
           {isLoading ? (
             <span className="flex items-center justify-center gap-2">
@@ -113,19 +142,22 @@ export default function LoginPage() {
           ) : 'Acceder a IURALEX'}
         </button>
 
-        <p className="text-center text-[13px] text-neutral-600 pt-1">
+        <p className="text-center text-[13px] pt-1" style={{ color: '#525252' }}>
           ¿Sin cuenta?{' '}
-          <Link href="/register" className="text-blue-500 hover:text-blue-400 font-medium transition">
+          <Link href="/register" className="font-medium transition" style={{ color: '#8F7EE9' }}>
             Solicitar acceso
           </Link>
         </p>
       </form>
 
-      <div className="mt-8 pt-6 border-t border-neutral-800/60">
-        <p className="text-[11px] text-neutral-700 text-center leading-relaxed">
-          Al acceder aceptas los <span className="text-neutral-600">Términos de Servicio</span> y la{' '}
-          <span className="text-neutral-600">Política de Privacidad</span> de IURALEX.<br />
-          Datos tratados conforme al <span className="text-neutral-600">RGPD (UE) 2016/679</span>.
+      <div className="mt-8 pt-6" style={{ borderTop: '1px solid #E7E5E4' }}>
+        <p className="text-[11px] text-center leading-relaxed" style={{ color: '#A3A3A3' }}>
+          Al acceder aceptas los Términos de Servicio y la Política de Privacidad de IURALEX.
+          <br />
+          Datos tratados conforme al RGPD (UE) 2016/679.
+        </p>
+        <p className="text-[11px] text-center mt-2.5" style={{ color: '#A3A3A3' }}>
+          Powered by <span style={{ color: '#8F7EE9', fontWeight: 600 }}>Cliender Tech</span> · Sagunto, Valencia 🇪🇸
         </p>
       </div>
     </motion.div>

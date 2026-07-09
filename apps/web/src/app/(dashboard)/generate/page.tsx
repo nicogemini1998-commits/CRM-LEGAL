@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // ─── Data ───────────────────────────────────────────────────────────────────
@@ -248,6 +249,127 @@ const TYPE_FIELDS: Record<string, FieldDef[]> = {
     { key: 'productos', label: 'Productos', placeholder: 'Gama de productos XYZ...' },
     { key: 'duracion', label: 'Duración', placeholder: '3 años renovables' },
   ],
+  'Querella': [
+    { key: 'querellante', label: 'Querellante', placeholder: 'Nombre completo (DNI)' },
+    { key: 'querellado', label: 'Querellado', placeholder: 'Nombre / identificación' },
+    { key: 'hechos', label: 'Hechos punibles', placeholder: 'Narración detallada de los hechos...' },
+    { key: 'tipificacion', label: 'Tipificación penal', placeholder: 'Delito de estafa (art. 248 CP)...' },
+    { key: 'diligencias', label: 'Diligencias solicitadas', placeholder: 'Declaración testigos, pericial...' },
+  ],
+  'Escrito defensa': [
+    { key: 'cliente', label: 'Cliente / acusado', placeholder: 'Nombre completo (DNI)' },
+    { key: 'acusacion', label: 'Acusación', placeholder: 'Acusación pública / particular...' },
+    { key: 'hechos', label: 'Hechos de la defensa', placeholder: 'Versión de los hechos del defendido...' },
+    { key: 'pruebas', label: 'Medios de prueba', placeholder: 'Testigos, periciales, documental...' },
+  ],
+  'Recurso reposición': [
+    { key: 'recurrente', label: 'Recurrente', placeholder: 'Nombre completo (NIF)' },
+    { key: 'organo', label: 'Órgano que dictó el acto', placeholder: 'Ayuntamiento / Consejería...' },
+    { key: 'acto_recurrido', label: 'Acto recurrido', placeholder: 'Resolución XX/XX/XXXX, nº...' },
+    { key: 'motivos', label: 'Motivos del recurso', placeholder: 'Infracción del art. XX...' },
+  ],
+  'Recurso contencioso': [
+    { key: 'demandante', label: 'Demandante', placeholder: 'Nombre completo (NIF)' },
+    { key: 'administracion', label: 'Administración demandada', placeholder: 'Estado / CCAA / Ayuntamiento' },
+    { key: 'acto_recurrido', label: 'Acto/disposición recurrida', placeholder: 'Resolución agotando vía...' },
+    { key: 'pretension', label: 'Pretensión', placeholder: 'Anulación + restablecimiento...' },
+  ],
+  'Solicitud acceso info': [
+    { key: 'solicitante', label: 'Solicitante', placeholder: 'Nombre completo (NIF)' },
+    { key: 'organismo', label: 'Organismo destinatario', placeholder: 'Ministerio / Ayuntamiento...' },
+    { key: 'informacion', label: 'Información solicitada', placeholder: 'Detalle de los documentos/datos...' },
+  ],
+  'LOI': [
+    { key: 'parte_a', label: 'Parte A (compradora)', placeholder: 'Empresa S.L. (NIF)' },
+    { key: 'parte_b', label: 'Parte B (vendedora/target)', placeholder: 'Empresa S.A. (NIF)' },
+    { key: 'objeto', label: 'Objeto de la operación', placeholder: 'Adquisición del 100% de las participaciones...' },
+    { key: 'precio_indicativo', label: 'Precio indicativo', placeholder: '5.000.000 € sujeto a due diligence' },
+    { key: 'exclusividad', label: 'Exclusividad', placeholder: '60 días de exclusividad' },
+  ],
+  'Joint venture': [
+    { key: 'socio_a', label: 'Socio A', placeholder: 'Empresa S.L. (NIF)' },
+    { key: 'socio_b', label: 'Socio B', placeholder: 'Empresa S.A. (NIF)' },
+    { key: 'objeto', label: 'Objeto de la JV', placeholder: 'Desarrollo conjunto del proyecto XYZ...' },
+    { key: 'aportaciones', label: 'Aportaciones', placeholder: 'A aporta know-how; B aporta 500.000€...' },
+    { key: 'gobierno', label: 'Gobierno', placeholder: '50/50, board paritario, materias reservadas...' },
+  ],
+  'Joint venture internacional': [
+    { key: 'socio_a', label: 'Socio A', placeholder: 'Empresa S.L. (NIF)' },
+    { key: 'socio_b', label: 'Socio B', placeholder: 'Company Ltd. (VAT)' },
+    { key: 'objeto', label: 'Objeto', placeholder: 'Joint venture para mercado MENA...' },
+    { key: 'ley_aplicable', label: 'Ley aplicable', placeholder: 'Derecho español / inglés / suizo' },
+    { key: 'arbitraje', label: 'Arbitraje', placeholder: 'CCI París / LCIA Londres' },
+  ],
+  'Compraventa empresa': [
+    { key: 'vendedor', label: 'Vendedor', placeholder: 'Persona/Sociedad (NIF)' },
+    { key: 'comprador', label: 'Comprador', placeholder: 'Empresa S.L. (NIF)' },
+    { key: 'target', label: 'Sociedad target', placeholder: 'TargetCo S.L. (NIF)' },
+    { key: 'precio', label: 'Precio', placeholder: '10.000.000 € + ajustes de cierre' },
+    { key: 'condiciones_cierre', label: 'Condiciones precedentes', placeholder: 'Autorizaciones, MAC, financiación...' },
+  ],
+  'Acta junta': [
+    { key: 'sociedad', label: 'Sociedad', placeholder: 'Empresa S.L. (NIF)' },
+    { key: 'fecha_junta', label: 'Fecha de la junta', placeholder: '15/05/2026' },
+    { key: 'asistentes', label: 'Asistentes', placeholder: '3 socios, 100% del capital...' },
+    { key: 'orden_dia', label: 'Orden del día', placeholder: '1. Aprobación cuentas 2025...' },
+    { key: 'acuerdos', label: 'Acuerdos adoptados', placeholder: 'Aprobadas cuentas por unanimidad...' },
+  ],
+  'Poder notarial': [
+    { key: 'poderdante', label: 'Poderdante', placeholder: 'Nombre completo (DNI)' },
+    { key: 'apoderado', label: 'Apoderado', placeholder: 'Nombre completo (DNI)' },
+    { key: 'facultades', label: 'Facultades conferidas', placeholder: 'Generales para administración...' },
+    { key: 'duracion', label: 'Duración / revocación', placeholder: 'Indefinido / 1 año / revocable' },
+  ],
+  'Licencia marca': [
+    { key: 'licenciante', label: 'Licenciante', placeholder: 'Empresa S.L. (titular)' },
+    { key: 'licenciatario', label: 'Licenciatario', placeholder: 'Empresa S.A.' },
+    { key: 'marca', label: 'Marca licenciada', placeholder: 'BRAND, registro 123456 OEPM' },
+    { key: 'territorio', label: 'Territorio', placeholder: 'España / UE / mundial' },
+    { key: 'royalty', label: 'Royalty', placeholder: '5% sobre ventas netas' },
+  ],
+  'Cesión derechos autor': [
+    { key: 'autor', label: 'Autor / cedente', placeholder: 'Nombre completo (DNI)' },
+    { key: 'cesionario', label: 'Cesionario', placeholder: 'Empresa S.L. (NIF)' },
+    { key: 'obra', label: 'Obra objeto de cesión', placeholder: 'Software, diseño, fotografías...' },
+    { key: 'modalidades', label: 'Modalidades de explotación', placeholder: 'Reproducción, distribución, transformación...' },
+    { key: 'remuneracion', label: 'Remuneración', placeholder: '10.000 € + 3% royalty' },
+  ],
+  'Modificación medidas': [
+    { key: 'demandante', label: 'Demandante', placeholder: 'Nombre completo (DNI)' },
+    { key: 'demandado', label: 'Demandado/a', placeholder: 'Nombre completo (DNI)' },
+    { key: 'sentencia_anterior', label: 'Sentencia anterior', placeholder: 'Sentencia divorcio nº.../año' },
+    { key: 'causa', label: 'Causa modificación', placeholder: 'Cambio sustancial circunstancias...' },
+  ],
+  'Capitulaciones matrimoniales': [
+    { key: 'conyuge_a', label: 'Cónyuge A', placeholder: 'Nombre completo (DNI)' },
+    { key: 'conyuge_b', label: 'Cónyuge B', placeholder: 'Nombre completo (DNI)' },
+    { key: 'regimen', label: 'Régimen económico', placeholder: 'Separación / participación...' },
+    { key: 'inventario', label: 'Inventario', placeholder: 'Bienes y derechos privativos...' },
+  ],
+  'Reclamación responsabilidad patrimonial': [
+    { key: 'reclamante', label: 'Reclamante', placeholder: 'Nombre completo (NIF)' },
+    { key: 'administracion', label: 'Administración', placeholder: 'Ayuntamiento de Madrid...' },
+    { key: 'hechos', label: 'Hechos lesivos', placeholder: 'Funcionamiento anormal del servicio...' },
+    { key: 'dano', label: 'Cuantificación del daño (€)', placeholder: '15.000 €' },
+  ],
+  'Aplazamiento deuda': [
+    { key: 'contribuyente', label: 'Contribuyente', placeholder: 'Nombre completo (NIF)' },
+    { key: 'deuda', label: 'Deuda a aplazar', placeholder: 'Liquidación IRPF 2024: 12.000 €' },
+    { key: 'plazo', label: 'Plazo solicitado', placeholder: '24 cuotas mensuales' },
+    { key: 'garantia', label: 'Garantía ofrecida', placeholder: 'Aval bancario / exención <30.000€' },
+  ],
+  'Desahucio impago': [
+    { key: 'arrendador', label: 'Arrendador', placeholder: 'Nombre completo (NIF)' },
+    { key: 'arrendatario', label: 'Arrendatario', placeholder: 'Nombre completo (DNI)' },
+    { key: 'inmueble', label: 'Inmueble', placeholder: 'Calle Mayor 5, 3ºB, Madrid' },
+    { key: 'rentas_impagadas', label: 'Rentas impagadas', placeholder: '4 mensualidades · 3.600 €' },
+  ],
+  'Desahucio expiración': [
+    { key: 'arrendador', label: 'Arrendador', placeholder: 'Nombre completo (NIF)' },
+    { key: 'arrendatario', label: 'Arrendatario', placeholder: 'Nombre completo (DNI)' },
+    { key: 'inmueble', label: 'Inmueble', placeholder: 'Calle Mayor 5, 3ºB, Madrid' },
+    { key: 'fecha_finalizacion', label: 'Fecha finalización contrato', placeholder: '31/12/2026' },
+  ],
 }
 
 const DEFAULT_FIELDS: FieldDef[] = [
@@ -309,6 +431,7 @@ function StepBar({ current }: { current: 1 | 2 | 3 }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 type Client = { id: string; name: string; email: string | null; nif_cif: string | null }
+type Case = { id: string; title: string; case_number: string | null }
 
 export default function GeneratePage() {
   const [step, setStep] = useState<1 | 2 | 3>(1)
@@ -322,13 +445,13 @@ export default function GeneratePage() {
   const [error, setError] = useState('')
   const [clients, setClients] = useState<Client[]>([])
   const [selectedClientId, setSelectedClientId] = useState('')
+  const [cases, setCases] = useState<Case[]>([])
+  const [saveState, setSaveState] = useState({ open: false, caseId: '', saving: false, saved: false })
   const resultRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    fetch('/api/clients')
-      .then(r => r.json())
-      .then(d => setClients(d.clients || []))
-      .catch(() => {})
+    fetch('/api/clients').then(r => r.json()).then(d => setClients(d.clients || [])).catch(() => {})
+    fetch('/api/cases').then(r => r.json()).then(d => setCases(d.cases || [])).catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -423,6 +546,40 @@ export default function GeneratePage() {
     setGenerating(false)
   }
 
+  const handleSaveToCase = async () => {
+    if (!finalContract || !saveState.caseId) return
+    setSaveState(s => ({ ...s, saving: true }))
+    try {
+      await fetch('/api/documents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: selectedType || 'Documento generado',
+          content_markdown: finalContract.content,
+          case_id: saveState.caseId,
+          source: 'generated',
+        }),
+      })
+      setSaveState(s => ({ ...s, saving: false, saved: true }))
+      setTimeout(() => setSaveState(s => ({ ...s, open: false, saved: false, caseId: '' })), 1800)
+    } catch {
+      setSaveState(s => ({ ...s, saving: false }))
+    }
+  }
+
+  const renderDoc = (text: string) =>
+    text.split('\n').map((line, i) => {
+      if (line.startsWith('#### ')) return <p key={i} style={{ fontWeight: 700, fontSize: 13, marginTop: 10, marginBottom: 2 }}>{line.slice(5).replace(/\*\*/g, '')}</p>
+      if (line.startsWith('### ')) return <p key={i} style={{ fontWeight: 700, fontSize: 14, marginTop: 14, marginBottom: 3 }}>{line.slice(4).replace(/\*\*/g, '')}</p>
+      if (line.startsWith('## ')) return <p key={i} style={{ fontWeight: 800, fontSize: 15, marginTop: 18, marginBottom: 4 }}>{line.slice(3)}</p>
+      if (line.startsWith('# ')) return <h2 key={i} style={{ fontWeight: 800, fontSize: 18, marginTop: 24, marginBottom: 8 }}>{line.slice(2)}</h2>
+      if (line.trim() === '---') return <hr key={i} style={{ border: 'none', borderTop: '1px solid var(--hairline)', margin: '12px 0' }} />
+      if (line.trim() === '') return <div key={i} style={{ height: 6 }} />
+      const parts = line.split(/\*\*([^*]+)\*\*/g)
+      const rendered = parts.map((p, pi) => pi % 2 === 1 ? <strong key={pi}>{p}</strong> : p)
+      return <p key={i} style={{ margin: 0, padding: '1px 0' }}>{rendered}</p>
+    })
+
   const activeCat = CATEGORIES.find(c => c.id === selectedCategory)
 
   // ── Step 1 ──────────────────────────────────────────────────────────────────
@@ -504,8 +661,21 @@ export default function GeneratePage() {
                     whileTap={{ scale: 0.96 }}
                     onClick={() => {
                       setSelectedType(type)
-                      setFields({})
-                      setSelectedClientId('')
+                      // Restore saved draft if any
+                      try {
+                        const raw = localStorage.getItem(`iuralex_draft_${type}`)
+                        if (raw) {
+                          const parsed = JSON.parse(raw)
+                          setFields(parsed.fields || {})
+                          setSelectedClientId(parsed.selectedClientId || '')
+                        } else {
+                          setFields({})
+                          setSelectedClientId('')
+                        }
+                      } catch {
+                        setFields({})
+                        setSelectedClientId('')
+                      }
                       setStep(2)
                     }}
                     style={{
@@ -565,16 +735,34 @@ export default function GeneratePage() {
                 Rellena los datos — los campos vacíos usarán valores por defecto
               </div>
             </div>
-            <button
-              onClick={() => setStep(1)}
-              style={{
-                padding: '7px 16px', background: 'none',
-                border: '1px solid var(--hairline)', borderRadius: 8,
-                fontSize: 13, color: 'var(--ink-secondary)', cursor: 'pointer',
-              }}
-            >
-              ← Atrás
-            </button>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                onClick={() => setStep(1)}
+                style={{
+                  padding: '7px 14px', background: 'none',
+                  border: '1px solid var(--hairline)', borderRadius: 8,
+                  fontSize: 13, color: 'var(--ink-secondary)', cursor: 'pointer',
+                }}
+              >
+                ← Volver categorías
+              </button>
+              <button
+                onClick={() => {
+                  if (!selectedType) return
+                  const key = `iuralex_draft_${selectedType}`
+                  localStorage.setItem(key, JSON.stringify({ fields, selectedClientId, savedAt: Date.now() }))
+                  setError('💾 Borrador guardado localmente')
+                  setTimeout(() => setError(''), 2500)
+                }}
+                style={{
+                  padding: '7px 14px', background: 'var(--surface-elevated)',
+                  border: '1px solid var(--hairline)', borderRadius: 8,
+                  fontSize: 13, color: 'var(--ink-primary)', cursor: 'pointer', fontWeight: 600,
+                }}
+              >
+                💾 Guardar borrador
+              </button>
+            </div>
           </div>
 
           <div style={{ padding: 24 }}>
@@ -715,11 +903,7 @@ export default function GeneratePage() {
     >
       <div style={{ background: 'var(--surface)', border: '1px solid var(--hairline)', borderRadius: 16, overflow: 'hidden' }}>
         {/* Header */}
-        <div style={{
-          padding: '18px 24px', borderBottom: '1px solid var(--hairline)',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          flexWrap: 'wrap', gap: 12,
-        }}>
+        <div style={{ position: 'relative', padding: '18px 24px', borderBottom: '1px solid var(--hairline)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 20 }}>{activeCat?.icon}</span>
             <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink-primary)' }}>{selectedType}</span>
@@ -744,7 +928,17 @@ export default function GeneratePage() {
             )}
           </div>
           {!generating && finalContract && (
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button
+                onClick={() => setStep(2)}
+                style={{
+                  padding: '7px 14px', background: 'none',
+                  border: '1px solid var(--hairline)', borderRadius: 8,
+                  fontSize: 13, color: 'var(--ink-secondary)', cursor: 'pointer',
+                }}
+              >
+                ← Editar datos
+              </button>
               <button
                 onClick={handleCopy}
                 style={{
@@ -753,18 +947,112 @@ export default function GeneratePage() {
                   fontSize: 13, color: 'var(--ink-secondary)', cursor: 'pointer',
                 }}
               >
-                Copiar
+                📋 Copiar
               </button>
               <button
                 onClick={handleDownloadTxt}
+                style={{
+                  padding: '7px 14px', background: 'none',
+                  border: '1px solid var(--hairline)', borderRadius: 8,
+                  fontSize: 13, color: 'var(--ink-primary)', cursor: 'pointer',
+                }}
+              >
+                ↓ TXT
+              </button>
+              <button
+                onClick={() => {
+                  if (!finalContract) return
+                  // Mock DOCX download (export as txt with .docx extension; real DOCX requires server-side generation)
+                  const blob = new Blob([finalContract.content], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+                  const url = URL.createObjectURL(blob)
+                  const a = document.createElement('a')
+                  a.href = url
+                  a.download = `${selectedType?.replace(/\s+/g, '_') || 'documento'}_LEXIA.docx`
+                  a.click()
+                  URL.revokeObjectURL(url)
+                }}
+                style={{
+                  padding: '7px 14px', background: 'none',
+                  border: '1px solid var(--hairline)', borderRadius: 8,
+                  fontSize: 13, color: 'var(--ink-primary)', cursor: 'pointer',
+                }}
+              >
+                ↓ DOCX
+              </button>
+              <button
+                onClick={() => {
+                  if (!finalContract) return
+                  // Mock PDF download via print
+                  const w = window.open('', '_blank')
+                  if (!w) return
+                  w.document.write(`<html><head><title>${selectedType}</title><style>body{font-family:Georgia,serif;padding:40px;line-height:1.7;color:#111;white-space:pre-wrap;}</style></head><body>${finalContract.content.replace(/</g, '&lt;')}</body></html>`)
+                  w.document.close()
+                  w.print()
+                }}
+                style={{
+                  padding: '7px 14px', background: 'none',
+                  border: '1px solid var(--hairline)', borderRadius: 8,
+                  fontSize: 13, color: 'var(--ink-primary)', cursor: 'pointer',
+                }}
+              >
+                ↓ PDF
+              </button>
+              <button
+                onClick={() => setSaveState(s => ({ ...s, open: !s.open }))}
                 style={{
                   padding: '7px 14px', background: 'var(--obsidian)',
                   border: '1px solid var(--obsidian)', borderRadius: 8,
                   fontSize: 13, color: '#fff', cursor: 'pointer', fontWeight: 600,
                 }}
               >
-                ↓ Descargar TXT
+                💾 Guardar en expediente
               </button>
+            </div>
+          )}
+          {saveState.open && (
+            <div style={{
+              position: 'absolute', right: 24, top: 60, zIndex: 30,
+              background: 'white', border: '1px solid var(--hairline)',
+              borderRadius: 12, padding: 16, minWidth: 300,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+            }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--ink-primary)', marginBottom: 10 }}>Guardar en expediente</p>
+              <select
+                value={saveState.caseId}
+                onChange={e => setSaveState(s => ({ ...s, caseId: e.target.value }))}
+                style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--hairline)', borderRadius: 8, fontSize: 13, marginBottom: 12, background: 'white' }}
+              >
+                <option value="">Selecciona un expediente...</option>
+                {cases.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.case_number ? `${c.case_number} - ` : ''}{c.title}
+                  </option>
+                ))}
+              </select>
+              {saveState.saved ? (
+                <p style={{ fontSize: 13, color: '#15803D', fontWeight: 700 }}>✓ Guardado correctamente</p>
+              ) : (
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    onClick={handleSaveToCase}
+                    disabled={!saveState.caseId || saveState.saving}
+                    style={{
+                      flex: 1, padding: '8px 0', borderRadius: 8, border: 'none',
+                      background: saveState.caseId ? 'var(--obsidian)' : 'var(--hairline)',
+                      color: saveState.caseId ? '#fff' : 'var(--ink-tertiary)',
+                      fontSize: 13, cursor: saveState.caseId ? 'pointer' : 'default', fontWeight: 600,
+                    }}
+                  >
+                    {saveState.saving ? 'Guardando...' : 'Guardar'}
+                  </button>
+                  <button
+                    onClick={() => setSaveState(s => ({ ...s, open: false }))}
+                    style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid var(--hairline)', background: 'none', fontSize: 13, cursor: 'pointer' }}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -774,19 +1062,16 @@ export default function GeneratePage() {
           ref={resultRef}
           style={{ padding: 24, maxHeight: 560, overflowY: 'auto', background: 'var(--bg)' }}
         >
-          <pre style={{
-            fontSize: 13, lineHeight: 1.75, color: 'var(--ink-primary)',
-            whiteSpace: 'pre-wrap', fontFamily: 'inherit', margin: 0,
-          }}>
-            {generating ? streamText : finalContract?.content}
-            {generating && (
-              <span style={{
-                display: 'inline-block', width: 2, height: '1em',
-                background: 'var(--obsidian)', marginLeft: 2, verticalAlign: 'middle',
-                animation: 'lexia-blink 1s step-start infinite',
-              }} />
-            )}
-          </pre>
+          {generating ? (
+            <pre style={{ fontSize: 13, lineHeight: 1.75, color: 'var(--ink-primary)', whiteSpace: 'pre-wrap', fontFamily: 'inherit', margin: 0 }}>
+              {streamText}
+              <span style={{ display: 'inline-block', width: 2, height: '1em', background: 'var(--obsidian)', marginLeft: 2, verticalAlign: 'middle', animation: 'lexia-blink 1s step-start infinite' }} />
+            </pre>
+          ) : (
+            <div style={{ fontSize: 13, lineHeight: 1.75, color: 'var(--ink-primary)' }}>
+              {renderDoc(finalContract?.content || '')}
+            </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -823,6 +1108,9 @@ export default function GeneratePage() {
 
   return (
     <div style={{ maxWidth: 900, margin: '0 auto' }}>
+      <Link href="/dashboard" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--ink-tertiary)', textDecoration: 'none', marginBottom: 20 }}>
+        ← Volver al inicio
+      </Link>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}

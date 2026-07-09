@@ -8,7 +8,8 @@ export async function auth() {
 
     if (!token) return null
 
-    const secret = process.env.NEXTAUTH_SECRET || 'dev-secret-iuralex-jwt-2025-minimum-32-chars'
+    const secret = process.env.NEXTAUTH_SECRET
+    if (!secret) throw new Error('NEXTAUTH_SECRET required')
     const decoded = await decode({ token, secret })
 
     if (!decoded || !decoded.sub) return null

@@ -4,8 +4,11 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { DuotoneIcon } from '@/components/ui/duotone-icon'
 import { ease } from '@/lib/motion'
+import { PoweredByCliender } from '@/components/ui/PoweredByCliender'
 
-type Section = 'perfil' | 'conexiones' | 'seguridad' | 'ia' | 'notificaciones' | 'facturacion'
+type Section = 'perfil' | 'conexiones' | 'seguridad' | 'ia' | 'notificaciones' | 'facturacion' | 'acerca'
+
+type Category = 'esenciales'
 
 interface Integration {
   id: string
@@ -14,25 +17,62 @@ interface Integration {
   icon: string
   color: string
   connected: boolean
-  category: 'storage' | 'calendar' | 'communication' | 'legal'
+  category: Category
   badge?: string
 }
 
+const BRAND = '#8F7EE9'
+
+// 5 conectores esenciales para abogados en España.
 const INTEGRATIONS: Integration[] = [
-  // Storage
-  { id: 'google_drive', name: 'Google Drive', description: 'Importa y sincroniza documentos directamente desde Drive', icon: '📁', color: '#4285F4', connected: false, category: 'storage' },
-  { id: 'dropbox', name: 'Dropbox', description: 'Conecta tu Dropbox para gestionar expedientes en la nube', icon: '📦', color: '#0061FF', connected: true, category: 'storage' },
-  { id: 'onedrive', name: 'OneDrive', description: 'Integración con Microsoft OneDrive y SharePoint', icon: '☁️', color: '#0078D4', connected: false, category: 'storage' },
-  { id: 'imanage', name: 'iManage', description: 'Sistema DMS legaltech líder para despachos', icon: '🗂️', color: '#1B3A6B', connected: false, category: 'storage', badge: 'Enterprise' },
-  // Calendar
-  { id: 'google_calendar', name: 'Google Calendar', description: 'Sincroniza plazos procesales y reuniones automáticamente', icon: '📅', color: '#34A853', connected: true, category: 'calendar' },
-  { id: 'outlook', name: 'Outlook / Microsoft 365', description: 'Calendarios y email integrados con expedientes', icon: '📧', color: '#0078D4', connected: false, category: 'calendar' },
-  // Communication
-  { id: 'slack', name: 'Slack', description: 'Notificaciones de plazos y alertas directamente en Slack', icon: '💬', color: '#4A154B', connected: false, category: 'communication' },
-  { id: 'teams', name: 'Microsoft Teams', description: 'Recibe alertas y comparte documentos desde Teams', icon: '👥', color: '#5059C9', connected: false, category: 'communication' },
-  // Legal
-  { id: 'docusign', name: 'DocuSign', description: 'Firma electrónica certificada para contratos y escrituras', icon: '✍️', color: '#FFCC00', connected: false, category: 'legal', badge: 'Popular' },
-  { id: 'lexisnexis', name: 'LexisNexis', description: 'Acceso a jurisprudencia y doctrina española actualizada', icon: '⚖️', color: '#D4132A', connected: false, category: 'legal', badge: 'Próximamente' },
+  {
+    id: 'lexnet',
+    name: 'LexNET',
+    description: 'Sistema oficial del Ministerio de Justicia para recibir notificaciones judiciales electrónicas, presentar escritos al juzgado y consultar el estado procesal de los expedientes. Imprescindible para todo despacho que litiga en España. Sincroniza automáticamente plazos críticos.',
+    icon: '⚖️',
+    color: '#003366',
+    connected: false,
+    category: 'esenciales',
+    badge: 'Oficial',
+  },
+  {
+    id: 'signaturit',
+    name: 'Signaturit',
+    description: 'Firma electrónica avanzada y cualificada conforme al Reglamento eIDAS y a la Ley 6/2020. Permite firmar contratos, poderes y documentos vinculantes con plena validez legal en España y la UE. Incluye certificados cualificados, evidencias forenses y trazabilidad probatoria.',
+    icon: '✍️',
+    color: '#00B5AD',
+    connected: false,
+    category: 'esenciales',
+  },
+  {
+    id: 'vlex',
+    name: 'vLex',
+    description: 'La base de datos jurídica de referencia en España con IA Vincent integrada. Acceso a jurisprudencia del TS, TC, Audiencias Provinciales, doctrina, legislación consolidada y formularios. LEXIA puede consultar vLex directamente para fundamentar análisis con citas verificadas.',
+    icon: '📚',
+    color: '#0066CC',
+    connected: false,
+    category: 'esenciales',
+    badge: 'Recomendado',
+  },
+  {
+    id: 'aeat',
+    name: 'AEAT — Agencia Tributaria',
+    description: 'Acceso con Cl@ve PIN o certificado digital a la Sede Electrónica de la Agencia Tributaria para presentaciones telemáticas (modelos), notificaciones electrónicas y consulta de procedimientos. Esencial para los trámites fiscales que asume el despacho en representación del cliente.',
+    icon: '🏦',
+    color: '#C00000',
+    connected: false,
+    category: 'esenciales',
+    badge: 'Oficial',
+  },
+  {
+    id: 'google_workspace',
+    name: 'Google Workspace',
+    description: 'Drive + Gmail + Calendar en una sola integración. Sincroniza correos con cada expediente, importa documentos desde Drive, y centraliza las citas con clientes y vencimientos procesales en Calendar. La opción de productividad más usada por despachos modernos en España.',
+    icon: '📁',
+    color: '#4285F4',
+    connected: false,
+    category: 'esenciales',
+  },
 ]
 
 const SECTIONS: { id: Section; label: string; icon: string }[] = [
@@ -42,16 +82,78 @@ const SECTIONS: { id: Section; label: string; icon: string }[] = [
   { id: 'ia',            label: 'Inteligencia Artificial', icon: 'sparkles' },
   { id: 'notificaciones',label: 'Notificaciones',      icon: 'clock' },
   { id: 'facturacion',   label: 'Plan y facturación',  icon: 'arrow-up-right' },
+  { id: 'acerca',        label: 'Acerca de IURALEX',   icon: 'sparkles' },
 ]
 
 function CategoryBadge({ label }: { label: string }) {
   return (
     <span
-      className="inline-block px-2 py-0.5 text-[10px] font-medium rounded-full"
-      style={{ background: 'var(--lime-bg-soft)', color: 'var(--lime-text-soft)', letterSpacing: '0.03em' }}
+      className="inline-block px-2 py-0.5 text-[10px] font-semibold rounded-full"
+      style={{ background: `${BRAND}18`, color: BRAND, letterSpacing: '0.03em' }}
     >
       {label}
     </span>
+  )
+}
+
+function ComingSoonModal({ open, integrationName, onClose }: { open: boolean; integrationName: string | null; onClose: () => void }) {
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          style={{ background: 'rgba(15,15,20,0.55)', backdropFilter: 'blur(6px)' }}
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.97 }}
+            transition={{ duration: 0.22, ease: ease.outExpo }}
+            className="w-full max-w-md rounded-2xl p-7"
+            style={{ background: 'var(--surface)', border: '1px solid var(--hairline)', boxShadow: 'var(--shadow-lg)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--lime-bg-soft)' }}>
+                <DuotoneIcon name="clock" size={18} primary="var(--lime)" />
+              </div>
+              <div>
+                <p className="text-[11px] uppercase tracking-wider font-medium" style={{ color: 'var(--ink-tertiary)' }}>Integración</p>
+                <p className="text-[15px] font-medium" style={{ color: 'var(--ink-primary)' }}>{integrationName ?? 'Próximamente'}</p>
+              </div>
+            </div>
+            <h3 className="font-display text-[22px] leading-tight mb-2" style={{ color: 'var(--ink-primary)' }}>
+              Próximamente disponible
+            </h3>
+            <p className="text-[13px] leading-relaxed mb-5" style={{ color: 'var(--ink-secondary)' }}>
+              Esta integración estará activa muy pronto. Para activarla en tu despacho ahora, contacta con tu Account Manager de{' '}
+              <span className="font-semibold" style={{ color: 'var(--ink-primary)' }}>Cliender</span>.
+            </p>
+            <div className="flex items-center justify-end gap-2">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-[13px] font-medium rounded-lg transition-colors duration-150"
+                style={{ background: 'var(--surface-elevated)', color: 'var(--ink-secondary)', border: '1px solid var(--hairline)' }}
+              >
+                Cerrar
+              </button>
+              <a
+                href="mailto:nicolas@cliender.com?subject=Activar%20integraci%C3%B3n%20IURALEX"
+                className="px-4 py-2 text-[13px] font-medium rounded-lg transition-colors duration-150"
+                style={{ background: 'var(--lime)', color: '#fff' }}
+              >
+                Contactar Account Manager
+              </a>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }
 
@@ -60,58 +162,59 @@ function IntegrationCard({ integration, onToggle }: { integration: Integration; 
 
   return (
     <motion.div
-      whileHover={isComingSoon ? {} : { y: -1 }}
-      className="p-4 rounded-xl transition-all duration-150 group"
+      whileHover={isComingSoon ? {} : { y: -2 }}
+      className="p-6 rounded-2xl transition-all duration-200 group"
       style={{
         background: 'var(--surface)',
-        border: `1px solid ${integration.connected ? 'rgba(124,58,237,0.25)' : 'var(--hairline)'}`,
+        border: `1px solid ${integration.connected ? `${BRAND}40` : 'var(--hairline)'}`,
         opacity: isComingSoon ? 0.6 : 1,
+        boxShadow: integration.connected ? `0 4px 20px -8px ${BRAND}40` : 'var(--shadow-xs)',
       }}
-      onMouseEnter={e => { if (!isComingSoon) (e.currentTarget as HTMLDivElement).style.borderColor = integration.connected ? 'rgba(124,58,237,0.4)' : 'var(--hairline-strong)' }}
-      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = integration.connected ? 'rgba(124,58,237,0.25)' : 'var(--hairline)' }}
+      onMouseEnter={e => { if (!isComingSoon) (e.currentTarget as HTMLDivElement).style.borderColor = integration.connected ? BRAND : `${BRAND}55` }}
+      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor = integration.connected ? `${BRAND}40` : 'var(--hairline)' }}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-5">
         <div
-          className="w-9 h-9 rounded-lg flex items-center justify-center text-lg flex-shrink-0 mt-0.5"
-          style={{ background: `${integration.color}12`, border: `1px solid ${integration.color}22` }}
+          className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+          style={{ background: `${integration.color}15`, border: `1px solid ${integration.color}28` }}
         >
           {integration.icon}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-0.5">
-            <span className="text-[13.5px] font-medium" style={{ color: 'var(--ink-primary)' }}>{integration.name}</span>
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <span className="text-[16px] font-semibold" style={{ color: 'var(--ink-primary)' }}>{integration.name}</span>
             {integration.badge && <CategoryBadge label={integration.badge} />}
             {integration.connected && (
-              <span className="flex items-center gap-1 text-[10.5px]" style={{ color: 'var(--success)' }}>
+              <span className="flex items-center gap-1.5 text-[11px] font-medium" style={{ color: 'var(--success)' }}>
                 <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--success)' }} />
                 Conectado
               </span>
             )}
           </div>
-          <p className="text-[12px] leading-relaxed" style={{ color: 'var(--ink-tertiary)' }}>
+          <p className="text-[13px] leading-relaxed" style={{ color: 'var(--ink-secondary)' }}>
             {integration.description}
           </p>
+          {!isComingSoon && (
+            <button
+              onClick={() => onToggle(integration.id)}
+              className="mt-4 px-5 py-2.5 text-[13px] font-semibold rounded-xl transition-all duration-150"
+              style={integration.connected
+                ? { background: 'var(--surface-elevated)', color: 'var(--ink-secondary)', border: '1px solid var(--hairline)' }
+                : { background: BRAND, color: '#fff', border: '1px solid transparent' }
+              }
+              onMouseEnter={e => {
+                if (integration.connected) { e.currentTarget.style.background = 'var(--danger-bg)'; e.currentTarget.style.color = 'var(--danger)' }
+                else { e.currentTarget.style.background = '#7C6BD6' }
+              }}
+              onMouseLeave={e => {
+                if (integration.connected) { e.currentTarget.style.background = 'var(--surface-elevated)'; e.currentTarget.style.color = 'var(--ink-secondary)' }
+                else { e.currentTarget.style.background = BRAND }
+              }}
+            >
+              {integration.connected ? 'Desconectar' : 'Conectar'}
+            </button>
+          )}
         </div>
-        {!isComingSoon && (
-          <button
-            onClick={() => onToggle(integration.id)}
-            className="flex-shrink-0 px-3 py-1.5 text-[12px] font-medium rounded-lg transition-all duration-150 mt-0.5"
-            style={integration.connected
-              ? { background: 'var(--surface-elevated)', color: 'var(--ink-secondary)', border: '1px solid var(--hairline)' }
-              : { background: 'var(--lime)', color: '#fff', border: '1px solid transparent' }
-            }
-            onMouseEnter={e => {
-              if (integration.connected) { e.currentTarget.style.background = 'var(--danger-bg)'; e.currentTarget.style.color = 'var(--danger)' }
-              else { e.currentTarget.style.background = 'var(--lime-hover)' }
-            }}
-            onMouseLeave={e => {
-              if (integration.connected) { e.currentTarget.style.background = 'var(--surface-elevated)'; e.currentTarget.style.color = 'var(--ink-secondary)' }
-              else { e.currentTarget.style.background = 'var(--lime)' }
-            }}
-          >
-            {integration.connected ? 'Desconectar' : 'Conectar'}
-          </button>
-        )}
       </div>
     </motion.div>
   )
@@ -131,9 +234,13 @@ function SectionPerfil() {
         style={{ background: 'var(--surface)', border: '1px solid var(--hairline)' }}
       >
         <div
-          className="w-16 h-16 rounded-xl flex items-center justify-center font-display italic text-2xl flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, var(--obsidian) 0%, var(--plum) 100%)', color: 'var(--lime)' }}
-        >I</div>
+          className="w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0"
+          style={{ background: '#8F7EE9' }}
+        >
+          <svg viewBox="0 0 326 600" className="h-9 w-auto text-white" fill="currentColor" aria-label="Cliender">
+            <path d="M257.17,600c-15.14,0-30.1-5.09-42.55-15.02L25.76,434.35C9.39,421.29,0,401.79,0,380.85s9.39-40.44,25.77-53.5l34.29-27.35-34.29-27.35C9.39,259.59,0,240.09,0,219.15s9.39-40.44,25.76-53.5L214.63,15.02c20.73-16.54,48.46-19.67,72.36-8.16,23.89,11.51,38.74,35.13,38.74,61.66v48.46c0,20.94-9.39,40.44-25.76,53.5l-162.4,129.52,162.4,129.52c16.37,13.06,25.77,32.56,25.77,53.5v48.46c0,26.52-14.85,50.15-38.75,61.66-9.56,4.6-19.72,6.86-29.81,6.86ZM55.9,396.57l188.86,150.63c8.92,7.11,17.83,4.04,21.26,2.4,3.42-1.65,11.38-6.71,11.38-18.11v-48.46c0-6.15-2.75-11.88-7.56-15.71L98.81,330.91l-42.91,34.22c-4.81,3.84-7.57,9.56-7.57,15.71s2.76,11.88,7.57,15.72h0ZM257.03,48.32c-3.68,0-7.97,1.06-12.27,4.49L55.9,203.43c-4.81,3.84-7.57,9.56-7.57,15.72s2.76,11.88,7.57,15.71l42.91,34.22,171.02-136.39c4.81-3.84,7.56-9.56,7.56-15.72v-48.46c0-11.4-7.96-16.46-11.38-18.11-1.77-.85-5.03-2.09-8.99-2.09Z" />
+          </svg>
+        </div>
         <div>
           <p className="text-[13.5px] font-medium" style={{ color: 'var(--ink-primary)' }}>Logo del despacho</p>
           <p className="text-[12px] mt-0.5" style={{ color: 'var(--ink-tertiary)' }}>PNG, SVG o JPG · máx. 2 MB · recomendado 256×256px</p>
@@ -191,25 +298,24 @@ function SectionPerfil() {
 }
 
 function SectionConexiones() {
-  const [integrations, setIntegrations] = useState(INTEGRATIONS)
+  const [integrations] = useState(INTEGRATIONS)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalIntegration, setModalIntegration] = useState<string | null>(null)
 
-  const toggle = (id: string) => {
-    setIntegrations(prev => prev.map(i => i.id === id ? { ...i, connected: !i.connected } : i))
+  // En demo mode todos los toggle muestran modal "Próximamente · contacta con tu Account Manager Cliender"
+  const handleToggle = (id: string) => {
+    const found = integrations.find(i => i.id === id)
+    setModalIntegration(found?.name ?? null)
+    setModalOpen(true)
   }
 
-  const categories: { id: Integration['category']; label: string }[] = [
-    { id: 'storage', label: 'Almacenamiento' },
-    { id: 'calendar', label: 'Calendarios y Email' },
-    { id: 'communication', label: 'Comunicación' },
-    { id: 'legal', label: 'Herramientas jurídicas' },
-  ]
-
   return (
-    <div className="space-y-8 max-w-2xl">
+    <div className="space-y-8 max-w-3xl">
       <div>
-        <h2 className="font-display text-[26px]" style={{ color: 'var(--ink-primary)' }}>Conexiones e integraciones</h2>
-        <p className="text-[13px] mt-1" style={{ color: 'var(--ink-secondary)' }}>
-          Conecta IURALEX con tus herramientas de trabajo habituales
+        <h2 className="font-display text-[28px]" style={{ color: 'var(--ink-primary)' }}>Conexiones esenciales</h2>
+        <p className="text-[14px] mt-2 leading-relaxed" style={{ color: 'var(--ink-secondary)' }}>
+          IURALEX se integra con las 5 herramientas imprescindibles para un despacho que trabaja en España.
+          Cada una está auditada, cumple la normativa y se conecta con tu cuenta en pocos clics.
         </p>
       </div>
 
@@ -217,26 +323,80 @@ function SectionConexiones() {
       {integrations.filter(i => i.connected).length > 0 && (
         <div
           className="flex items-center gap-3 px-4 py-3 rounded-xl"
-          style={{ background: 'var(--lime-bg-soft)', border: '1px solid rgba(124,58,237,0.2)' }}
+          style={{ background: `${BRAND}12`, border: `1px solid ${BRAND}33` }}
         >
-          <DuotoneIcon name="check" size={16} primary="var(--lime)" />
-          <span className="text-[13px]" style={{ color: 'var(--lime-text-soft)' }}>
-            {integrations.filter(i => i.connected).length} integración{integrations.filter(i => i.connected).length > 1 ? 'es' : ''} activa{integrations.filter(i => i.connected).length > 1 ? 's' : ''}
+          <DuotoneIcon name="check" size={16} primary={BRAND} />
+          <span className="text-[13px]" style={{ color: BRAND }}>
+            {integrations.filter(i => i.connected).length} de {integrations.length} integraciones activas
           </span>
         </div>
       )}
 
-      {categories.map(cat => {
-        const items = integrations.filter(i => i.category === cat.id)
-        return (
-          <div key={cat.id}>
-            <h3 className="label-micro mb-3">{cat.label}</h3>
-            <div className="space-y-2.5">
-              {items.map(i => <IntegrationCard key={i.id} integration={i} onToggle={toggle} />)}
-            </div>
+      <div className="space-y-4">
+        {integrations.map(i => <IntegrationCard key={i.id} integration={i} onToggle={handleToggle} />)}
+      </div>
+
+      <ComingSoonModal
+        open={modalOpen}
+        integrationName={modalIntegration}
+        onClose={() => setModalOpen(false)}
+      />
+    </div>
+  )
+}
+
+function SectionAcerca() {
+  return (
+    <div className="space-y-6 max-w-2xl">
+      <div>
+        <h2 className="font-display text-[26px]" style={{ color: 'var(--ink-primary)' }}>Acerca de IURALEX</h2>
+        <p className="text-[13px] mt-1" style={{ color: 'var(--ink-secondary)' }}>Información sobre la plataforma y el equipo que la desarrolla</p>
+      </div>
+
+      <div
+        className="rounded-xl p-6"
+        style={{ background: 'var(--surface)', border: '1px solid var(--hairline)' }}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center font-display italic"
+            style={{ background: 'linear-gradient(135deg, var(--obsidian) 0%, var(--plum) 100%)', color: 'var(--lime)', fontSize: 26, paddingBottom: 3 }}
+          >I</div>
+          <div>
+            <p className="font-display text-[22px] leading-none" style={{ color: 'var(--ink-primary)' }}>IURALEX</p>
+            <p className="text-[12px] mt-1" style={{ color: 'var(--ink-tertiary)' }}>v1.0.0 · LegalTech para España</p>
           </div>
-        )
-      })}
+        </div>
+
+        <dl className="space-y-3 text-[13px]">
+          <div className="flex justify-between gap-4">
+            <dt style={{ color: 'var(--ink-tertiary)' }}>Versión</dt>
+            <dd style={{ color: 'var(--ink-primary)' }}>1.0.0</dd>
+          </div>
+          <div className="flex justify-between gap-4">
+            <dt style={{ color: 'var(--ink-tertiary)' }}>Desarrollado por</dt>
+            <dd className="font-medium" style={{ color: 'var(--ink-primary)' }}>Cliender Tech (HBD Revolution SL)</dd>
+          </div>
+          <div className="flex justify-between gap-4">
+            <dt style={{ color: 'var(--ink-tertiary)' }}>Ubicación</dt>
+            <dd style={{ color: 'var(--ink-primary)' }}>Sagunto, Valencia · España</dd>
+          </div>
+          <div className="flex justify-between gap-4">
+            <dt style={{ color: 'var(--ink-tertiary)' }}>Contacto</dt>
+            <dd>
+              <a href="mailto:nicolas@cliender.com" className="font-medium" style={{ color: 'var(--lime-text-soft)' }}>
+                nicolas@cliender.com
+              </a>
+            </dd>
+          </div>
+          <div className="flex justify-between gap-4">
+            <dt style={{ color: 'var(--ink-tertiary)' }}>Modelo IA</dt>
+            <dd style={{ color: 'var(--ink-primary)' }}>Claude Haiku 4.5 (Anthropic)</dd>
+          </div>
+        </dl>
+      </div>
+
+      <PoweredByCliender variant="inline" className="text-center" />
     </div>
   )
 }
@@ -497,6 +657,7 @@ export default function SettingsPage() {
       case 'ia':            return <SectionIA />
       case 'notificaciones': return <SectionPlaceholder title="Notificaciones" description="Configura alertas de plazos, expedientes y avisos del sistema" />
       case 'facturacion':   return <SectionPlaceholder title="Plan y facturación" description="Gestiona tu suscripción, facturas y método de pago" />
+      case 'acerca':        return <SectionAcerca />
     }
   }
 

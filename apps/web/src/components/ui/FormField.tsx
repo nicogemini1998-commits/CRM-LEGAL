@@ -26,8 +26,8 @@ export function InputField({ label, error, hint, required = false, icon, classNa
         <input
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className={`w-full px-4 py-2.5 border rounded-lg text-slate-900 placeholder-slate-400 transition-all duration-200 focus:outline-none ${icon ? 'pl-10' : ''} ${error ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-500/30 focus:border-red-500' : 'border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400'} ${className}`}
-          style={{ borderColor: focused ? (error ? '#fca5a5' : '#a5b4fc') : error ? '#fecaca' : '#e2e8f0' }}
+          className={`w-full px-4 py-2.5 border rounded-lg text-slate-900 placeholder-slate-400 transition-all duration-200 focus:outline-none ${icon ? 'pl-10' : ''} ${error ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-500/30 focus:border-red-500' : 'border-slate-200 bg-white focus:ring-2 focus:ring-[#8F7EE9]/20 focus:border-[#8F7EE9]'} ${className}`}
+          style={{ borderColor: focused ? (error ? '#fca5a5' : '#8F7EE9') : error ? '#fecaca' : '#e2e8f0' }}
           {...props}
         />
       </div>
@@ -51,8 +51,8 @@ export function TextArea({ label, error, hint, required = false, icon: _icon, cl
       <textarea
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        className={`w-full px-4 py-2.5 border rounded-lg text-slate-900 placeholder-slate-400 transition-all duration-200 focus:outline-none resize-vertical ${error ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-500/30 focus:border-red-500' : 'border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400'} ${className}`}
-        style={{ borderColor: focused ? (error ? '#fca5a5' : '#a5b4fc') : error ? '#fecaca' : '#e2e8f0' }}
+        className={`w-full px-4 py-2.5 border rounded-lg text-slate-900 placeholder-slate-400 transition-all duration-200 focus:outline-none resize-vertical ${error ? 'border-red-300 bg-red-50 focus:ring-2 focus:ring-red-500/30 focus:border-red-500' : 'border-slate-200 bg-white focus:ring-2 focus:ring-[#8F7EE9]/20 focus:border-[#8F7EE9]'} ${className}`}
+        style={{ borderColor: focused ? (error ? '#fca5a5' : '#8F7EE9') : error ? '#fecaca' : '#e2e8f0' }}
         {...props}
       />
       {error && (

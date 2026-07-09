@@ -14,7 +14,7 @@ export const anthropic = { get client() { return getClient() } }
 
 // Haiku 3.5: $0.80/MTok input, $4/MTok output — 10x más barato que Sonnet
 // Con prompt caching: ~90% descuento en tokens del sistema repetidos
-export const MODEL = 'claude-3-5-haiku-20241022'
+export const MODEL = 'claude-haiku-4-5-20251001'
 
 export type MessageParam = {
   role: 'user' | 'assistant'
@@ -71,12 +71,18 @@ export async function callClaudeAPI(
 export function streamClaudeAPI(
   systemPrompt: string,
   messages: MessageParam[],
-  options?: { maxTokens?: number }
+  options?: { maxTokens?: number; extraSystemBlocks?: Array<{ text: string; cache?: boolean }> }
 ) {
+  const baseBlock = { type: 'text' as const, text: systemPrompt, cache_control: { type: 'ephemeral' as const } }
+  const extras = (options?.extraSystemBlocks || []).map(b =>
+    b.cache
+      ? { type: 'text' as const, text: b.text, cache_control: { type: 'ephemeral' as const } }
+      : { type: 'text' as const, text: b.text }
+  )
   return getClient().messages.stream({
     model: MODEL,
     max_tokens: options?.maxTokens || 2048,
-    system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
+    system: [baseBlock, ...extras],
     messages,
   })
 }

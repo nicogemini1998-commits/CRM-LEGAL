@@ -7,7 +7,7 @@ import { sanitizeText, validateUUID } from '@/lib/security/sanitize'
 import { withErrorHandler, ValidationError, UnauthorizedError } from '@/lib/security/apiResponse'
 import { auditLog } from '@/lib/security/gdpr'
 
-const IS_DEV_WITHOUT_DB = !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')
+const IS_DEV_WITHOUT_DB = process.env.NEXT_PUBLIC_DEMO_MODE === '1' || !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')
 
 export async function GET(req: NextRequest) {
   return withErrorHandler(async () => {
@@ -15,8 +15,16 @@ export async function GET(req: NextRequest) {
     if (!session?.user?.id) throw new UnauthorizedError()
 
     if (IS_DEV_WITHOUT_DB) {
-      const { DEMO_DOCUMENTS } = await import('@/lib/dev/demo-data')
-      return NextResponse.json({ documents: DEMO_DOCUMENTS })
+      const { DEMO_DOCUMENTS, DEMO_CASES, DEMO_CLIENTS } = await import('@/lib/dev/demo-data')
+      const clientId = req.nextUrl.searchParams.get('clientId')
+      const caseClientMap = new Map(DEMO_CASES.map(c => [c.id, c.client_id]))
+      const clientNameMap = new Map(DEMO_CLIENTS.map(c => [c.id, c.name]))
+      const enriched = DEMO_DOCUMENTS.map(d => {
+        const cid = (d as any).client_id || (d.case_id ? caseClientMap.get(d.case_id) ?? null : null)
+        return { ...d, client_id: cid, client_name: cid ? clientNameMap.get(cid) ?? null : null }
+      })
+      const filtered = clientId ? enriched.filter(d => d.client_id === clientId) : enriched
+      return NextResponse.json({ documents: filtered })
     }
 
     const supabase = createServerClient()
@@ -62,14 +70,73 @@ export async function POST(req: NextRequest) {
     const docType = sanitizeText(rawDocType)
     if (!allowedTypes.includes(docType)) throw new ValidationError('Tipo de documento no válido')
 
+    const rawClientId = formData.get('client_id')
+    let clientId: string | null = null
+    if (rawClientId && typeof rawClientId === 'string' && rawClientId !== 'null') {
+      clientId = rawClientId // validated shape, not UUID-enforced for demo
+
+    }
+
     let caseId: string | null = null
     if (rawCaseId && typeof rawCaseId === 'string' && rawCaseId !== 'null') {
-      caseId = validateUUID(rawCaseId)
-      // Verificar que el caso pertenece al usuario
-      const supabase = createServerClient()
-      const { data: caseCheck } = await supabase
-        .from('cases').select('id').eq('id', caseId).eq('user_id', session.user.id).single()
-      if (!caseCheck) throw new ValidationError('Caso no encontrado')
+      caseId = IS_DEV_WITHOUT_DB ? rawCaseId : validateUUID(rawCaseId)
+      if (!IS_DEV_WITHOUT_DB) {
+        const supabase = createServerClient()
+        const { data: caseCheck } = await supabase
+          .from('cases').select('id').eq('id', caseId).eq('user_id', session.user.id).single()
+        if (!caseCheck) throw new ValidationError('Caso no encontrado')
+      }
+    }
+
+    // Demo mode: parsear archivo + insertar en memoria + encolar análisis IA
+    if (IS_DEV_WITHOUT_DB) {
+      const { DEMO_DOCUMENTS, enqueueDemoAnalysis } = await import('@/lib/dev/demo-data')
+      const newId = `auto-doc-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+      let content_markdown: string | null = null
+      try {
+        const ext = (file.name.split('.').pop() || '').toLowerCase()
+        if (ext === 'txt') {
+          content_markdown = await file.text()
+        } else if (ext === 'pdf') {
+          // Polyfill DOMMatrix para Node.js (pdf-parse lo usa en detección de entorno de test)
+          if (typeof (globalThis as any).DOMMatrix === 'undefined') {
+            (globalThis as any).DOMMatrix = class DOMMatrix { constructor() {} }
+          }
+          const { default: pdfParse } = await import('pdf-parse' as any)
+          const buffer = Buffer.from(await file.arrayBuffer())
+          const parsed = await pdfParse(buffer)
+          content_markdown = parsed.text || null
+        }
+      } catch (e) { console.error('[doc-upload] parse failed:', e instanceof Error ? e.message : e) }
+      const newDoc = {
+        id: newId,
+        user_id: session.user.id,
+        case_id: caseId,
+        client_id: clientId,
+        title,
+        document_type: docType,
+        file_type: (file.name.split('.').pop() || 'pdf').toLowerCase(),
+        confidential,
+        storage_path: null as string | null,
+        file_hash: null as string | null,
+        deleted_at: null as string | null,
+        content_markdown,
+        created_at: new Date().toISOString(),
+      }
+      ;(DEMO_DOCUMENTS as unknown as Array<typeof newDoc>).unshift(newDoc)
+      // Persist uploaded document to disk
+      try {
+        const { appendUploadedDoc } = await import('@/lib/dev/persist')
+        appendUploadedDoc(newDoc)
+      } catch { /* persist optional */ }
+      enqueueDemoAnalysis({
+        documentId: newId,
+        caseId,
+        userId: session.user.id,
+        title,
+        documentType: docType,
+      })
+      return NextResponse.json({ document: newDoc, url: null, autoAnalysis: 'pending' }, { status: 201 })
     }
 
     // Validación completa de archivo (magic bytes, extensión, contenido)
@@ -106,6 +173,16 @@ export async function POST(req: NextRequest) {
       ipAddress: req.headers.get('x-forwarded-for') || undefined,
     })
 
-    return NextResponse.json({ document: data, url }, { status: 201 })
+    // Fire-and-forget: disparar análisis IA en background (no esperamos respuesta)
+    // En prod real, esto se encolaría con Inngest. Por ahora, llamada interna no-await.
+    const origin = req.headers.get('origin') || `http://localhost:3000`
+    const cookie = req.headers.get('cookie') || ''
+    fetch(`${origin}/api/claude/analyze-document`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', cookie },
+      body: JSON.stringify({ documentId: data.id, analysisType: 'FULL' }),
+    }).catch(() => { /* fire-and-forget */ })
+
+    return NextResponse.json({ document: data, url, autoAnalysis: 'pending' }, { status: 201 })
   })
 }

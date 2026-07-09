@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+/* ── Tailwind 4 brand theme — Cliender official ─────────────────── */
+@theme {
+  --color-cliender-purple: #8F7EE9;
+  --color-cliender-purple-hover: #7C6BD6;
+  --color-cliender-purple-pressed: #6A5BC1;
+  --color-cliender-purple-soft: #F1EEFB;
+  --color-cliender-navy: #1E2839;
+  --color-cliender-black: #14181E;
+  --color-cliender-cream: #EBEAE4;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
    IURALEX — Design System v4.0 "Obsidian & Citrus"
    Editorial Tech · Quiet Power · Linear-meets-Vercel-meets-Arc
@@ -24,19 +35,28 @@
   --hairline-strong: #D6D3D1;
   --hairline-faint: #F0EFEC;
 
-  /* ── Signature: Cliender Purple + Obsidian ───────────────────────── */
-  --lime: #7C3AED;              /* Cliender purple primary */
-  --lime-hover: #6D28D9;        /* darker hover */
-  --lime-pressed: #5B21B6;
-  --lime-glow: rgba(124, 58, 237, 0.32);
-  --lime-bg-soft: #F5F3FF;      /* violet-50 — for soft backgrounds */
-  --lime-text-on: #FFFFFF;      /* white text on purple solid */
-  --lime-text-soft: #5B21B6;    /* dark purple text on bg-soft */
+  /* ── Signature: Cliender Purple + Obsidian (BRAND OFFICIAL) ────── */
+  --cliender-purple: #8F7EE9;          /* Cliender Purple — primary CTA */
+  --cliender-purple-hover: #7C6BD6;
+  --cliender-purple-pressed: #6A5BC1;
+  --cliender-purple-soft: #F1EEFB;
+  --cliender-navy: #1E2839;            /* Dark Navy */
+  --cliender-black: #14181E;           /* Almost Black */
+  --cliender-cream: #EBEAE4;
 
-  --obsidian: #18181B;
-  --obsidian-hover: #27272A;
-  --obsidian-pressed: #09090B;
-  --obsidian-soft: #3F3F46;
+  /* Legacy aliases — kept for backwards-compat across the app */
+  --lime: var(--cliender-purple);
+  --lime-hover: var(--cliender-purple-hover);
+  --lime-pressed: var(--cliender-purple-pressed);
+  --lime-glow: rgba(143, 126, 233, 0.32);
+  --lime-bg-soft: var(--cliender-purple-soft);
+  --lime-text-on: #FFFFFF;
+  --lime-text-soft: #4B3FA8;
+
+  --obsidian: var(--cliender-navy);
+  --obsidian-hover: #2A364B;
+  --obsidian-pressed: var(--cliender-black);
+  --obsidian-soft: #3F4A60;
 
   /* ── Semantic ─────────────────────────────────────────────────────── */
   --success: #16A34A;

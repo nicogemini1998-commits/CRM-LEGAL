@@ -20,7 +20,7 @@ const typeColors: Record<TimelineEventType, { bg: string; text: string; dot: str
   success: { bg: 'bg-emerald-50', text: 'text-emerald-600', dot: 'bg-emerald-500' },
   warning: { bg: 'bg-amber-50', text: 'text-amber-600', dot: 'bg-amber-500' },
   error: { bg: 'bg-red-50', text: 'text-red-600', dot: 'bg-red-500' },
-  document: { bg: 'bg-indigo-50', text: 'text-indigo-600', dot: 'bg-indigo-500' },
+  document: { bg: 'bg-[#F1EEFB]', text: 'text-[#6A5BC1]', dot: 'bg-[#8F7EE9]' },
   chat: { bg: 'bg-cyan-50', text: 'text-cyan-600', dot: 'bg-cyan-500' },
 }
 

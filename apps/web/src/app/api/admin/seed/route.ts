@@ -19,8 +19,11 @@ export async function POST(req: NextRequest) {
   const supabase = createServerClient()
 
   // Crear usuario admin Nicolas
-  const adminEmail = 'nicolas@cliender.com'
-  const adminPassword = 'Master123'
+  const adminEmail = process.env.SEED_ADMIN_EMAIL || 'nicolas@cliender.com'
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD
+  if (!adminPassword || adminPassword.length < 12) {
+    return NextResponse.json({ error: 'SEED_ADMIN_PASSWORD required (min 12 chars)' }, { status: 500 })
+  }
   const passwordHash = await bcrypt.hash(adminPassword, 12)
 
   const { data: existingUser } = await supabase

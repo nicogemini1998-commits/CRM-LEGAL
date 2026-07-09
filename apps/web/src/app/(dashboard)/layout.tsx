@@ -3,52 +3,74 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { LogOut } from 'lucide-react'
 import { CommandPalette } from '@/components/features/command-palette'
 import { DuotoneIcon } from '@/components/ui/duotone-icon'
 import { CommandShortcut } from '@/components/ui/command-shortcut'
+import { PoweredByCliender } from '@/components/ui/PoweredByCliender'
+import { ClienderLogo } from '@/components/brand/ClienderLogo'
+import { cachedFetchJSON } from '@/lib/hooks/useCachedFetch'
+import { useRole } from '@/lib/rbac/useRole'
+import { hasPermission } from '@/lib/rbac/rbac'
 
-type NavItem = { href: string; label: string; icon: 'home' | 'briefcase' | 'document' | 'users' | 'feather' | 'sparkles' | 'settings' | 'compass' | 'bolt' | 'clock' | 'book-open'; signature?: boolean; badge?: string }
+type NavItem = {
+  href: string
+  label: string
+  icon: 'home' | 'briefcase' | 'document' | 'users' | 'feather' | 'sparkles' | 'settings' | 'compass' | 'bolt' | 'clock' | 'book-open' | 'euro'
+  signature?: boolean
+  badge?: string
+  perm?: 'viewDashboard' | 'viewCases' | 'viewDocuments' | 'viewClients' | 'viewTemplates' | 'viewDeadlines' | 'viewFinanzas' | 'viewChat' | 'viewAdmin' | 'viewSettings' | 'viewTeam'
+}
 
 const NAV_ITEMS: NavItem[] = [
-  { href: '/dashboard',  label: 'Inicio',           icon: 'home' },
-  { href: '/cases',      label: 'Expedientes',      icon: 'briefcase' },
-  { href: '/documents',  label: 'Documentos',       icon: 'document' },
-  { href: '/clients',    label: 'Clientes',         icon: 'users' },
-  { href: '/acciones',   label: 'Acciones',         icon: 'bolt',       badge: '80+' },
-  { href: '/plantillas', label: 'Plantillas',       icon: 'book-open',  badge: '50+' },
-  { href: '/plazos',     label: 'Plazos',           icon: 'clock' },
-  { href: '/generate',   label: 'Generar',          icon: 'feather' },
-  { href: '/chat',       label: 'LEXIA',            icon: 'sparkles', signature: true },
+  { href: '/dashboard',  label: 'Inicio',      icon: 'home',      perm: 'viewDashboard' },
+  { href: '/cases',      label: 'Expedientes', icon: 'briefcase', perm: 'viewCases' },
+  { href: '/documents',  label: 'Documentos',  icon: 'document',  perm: 'viewDocuments' },
+  { href: '/clients',    label: 'Clientes',    icon: 'users',     perm: 'viewClients' },
+  { href: '/acciones',   label: 'Acciones',    icon: 'bolt',      badge: '17', perm: 'viewDashboard' },
+  { href: '/plantillas', label: 'Plantillas',  icon: 'book-open', badge: '20', perm: 'viewTemplates' },
+  { href: '/plazos',     label: 'Plazos',      icon: 'clock',     perm: 'viewDeadlines' },
+  { href: '/finanzas',   label: 'Finanzas',    icon: 'euro',      perm: 'viewFinanzas' },
+  { href: '/generate',   label: 'Generar',     icon: 'feather',   perm: 'viewTemplates' },
+  { href: '/chat',       label: 'LEXIA',       icon: 'sparkles',  signature: true, perm: 'viewChat' },
 ]
 
 const BOTTOM_ITEMS: NavItem[] = [
-  { href: '/admin/equipo', label: 'Equipo',         icon: 'settings' },
-  { href: '/settings', label: 'Configuración',  icon: 'compass' },
+  { href: '/admin/equipo', label: 'Equipo',        icon: 'settings', perm: 'viewTeam' },
+  { href: '/settings',     label: 'Configuración', icon: 'compass',  perm: 'viewSettings' },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
   const [userEmail, setUserEmail] = useState('abogado@despacho.com')
   const [userRole, setUserRole] = useState('Abogado')
   const [userName, setUserName] = useState('Nicolas')
   const [cmdOpen, setCmdOpen] = useState(false)
+  const { role } = useRole()
 
   const userInitial = (userName || userEmail)[0]?.toUpperCase() || 'I'
 
   useEffect(() => {
-    fetch('/api/auth/session')
-      .then(r => r.json())
-      .then(session => {
-        if (session.user?.email) setUserEmail(session.user.email)
-        if (session.user?.role) setUserRole(session.user.role === 'admin' ? 'Administrador' : 'Abogado')
-        if (session.user?.name) setUserName(session.user.name.split(' ')[0])
-        else if (session.user?.email) {
+    let cancelled = false
+    cachedFetchJSON<any>('/api/auth/session')
+      .then((session) => {
+        if (cancelled) return
+        if (session?.user?.email) setUserEmail(session.user.email)
+        if (session?.user?.role) setUserRole(session.user.role)
+        if (session?.user?.name) setUserName(session.user.name.split(' ')[0])
+        else if (session?.user?.email) {
           const local = session.user.email.split('@')[0]
           setUserName(local.charAt(0).toUpperCase() + local.slice(1))
         }
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error('[layout] session fetch failed:', err)
+      })
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -63,6 +85,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [handleKeyDown])
 
+  const handleLogout = useCallback(async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } catch {
+      // ignore — proceed to redirect
+    } finally {
+      router.push('/login')
+    }
+  }, [router])
+
   return (
     <div className="min-h-screen flex" style={{ background: 'var(--bg)' }}>
       {/* ── Sidebar ───────────────────────────────────────────────── */}
@@ -74,29 +106,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="px-5 pt-5 pb-4">
           <Link href="/dashboard" className="flex items-center gap-2.5 group">
             <motion.div
-              whileHover={{ rotate: -4, scale: 1.04 }}
+              whileHover={{ rotate: -4, scale: 1.06 }}
               transition={{ type: 'spring', stiffness: 300, damping: 18 }}
               className="w-8 h-8 rounded-lg flex items-center justify-center shadow-lg"
               style={{
-                background: 'var(--lime)',
-                boxShadow: '0 4px 14px -2px rgba(124, 58, 237, 0.45)',
+                background: '#8F7EE9',
+                boxShadow: '0 4px 14px -2px rgba(143, 126, 233, 0.45)',
               }}
             >
-              <span
-                className="font-display italic"
-                style={{
-                  color: 'var(--lime-text-on)',
-                  fontSize: 18,
-                  lineHeight: 1,
-                  paddingBottom: 2,
-                }}
-              >
-                I
-              </span>
+              <ClienderLogo variant="symbol" color="white" size={16} title="Cliender" />
             </motion.div>
             <div>
               <p className="text-white text-[15px] font-semibold tracking-tight leading-none">IURALEX</p>
-              <p className="text-[10px] mt-1 font-medium tracking-wider uppercase" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              <p
+                className="text-[9.5px] mt-1 font-medium tracking-[0.18em] uppercase"
+                style={{ color: 'rgba(255,255,255,0.45)' }}
+              >
                 by Cliender
               </p>
             </div>
@@ -124,10 +149,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             Workspace
           </p>
           <div className="space-y-0.5">
-            {[...NAV_ITEMS, ...BOTTOM_ITEMS].map((item) => {
+            {[...NAV_ITEMS, ...BOTTOM_ITEMS].filter(item => !item.perm || hasPermission(role as any, item.perm as any)).map((item) => {
               const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')
               return (
-                <Link key={item.href} href={item.href}>
+                <Link key={item.href} href={item.href} prefetch={true}>
                   <motion.div
                     whileTap={{ scale: 0.97 }}
                     transition={{ duration: 0.12 }}
@@ -213,8 +238,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <p className="text-[10.5px] mt-0.5 truncate" style={{ color: 'rgba(255,255,255,0.45)' }}>{userEmail}</p>
             </div>
           </div>
+
+          {/* Logout */}
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="mt-2 w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[12.5px] font-medium transition-colors duration-150"
+            style={{ color: 'rgba(255,255,255,0.7)', background: 'transparent' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+              e.currentTarget.style.color = '#fff'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent'
+              e.currentTarget.style.color = 'rgba(255,255,255,0.7)'
+            }}
+          >
+            <LogOut size={14} />
+            <span>Cerrar sesión</span>
+          </button>
+
           <p className="text-[10px] mt-2 text-center font-medium" style={{ color: 'rgba(255,255,255,0.25)' }}>
             © 2025 Cliender
+          </p>
+          <p className="text-[9.5px] mt-0.5 text-center tracking-wide" style={{ color: 'rgba(255,255,255,0.2)' }}>
+            v1.0.0 · by Cliender Tech
           </p>
         </div>
       </aside>
@@ -223,20 +271,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <CommandPalette isOpen={cmdOpen} onClose={() => setCmdOpen(false)} />
 
       {/* Main */}
-      <div className="flex-1 ml-60 relative">
-        <main className="w-full max-w-6xl mx-auto px-12 py-10">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={pathname}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
+      <div className="flex-1 ml-60 relative flex flex-col min-h-screen">
+        <main className="flex-1 w-full max-w-6xl mx-auto px-12 py-10">
+          {children}
         </main>
+
+        {/* Global footer — pegado al fondo después del contenido, no sticky */}
+        <PoweredByCliender variant="footer" />
       </div>
     </div>
   )

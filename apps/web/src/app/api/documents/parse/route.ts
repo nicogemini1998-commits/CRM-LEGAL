@@ -11,6 +11,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { parseBuffer } from '@/lib/document-parser'
+import { auth } from '@/lib/auth/auth'
 
 const MAX_BYTES = 25 * 1024 * 1024 // 25 MB
 
@@ -22,6 +23,11 @@ const ALLOWED_TYPES = new Set([
 ])
 
 export async function POST(req: NextRequest) {
+  const session = await auth().catch(() => null)
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+  }
+
   try {
     const contentType = req.headers.get('content-type') || ''
     if (!contentType.includes('multipart/form-data')) {

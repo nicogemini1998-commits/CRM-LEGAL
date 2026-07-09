@@ -28,6 +28,7 @@ type IconName =
   | 'compass'
   | 'bolt'
   | 'book-open'
+  | 'euro'
 
 interface DuotoneIconProps extends Omit<SVGProps<SVGSVGElement>, 'name'> {
   name: IconName
@@ -234,6 +235,14 @@ export function DuotoneIcon({
         <svg {...common}>
           <path {...fillSec} d="M2 7h9v14H5a3 3 0 0 1-3-3V7ZM22 7H13v14h6a3 3 0 0 0 3-3V7Z" />
           <path stroke={primary} d="M2 7h9v14M22 7H13v14M12 7V3M2 7a5 5 0 0 1 5-5h5M22 7a5 5 0 0 0-5-5h-5" />
+        </svg>
+      )
+    case 'euro':
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="9" stroke={primary} />
+          <circle cx="12" cy="12" r="9" {...fillSec} />
+          <path stroke={primary} strokeWidth="1.5" d="M15 8.5a5 5 0 1 0 0 7M7 11h6M7 13h6" />
         </svg>
       )
     default:

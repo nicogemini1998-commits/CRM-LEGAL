@@ -14,7 +14,7 @@ const CaseSchema = z.object({
   client_id: z.string().uuid().optional().nullable(),
 })
 
-const IS_DEV_WITHOUT_DB = !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')
+const IS_DEV_WITHOUT_DB = process.env.NEXT_PUBLIC_DEMO_MODE === '1' || !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')
 
 export async function GET() {
   return withErrorHandler(async () => {
